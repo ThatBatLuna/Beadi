@@ -3,6 +3,7 @@ import {
   FocusEventHandler,
   FunctionComponent,
   PointerEventHandler,
+  ReactNode,
   useCallback,
   useRef,
   useState,
@@ -16,17 +17,19 @@ type NumberInputProps = {
   id: string;
   name: string;
   onChange: (e: ChangeEvent) => void;
+  label?: ReactNode | string;
 };
 
 const NumberInput: FunctionComponent<NumberInputProps> = ({
   id,
   name,
   onChange,
+  label,
 }) => {
   const [value, setValue] = useState(0);
   const [sliding, setSliding] = useState(false);
   const [startX, setStartX] = useState<number | null>(null);
-  const [textEdit, setTextEdit] = useState(true);
+  const [textEdit, setTextEdit] = useState(false);
 
   const inputElement = useRef(null);
 
@@ -45,6 +48,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
         (e.target as HTMLElement).setPointerCapture(e.pointerId);
         setSliding(true);
         setStartX(e.pageX);
+        // (e.target as HTMLElement).requestPointerLock();
       }
     },
     [setSliding, textEdit]
@@ -111,7 +115,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           autoFocus={true}
         />
       ) : (
-        <div className="block w-full h-full px-2 text-center text-white rounded-md bg-slate-800 cursor-ew-resize hover:bg-neutral-800">
+        <div className="flex flex-row w-full h-full px-4 rounded-md itext-white bg-slate-800 cursor-ew-resize hover:bg-neutral-800">
+          {label && <span className="grow">{label}</span>}
           <span>{value}</span>
         </div>
       )}

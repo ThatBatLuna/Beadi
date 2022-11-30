@@ -12,7 +12,9 @@ import ReactFlow, {
   NodeTypes,
   OnConnect,
 } from "reactflow";
+import AddNode from "../nodes/AddNode";
 import ConstantValueNode from "../nodes/ConstantValueNode";
+import ShowCaseNode from "../nodes/ShowcaseNode";
 
 const initialNodes: Node<any>[] = [
   {
@@ -25,8 +27,19 @@ const initialNodes: Node<any>[] = [
   },
   {
     id: "2",
-    position: { x: 100, y: 0 },
-    data: 0,
+    type: "add",
+    position: { x: 0, y: 0 },
+    data: {
+      value: 8,
+    },
+  },
+  {
+    id: "3",
+    type: "showcase",
+    position: { x: 0, y: 0 },
+    data: {
+      value: 8,
+    },
   },
 ];
 
@@ -36,6 +49,8 @@ const Viewport: FunctionComponent<{}> = (props) => {
   const nodeTypes: NodeTypes = useMemo(
     () => ({
       constantValue: ConstantValueNode,
+      add: AddNode,
+      showcase: ShowCaseNode,
     }),
     []
   );
