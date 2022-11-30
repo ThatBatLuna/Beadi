@@ -14,18 +14,7 @@ const ConstantValueNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
       <NodeLine
         type="output"
         label="Value"
-        input={
-          <NumberInput
-            id="value"
-            name="value"
-            label="Value"
-            onChange={onChange}
-          ></NumberInput>
-        }
-      ></NodeLine>
-      <NodeLine
-        type="input"
-        label="Value"
+        id="value"
         input={
           <NumberInput
             id="value"

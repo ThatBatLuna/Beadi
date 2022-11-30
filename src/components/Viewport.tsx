@@ -1,4 +1,10 @@
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import ReactFlow, {
   Node,
   Edge,
@@ -12,8 +18,10 @@ import ReactFlow, {
   NodeTypes,
   OnConnect,
 } from "reactflow";
+import { update } from "../engine";
 import AddNode from "../nodes/AddNode";
 import ConstantValueNode from "../nodes/ConstantValueNode";
+import DisplayNode from "../nodes/Display";
 import ShowCaseNode from "../nodes/ShowcaseNode";
 
 const initialNodes: Node<any>[] = [
@@ -41,6 +49,14 @@ const initialNodes: Node<any>[] = [
       value: 8,
     },
   },
+  {
+    id: "4",
+    type: "display",
+    position: { x: 0, y: 0 },
+    data: {
+      value: 8,
+    },
+  },
 ];
 
 const initialEdges: Edge<any>[] = [];
@@ -51,6 +67,7 @@ const Viewport: FunctionComponent<{}> = (props) => {
       constantValue: ConstantValueNode,
       add: AddNode,
       showcase: ShowCaseNode,
+      display: DisplayNode,
     }),
     []
   );
@@ -71,6 +88,17 @@ const Viewport: FunctionComponent<{}> = (props) => {
     (params) => setEdges((eds) => addEdge(params, eds)),
     []
   );
+
+  useEffect(() => {
+    let interval = setTimeout(() => {
+      //   console.log("Calc");
+      setNodes((nodes) => update(nodes, edges));
+    }, 20);
+
+    return () => {
+      clearTimeout(interval);
+    };
+  }, [setNodes, edges]);
 
   return (
     <ReactFlow

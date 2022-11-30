@@ -14,6 +14,7 @@ const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
       <NodeLine
         type="input"
         label="Value"
+        id="value1"
         input={
           <NumberInput
             id="value"
@@ -26,6 +27,7 @@ const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
       <NodeLine
         type="output"
         label="Value"
+        id="value2"
         input={
           <NumberInput
             id="value"
@@ -35,8 +37,8 @@ const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
           ></NumberInput>
         }
       ></NodeLine>
-      <NodeLine type="output" label="Value"></NodeLine>
-      <NodeLine type="input" label="Value"></NodeLine>
+      <NodeLine id="output1" type="output" label="Value"></NodeLine>
+      <NodeLine id="output2" type="input" label="Value"></NodeLine>
     </NodeShell>
   );
 };
