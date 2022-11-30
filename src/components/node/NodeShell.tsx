@@ -7,7 +7,7 @@ type NodeShellProps = {
 
 const NodeShell: FunctionComponent<NodeShellProps> = ({ children, title }) => {
   return (
-    <div className="flex flex-col text-white">
+    <div className="flex flex-col text-white w-[200px]">
       <div className="bg-red-800 rounded-t-md">
         <h1 className="px-1">{title}</h1>
       </div>

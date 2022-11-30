@@ -16,7 +16,7 @@ type ChangeEvent = {
 type NumberInputProps = {
   id: string;
   name: string;
-  onChange: (e: ChangeEvent) => void;
+  onChange?: (e: ChangeEvent) => void;
   label?: ReactNode | string;
 };
 
@@ -37,7 +37,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
     (e) => {
       const value = parseFloat(e.target.value);
       setValue(value);
-      onChange({ value: value });
+      onChange?.({ value: value });
     },
     [setValue, onChange]
   );
@@ -97,7 +97,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   return (
     <div
       data-blub="Hi"
-      className="w-40 px-1 pointer-events-auto"
+      className="w-full px-1 pointer-events-auto"
       onPointerDownCapture={beginSliding}
       onPointerUpCapture={endSliding}
       onPointerMoveCapture={slide}
