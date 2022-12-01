@@ -8,11 +8,10 @@ const AddNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
   const edges = useEdges();
 
   const connections = useMemo(() => {
-    console.log(edges);
     const inEdges = edges.filter((it) => it.target === id);
-    const outEdges = edges.filter((it) => it.source === id);
+    // const outEdges = edges.filter((it) => it.source === id);
 
-    console.log(inEdges);
+    // console.log(inEdges);
 
     return {
       value: inEdges.findIndex((it) => it.targetHandle === "value") >= 0,
@@ -21,11 +20,11 @@ const AddNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
   }, [edges, id]);
 
   return (
-    <NodeShell title="Add">
+    <NodeShell title={"Add" + id}>
       <NodeLine
         type="input"
         label="Value"
-        id="value"
+        id="a"
         connected={connections["value"]}
         input={
           <NumberInput id="value" name="value" label="Value"></NumberInput>
@@ -34,13 +33,13 @@ const AddNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
       <NodeLine
         type="input"
         label="Value"
-        id="value2"
+        id="b"
         connected={connections["value2"]}
         input={
           <NumberInput id="value2" name="value2" label="Value2"></NumberInput>
         }
       ></NodeLine>
-      <NodeLine id="output" type="output" label="Value"></NodeLine>
+      <NodeLine id="sum" type="output" label="Value"></NodeLine>
     </NodeShell>
   );
 };

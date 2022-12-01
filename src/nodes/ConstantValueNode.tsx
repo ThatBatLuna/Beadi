@@ -4,13 +4,13 @@ import NumberInput from "../components/input/NumberInput";
 import NodeLine from "../components/node/NodeLine";
 import NodeShell from "../components/node/NodeShell";
 
-const ConstantValueNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
+const ConstantValueNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
   const onChange = useCallback((evt: any) => {
     console.log(evt);
   }, []);
 
   return (
-    <NodeShell title="Constant Value">
+    <NodeShell title={"Constant Value" + id}>
       <NodeLine
         type="output"
         label="Value"
