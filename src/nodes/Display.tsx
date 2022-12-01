@@ -6,7 +6,7 @@ import NodeShell from "../components/node/NodeShell";
 
 const DisplayNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
   return (
-    <NodeShell title="Display">
+    <NodeShell title={"Display" + id}>
       <NodeLine type="input" label="Value" id="value"></NodeLine>
     </NodeShell>
   );

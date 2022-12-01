@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   Node,
   Edge,
@@ -18,11 +12,9 @@ import ReactFlow, {
   NodeTypes,
   OnConnect,
 } from "reactflow";
-import { update } from "../engine";
-import AddNode from "../nodes/AddNode";
-import ConstantValueNode from "../nodes/ConstantValueNode";
-import DisplayNode from "../nodes/Display";
-import ShowCaseNode from "../nodes/ShowcaseNode";
+import { buildModel } from "../engine";
+import _ from "lodash";
+import { nodeDefs } from "../engine/node";
 
 const initialNodes: Node<any>[] = [
   {
@@ -43,7 +35,7 @@ const initialNodes: Node<any>[] = [
   },
   {
     id: "3",
-    type: "showcase",
+    type: "showCase",
     position: { x: 0, y: 0 },
     data: {
       value: 8,
@@ -61,44 +53,44 @@ const initialNodes: Node<any>[] = [
 
 const initialEdges: Edge<any>[] = [];
 
-const Viewport: FunctionComponent<{}> = (props) => {
-  const nodeTypes: NodeTypes = useMemo(
-    () => ({
-      constantValue: ConstantValueNode,
-      add: AddNode,
-      showcase: ShowCaseNode,
-      display: DisplayNode,
-    }),
-    []
-  );
+const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) => it.component);
 
+const Viewport: FunctionComponent<{}> = (props) => {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
 
+  const [model, setModel] = useState<any>(null);
+
   const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    (changes) =>
+      setNodes((nds) => {
+        let newNodes = applyNodeChanges(changes, nds);
+        return newNodes;
+      }),
     []
   );
   const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    (changes) =>
+      setEdges((eds) => {
+        let newEdges = applyEdgeChanges(changes, eds);
+        return newEdges;
+      }),
     []
   );
 
   const onConnect: OnConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
+    (params) =>
+      setEdges((eds) => {
+        let newEdges = addEdge(params, eds);
+        setModel(buildModel(nodes, newEdges));
+        return newEdges;
+      }),
+    [nodes]
   );
 
   useEffect(() => {
-    let interval = setTimeout(() => {
-      //   console.log("Calc");
-      setNodes((nodes) => update(nodes, edges));
-    }, 20);
-
-    return () => {
-      clearTimeout(interval);
-    };
-  }, [setNodes, edges]);
+    console.log(model);
+  }, [model]);
 
   return (
     <ReactFlow

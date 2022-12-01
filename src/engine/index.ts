@@ -1,20 +1,130 @@
 import { Node, Edge } from "reactflow";
+import { nodeDefs } from "./node";
 
-function isSink(node: Node<any>) {}
+type Recipe = {
+  dependencies: string[];
+  outpus: string[];
+  func: (inputs: any[]) => any[];
+};
+type Model = {
+  executionPlan: Recipe[];
+};
 
-export function update(nodes: Node<any>[], edges: Edge<any>[]): Node<any>[] {
-  //Build graph between handles
-  //Resolve dependency tree with all "sink" handles as roots
-
-  const nodeLookup = Object.assign({}, ...nodes.map((it) => ({ [it.id]: it })));
-
-  console.log("Hi");
-  console.log(edges);
-  console.log(nodes);
-
-  // const sinkEdges = edges.filter((node) => isSink(node));
-
-  const edgeValues = edges.map((it) => ({ [it.id]: it }));
-
-  return nodes;
+function handleId(nodeId: string, handleId: string) {
+  return `${nodeId}__${handleId}`;
 }
+
+export function buildModel(nodes: Node<any>[], edges: Edge<any>[]): Model {
+  //Find all terminating handles
+  console.log("Rebuilding Model");
+
+  let terminals = [];
+  let nodeDict: Record<string, Node<any>> = {};
+
+  for (const node of nodes) {
+    nodeDict[node.id] = node;
+    let nodeType = nodeDefs[node.type!!];
+    for (const input of nodeType.inputs) {
+      if (input.terminal) {
+        terminals.push({
+          node: node.id,
+          handle: input.id,
+        });
+      }
+    }
+  }
+
+  let executedNodes = new Set<string>([]);
+  let executionPlan: Recipe[] = [];
+
+  function resolveInputHandles(nodeId: string) {
+    if (!executedNodes.has(nodeId)) {
+      // console.group("Resolving ", nodeId);
+      const nodeType = nodeDefs[nodeDict[nodeId].type!!];
+      let suppliers = edges.filter((edge) => edge.target === nodeId);
+      let outputForInput: Record<string, string> = {};
+      for (const edge of suppliers) {
+        const supplierNode = edge.source;
+        outputForInput[edge.targetHandle || "??"] = handleId(
+          edge.source,
+          edge.sourceHandle || "??"
+        );
+        //Resolve the supplier Node
+        resolveInputHandles(supplierNode);
+      }
+
+      executionPlan.push({
+        dependencies: nodeType.inputs.map(
+          (inputHandle) =>
+            outputForInput[inputHandle.id] ||
+            `${nodeId}__input__${inputHandle.id}`
+        ),
+        outpus: nodeType.outputs.map((outputHandle) =>
+          handleId(nodeId, outputHandle.id)
+        ),
+        func: nodeType.executor,
+      });
+      executedNodes.add(nodeId);
+
+      // console.groupEnd();
+    }
+  }
+
+  for (const handle of terminals) {
+    resolveInputHandles(handle.node);
+  }
+
+  return {
+    executionPlan: executionPlan,
+  };
+}
+
+/*
+
+Constant 2 --->  Add 1 --\
+           \->             ->  Add 4 ---> Display 5
+                           -> 
+          Constant 3 -----/
+
+
+//Execution Plan
+[
+  2,
+  1,
+  3,
+  4,
+  5
+]
+
+//Nodes
+{
+  1: {
+    inputs: [2_value, 2_value],
+    exec: [FUNCTION, adds both inputs and writes 1_sum]
+  }
+  2: {
+    inputs: [2_ivalue],
+    exec: [FUNCTION, forwards input to 2_value]
+  }
+  3: {
+    inputs: [2_ivalue],
+    exec: [FUNCTION, forwards input to 2_value]
+  }
+  4: {
+    inputs: [1_sum, 3_value],
+    exec: [FUNCTION, adds both inputs and writes 4_sum]
+  }
+  5: {
+    inputs: [4_sum],
+    exec: [FUNCTION, displays 4_sum]
+  }
+}
+
+//Datas
+{
+  2_ivalue: 1,
+  3_ivalue: 2
+}
+
+
+*/
