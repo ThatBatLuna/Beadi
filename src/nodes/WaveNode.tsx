@@ -24,7 +24,8 @@ export const waveNodeDef: NodeDef = {
       default: 1.0,
     },
   ],
-  executor: (i) => {
-    return [Math.sin(Date.now() / 1000)];
+  executor: ([amplitude, frequency]) => {
+    const seconds = Date.now() / 1000;
+    return [Math.sin(seconds * 2 * Math.PI * frequency) * amplitude];
   },
 };

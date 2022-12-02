@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import ReactFlow, { Controls, Background, NodeTypes } from "reactflow";
 import { buildModel } from "../engine";
 import _ from "lodash";
@@ -30,9 +30,16 @@ const Viewport: FunctionComponent<{}> = (props) => {
   const data = useDataStore((store) => store.handles);
   const commit = useDataStore((store) => store.commitData);
 
+  const nodeTypeData = useMemo(() => {
+    return nodes.map((it) => ({ type: it.type, id: it.id, data: it.data }));
+  }, [nodes]);
+
   useEffect(() => {
-    setModel(buildModel(nodes, edges));
-  }, [nodes, edges]);
+    console.log(nodeTypeData);
+    //TODO Why is this called when nodes are moved???
+    setModel(buildModel(nodeTypeData, edges));
+  }, [nodeTypeData, edges]);
+
   useEffect(() => {
     console.log("Model", model);
   }, [model]);
