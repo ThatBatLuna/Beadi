@@ -24,6 +24,7 @@ export const displayNodeDef: NodeDef = {
       id: "value",
       label: "Value",
       type: "number",
+      default: 0.0,
     },
   ],
   executor: ([v], commit) => {

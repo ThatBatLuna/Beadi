@@ -12,6 +12,7 @@ export interface HandleDef {
 
 export interface InputHandleDef extends HandleDef {
   terminal?: boolean;
+  default: any;
 }
 
 export interface OutputHandleDef extends HandleDef {}

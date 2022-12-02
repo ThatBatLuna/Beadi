@@ -15,11 +15,13 @@ export const addNodeDef: NodeDef = {
       id: "a",
       label: "Value",
       type: "number",
+      default: 0.0,
     },
     {
       id: "b",
       label: "Value",
       type: "number",
+      default: 0.0,
     },
   ],
   executor: ([a, b]) => {

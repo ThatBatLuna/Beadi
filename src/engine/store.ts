@@ -1,40 +1,74 @@
 import { useCallback } from "react";
-import create from "zustand";
+import {
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Connection,
+  Edge,
+  Node,
+  NodeChange,
+  OnConnect,
+  OnEdgesChange,
+  OnNodesChange,
+} from "reactflow";
+import create, { StateCreator } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
-interface DataStore {
+interface DisplaySlice {
+  nodes: Node[];
+  edges: Edge[];
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
+  onConnect: OnConnect;
+}
+const createDisplaySlice: StateCreator<DisplaySlice, [], [], DisplaySlice> = (
+  set,
+  get
+) => ({
+  nodes: [],
+  edges: [],
+  onConnect: (connection) => set({ edges: addEdge(connection, get().edges) }),
+  onNodesChange: (changes) =>
+    set({ nodes: applyNodeChanges(changes, get().nodes) }),
+  onEdgesChange: (changes) =>
+    set({ edges: applyEdgeChanges(changes, get().edges) }),
+});
+
+interface DataSlice {
   handles: Record<string, any>;
   committed: Record<string, any>;
   setHandle: (nodeId: string, handleId: string, data: any) => void;
   commitData: (data: Record<string, any>) => void;
 }
-
-export const useDataStore = create<DataStore>()(
-  devtools(
-    (set) => ({
-      handles: {},
-      committed: {},
-      setHandle: (nodeId, handleId, data) =>
-        set((state) => ({
-          handles: {
-            ...state.handles,
-            [`${nodeId}__${handleId}`]: data,
-          },
-        })),
-      commitData: (data) => {
-        set((state) => ({
-          committed: {
-            ...state.handles,
-            ...data,
-          },
-        }));
+const createDataSlice: StateCreator<DataSlice, [], [], DataSlice> = (
+  set,
+  get
+) => ({
+  handles: {},
+  committed: {},
+  setHandle: (nodeId, handleId, data) =>
+    set((state) => ({
+      handles: {
+        ...state.handles,
+        [`${nodeId}__${handleId}`]: data,
       },
-    }),
-    {
-      name: "data-storage",
-    }
-  )
-);
+    })),
+  commitData: (data) => {
+    set((state) => ({
+      committed: {
+        ...state.handles,
+        ...data,
+      },
+    }));
+  },
+});
+
+export type DataStore = DataSlice & DisplaySlice;
+
+export const useDataStore = create<DataStore>()((...a) => ({
+  ...createDataSlice(...a),
+  ...createDisplaySlice(...a),
+}));
 
 export type HandleData<T> = [T, (value: T) => void];
 export function useHandleData<T>(
