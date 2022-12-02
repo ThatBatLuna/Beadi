@@ -13,6 +13,9 @@ import {
 } from "reactflow";
 import create, { StateCreator } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { nodeDefs } from "./node";
+
+type AddNode = (type: string) => void;
 
 interface DisplaySlice {
   nodes: Node[];
@@ -20,11 +23,14 @@ interface DisplaySlice {
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
+  addNode: AddNode;
 }
-const createDisplaySlice: StateCreator<DisplaySlice, [], [], DisplaySlice> = (
-  set,
-  get
-) => ({
+const createDisplaySlice: StateCreator<
+  DisplaySlice & DataSlice,
+  [],
+  [],
+  DisplaySlice
+> = (set, get) => ({
   nodes: [],
   edges: [],
   onConnect: (connection) => set({ edges: addEdge(connection, get().edges) }),
@@ -32,6 +38,25 @@ const createDisplaySlice: StateCreator<DisplaySlice, [], [], DisplaySlice> = (
     set({ nodes: applyNodeChanges(changes, get().nodes) }),
   onEdgesChange: (changes) =>
     set({ edges: applyEdgeChanges(changes, get().edges) }),
+  addNode: (type) => {
+    const id = "" + Date.now();
+    nodeDefs[type].inputs.forEach((input) => {
+      get().setHandle(id, `input__${input.id}`, input.default);
+    });
+    set({
+      nodes: get().nodes.concat([
+        {
+          data: {},
+          id: id,
+          position: {
+            x: 0,
+            y: 0,
+          },
+          type: type,
+        },
+      ]),
+    });
+  },
 });
 
 interface DataSlice {
@@ -76,9 +101,9 @@ export function useHandleData<T>(
   nodeId: string,
   handleId: string
 ): HandleData<T> {
-  const value = useDataStore(
-    (state) => state.handles[`${nodeId}__input__${handleId}`]
-  );
+  const value = useDataStore((state) => {
+    return state.handles[`${nodeId}__input__${handleId}`];
+  });
   const setHandle = useDataStore((state) => state.setHandle);
   const setValue = useCallback(
     (value: T) => {
