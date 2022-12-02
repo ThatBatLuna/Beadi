@@ -4,35 +4,35 @@ import { devtools, persist } from "zustand/middleware";
 
 interface DataStore {
   handles: Record<string, any>;
+  committed: Record<string, any>;
   setHandle: (nodeId: string, handleId: string, data: any) => void;
   commitData: (data: Record<string, any>) => void;
 }
 
 export const useDataStore = create<DataStore>()(
   devtools(
-    persist(
-      (set) => ({
-        handles: {},
-        setHandle: (nodeId, handleId, data) =>
-          set((state) => ({
-            handles: {
-              ...state.handles,
-              [`${nodeId}__${handleId}`]: data,
-            },
-          })),
-        commitData: (data) => {
-          set((state) => ({
-            handles: {
-              ...state.handles,
-              ...data,
-            },
-          }));
-        },
-      }),
-      {
-        name: "data-storage",
-      }
-    )
+    (set) => ({
+      handles: {},
+      committed: {},
+      setHandle: (nodeId, handleId, data) =>
+        set((state) => ({
+          handles: {
+            ...state.handles,
+            [`${nodeId}__${handleId}`]: data,
+          },
+        })),
+      commitData: (data) => {
+        set((state) => ({
+          committed: {
+            ...state.handles,
+            ...data,
+          },
+        }));
+      },
+    }),
+    {
+      name: "data-storage",
+    }
   )
 );
 
@@ -64,7 +64,7 @@ export function useInputHandleData<T>(
 }
 export function useCommittedData<T>(nodeId: string, handleId: string): T {
   const value = useDataStore(
-    (state) => state.handles[`${nodeId}__commit__${handleId}`]
+    (state) => state.committed[`${nodeId}__commit__${handleId}`]
   );
   return value as T;
 }

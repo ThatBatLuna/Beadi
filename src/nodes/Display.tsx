@@ -1,4 +1,10 @@
-import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { NodeProps, Handle, Position, useEdges } from "reactflow";
 import NumberInput from "../components/input/NumberInput";
 import NodeHandleLine from "../components/node/NodeHandleLine";
@@ -8,8 +14,6 @@ import { useCommittedData } from "../engine/store";
 
 const DisplayNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
   const value = useCommittedData<number>(id, "display");
-
-  console.log(value);
 
   return (
     <NodeShell title={"Display" + id}>
