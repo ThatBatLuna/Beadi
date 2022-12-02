@@ -17,7 +17,6 @@ import _ from "lodash";
 import { nodeDefs } from "../engine/node";
 import { evaluate } from "../engine/evaluate";
 import { useDataStore } from "../engine/store";
-import shallow from "zustand/shallow";
 import { makeNodeRenderer } from "./node/NodeRenderer";
 
 const initialNodes: Node<any>[] = [
