@@ -1,9 +1,11 @@
+import { sign } from "crypto";
 import { ComponentType } from "react";
 import { NodeProps } from "reactflow";
 import AddNode from "../nodes/AddNode";
 import ConstantValueNode from "../nodes/ConstantValueNode";
 import DisplayNode from "../nodes/Display";
 import ShowCaseNode from "../nodes/ShowcaseNode";
+import WaveNode from "../nodes/WaveNode";
 
 export interface HandleDef {
   id: string;
@@ -50,6 +52,27 @@ const nodeDefList: NodeDef[] = [
     ],
     executor: (i) => {
       return i;
+    },
+  },
+  {
+    type: "wave",
+    component: WaveNode,
+    outputs: [
+      {
+        id: "value",
+        label: "Value",
+        type: "number",
+      },
+    ],
+    inputs: [
+      {
+        id: "amplitude",
+        label: "Value",
+        type: "number",
+      },
+    ],
+    executor: (i) => {
+      return [Math.sin(Date.now() / 1000)];
     },
   },
   {

@@ -38,11 +38,9 @@ const initialNodes: Node<any>[] = [
   },
   {
     id: "3",
-    type: "showCase",
+    type: "wave",
     position: { x: 0, y: 0 },
-    data: {
-      value: 8,
-    },
+    data: {},
   },
   {
     id: "4",
@@ -66,7 +64,7 @@ const Viewport: FunctionComponent<{}> = (props) => {
 
   const [model, setModel] = useState<any>(null);
 
-  const data = useDataStore((store) => store.handles, shallow);
+  const data = useDataStore((store) => store.handles);
   const commit = useDataStore((store) => store.commitData);
 
   const onNodesChange: OnNodesChange = useCallback(
