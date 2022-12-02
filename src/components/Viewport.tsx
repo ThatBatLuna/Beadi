@@ -18,6 +18,7 @@ import { nodeDefs } from "../engine/node";
 import { evaluate } from "../engine/evaluate";
 import { useDataStore } from "../engine/store";
 import shallow from "zustand/shallow";
+import { makeNodeRenderer } from "./node/NodeRenderer";
 
 const initialNodes: Node<any>[] = [
   {
@@ -54,8 +55,9 @@ const initialNodes: Node<any>[] = [
 
 const initialEdges: Edge<any>[] = [];
 
-const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) => it.component);
-
+const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) =>
+  makeNodeRenderer(it)
+);
 const timestep = 1000 / 60;
 
 const Viewport: FunctionComponent<{}> = (props) => {

@@ -1,28 +1,33 @@
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { NodeProps, Handle, Position, useEdges } from "reactflow";
-import NumberInput from "../components/input/NumberInput";
-import NodeHandleLine from "../components/node/NodeHandleLine";
+import { FunctionComponent } from "react";
 import NodeLine from "../components/node/NodeLine";
-import NodeShell from "../components/node/NodeShell";
+import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData } from "../engine/store";
 
-const DisplayNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
+const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const value = useCommittedData<number>(id, "display");
 
   return (
-    <NodeShell title={"Display" + id}>
-      <NodeLine>
-        <p>{value}</p>
-      </NodeLine>
-      <NodeHandleLine type="input" label="Value" id="value"></NodeHandleLine>
-    </NodeShell>
+    <NodeLine>
+      <p>{value}</p>
+    </NodeLine>
   );
 };
 
-export default DisplayNode;
+export const displayNodeDef: NodeDef = {
+  type: "display",
+  // component: DisplayNode,
+  header: DisplayNode,
+  outputs: [],
+  inputs: [
+    {
+      terminal: true,
+      id: "value",
+      label: "Value",
+      type: "number",
+    },
+  ],
+  executor: ([v], commit) => {
+    commit("display", v);
+    return [];
+  },
+};

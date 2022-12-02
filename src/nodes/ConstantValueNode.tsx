@@ -1,38 +1,23 @@
-import { FunctionComponent, useCallback } from "react";
-import { NodeProps, Handle, Position, useStore } from "reactflow";
-import NumberInput, { ChangeEvent } from "../components/input/NumberInput";
-import NodeHandleLine from "../components/node/NodeHandleLine";
-import NodeShell from "../components/node/NodeShell";
-import { useDataStore, useInputHandleData } from "../engine/store";
+import { NodeDef } from "../engine/node";
 
-const ConstantValueNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
-  const [value, setValue] = useInputHandleData<number>(id, "value");
-
-  const onChange = useCallback(
-    (evt: ChangeEvent) => {
-      setValue(evt.value);
+export const constantValueNodeDef: NodeDef = {
+  type: "constantValue",
+  // component: ConstantValueNode,
+  outputs: [
+    {
+      id: "value",
+      label: "Value",
+      type: "number",
     },
-    [setValue]
-  );
-
-  return (
-    <NodeShell title={"Constant Value" + id + " " + value}>
-      <NodeHandleLine
-        type="output"
-        label="Value"
-        id="value"
-        input={
-          <NumberInput
-            id="value"
-            name="value"
-            label="Value"
-            value={value}
-            onChange={onChange}
-          ></NumberInput>
-        }
-      ></NodeHandleLine>
-    </NodeShell>
-  );
+  ],
+  inputs: [
+    {
+      id: "value",
+      label: "Value",
+      type: "number",
+    },
+  ],
+  executor: (i) => {
+    return i;
+  },
 };
-
-export default ConstantValueNode;
