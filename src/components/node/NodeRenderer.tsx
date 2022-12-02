@@ -31,8 +31,6 @@ export function makeNodeRenderer(
       );
     }, [edges, id]);
 
-    console.log(id, connections);
-
     return (
       <NodeShell title={def.type + " " + id}>
         {HeaderComponent && (

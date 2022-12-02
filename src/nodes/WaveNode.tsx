@@ -15,11 +15,13 @@ export const waveNodeDef: NodeDef = {
       id: "amplitude",
       label: "Amplitude",
       type: "number",
+      default: 1.0,
     },
     {
       id: "frequency",
       label: "Frequency",
       type: "number",
+      default: 1.0,
     },
   ],
   executor: (i) => {

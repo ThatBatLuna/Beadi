@@ -1,100 +1,38 @@
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
-import ReactFlow, {
-  Node,
-  Edge,
-  Controls,
-  Background,
-  addEdge,
-  applyNodeChanges,
-  applyEdgeChanges,
-  OnNodesChange,
-  OnEdgesChange,
-  NodeTypes,
-  OnConnect,
-} from "reactflow";
+import { FunctionComponent, useEffect, useState } from "react";
+import ReactFlow, { Controls, Background, NodeTypes } from "reactflow";
 import { buildModel } from "../engine";
 import _ from "lodash";
 import { nodeDefs } from "../engine/node";
 import { evaluate } from "../engine/evaluate";
-import { useDataStore } from "../engine/store";
+import { DataStore, useDataStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
-
-const initialNodes: Node<any>[] = [
-  {
-    id: "1",
-    type: "constantValue",
-    position: { x: 0, y: 0 },
-    data: {
-      value: 8,
-    },
-  },
-  {
-    id: "2",
-    type: "add",
-    position: { x: 0, y: 0 },
-    data: {
-      value: 8,
-    },
-  },
-  {
-    id: "3",
-    type: "wave",
-    position: { x: 0, y: 0 },
-    data: {},
-  },
-  {
-    id: "4",
-    type: "display",
-    position: { x: 0, y: 0 },
-    data: {
-      value: 8,
-    },
-  },
-];
-
-const initialEdges: Edge<any>[] = [];
+import shallow from "zustand/shallow";
 
 const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) =>
   makeNodeRenderer(it)
 );
 const timestep = 1000 / 60;
 
+const selector = (state: DataStore) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+});
+
 const Viewport: FunctionComponent<{}> = (props) => {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
+    useDataStore(selector, shallow);
 
   const [model, setModel] = useState<any>(null);
 
   const data = useDataStore((store) => store.handles);
   const commit = useDataStore((store) => store.commitData);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) =>
-      setNodes((nds) => {
-        let newNodes = applyNodeChanges(changes, nds);
-        return newNodes;
-      }),
-    []
-  );
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) =>
-      setEdges((eds) => {
-        let newEdges = applyEdgeChanges(changes, eds);
-        return newEdges;
-      }),
-    []
-  );
-
-  const onConnect: OnConnect = useCallback(
-    (params) =>
-      setEdges((eds) => {
-        let newEdges = addEdge(params, eds);
-        setModel(buildModel(nodes, newEdges));
-        return newEdges;
-      }),
-    [nodes]
-  );
-
+  useEffect(() => {
+    setModel(buildModel(nodes, edges));
+  }, [nodes, edges]);
   useEffect(() => {
     console.log("Model", model);
   }, [model]);

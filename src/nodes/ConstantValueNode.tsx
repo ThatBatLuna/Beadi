@@ -15,6 +15,7 @@ export const constantValueNodeDef: NodeDef = {
       id: "value",
       label: "Value",
       type: "number",
+      default: 0.0,
     },
   ],
   executor: (i) => {
