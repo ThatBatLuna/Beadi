@@ -1,5 +1,5 @@
-import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
-import { NodeProps, Handle, Position, useEdges } from "reactflow";
+import { FunctionComponent, useMemo } from "react";
+import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
@@ -26,10 +26,12 @@ export function makeNodeRenderer(
       return def.inputs.map(
         (input) =>
           edges.findIndex(
-            (it) => it.target === id && it.targetHandle === "a"
+            (it) => it.target === id && it.targetHandle === input.id
           ) >= 0
       );
     }, [edges, id]);
+
+    console.log(id, connections);
 
     return (
       <NodeShell title={def.type + " " + id}>
