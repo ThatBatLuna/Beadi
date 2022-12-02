@@ -1,12 +1,14 @@
 import { Node, Edge } from "reactflow";
-import { nodeDefs } from "./node";
+import { nodeDefs, NodeExecutor } from "./node";
 
-type Recipe = {
+export type Recipe = {
   dependencies: string[];
   outpus: string[];
-  func: (inputs: any[]) => any[];
+  nodeId: string;
+  func: NodeExecutor;
 };
-type Model = {
+
+export type Model = {
   executionPlan: Recipe[];
 };
 
@@ -62,6 +64,7 @@ export function buildModel(nodes: Node<any>[], edges: Edge<any>[]): Model {
         outpus: nodeType.outputs.map((outputHandle) =>
           handleId(nodeId, outputHandle.id)
         ),
+        nodeId: nodeId,
         func: nodeType.executor,
       });
       executedNodes.add(nodeId);
