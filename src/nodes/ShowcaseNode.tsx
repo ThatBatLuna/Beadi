@@ -1,7 +1,7 @@
 import { FunctionComponent, useCallback } from "react";
 import { NodeProps, Handle, Position } from "reactflow";
 import NumberInput from "../components/input/NumberInput";
-import NodeLine from "../components/node/NodeLine";
+import NodeHandleLine from "../components/node/NodeHandleLine";
 import NodeShell from "../components/node/NodeShell";
 
 const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
@@ -11,7 +11,7 @@ const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
 
   return (
     <NodeShell title="Showcase">
-      <NodeLine
+      <NodeHandleLine
         type="input"
         label="Value"
         id="value1"
@@ -23,8 +23,8 @@ const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
             onChange={onChange}
           ></NumberInput>
         }
-      ></NodeLine>
-      <NodeLine
+      ></NodeHandleLine>
+      <NodeHandleLine
         type="output"
         label="Value"
         id="value2"
@@ -36,9 +36,9 @@ const ShowCaseNode: FunctionComponent<NodeProps<any>> = ({ data }) => {
             onChange={onChange}
           ></NumberInput>
         }
-      ></NodeLine>
-      <NodeLine id="output1" type="output" label="Value"></NodeLine>
-      <NodeLine id="output2" type="input" label="Value"></NodeLine>
+      ></NodeHandleLine>
+      <NodeHandleLine id="output1" type="output" label="Value"></NodeHandleLine>
+      <NodeHandleLine id="output2" type="input" label="Value"></NodeHandleLine>
     </NodeShell>
   );
 };
