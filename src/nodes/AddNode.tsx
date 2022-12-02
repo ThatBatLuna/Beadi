@@ -1,7 +1,7 @@
 import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 import { NodeProps, Handle, Position, useEdges } from "reactflow";
 import NumberInput from "../components/input/NumberInput";
-import NodeLine from "../components/node/NodeLine";
+import NodeHandleLine from "../components/node/NodeHandleLine";
 import NodeShell from "../components/node/NodeShell";
 import { useInputHandleData } from "../engine/store";
 
@@ -25,7 +25,7 @@ const AddNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
 
   return (
     <NodeShell title={"Add" + id}>
-      <NodeLine
+      <NodeHandleLine
         type="input"
         label="Value"
         id="a"
@@ -39,8 +39,8 @@ const AddNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
             onChange={(e) => setValueA(e.value)}
           ></NumberInput>
         }
-      ></NodeLine>
-      <NodeLine
+      ></NodeHandleLine>
+      <NodeHandleLine
         type="input"
         label="Value"
         id="b"
@@ -54,8 +54,8 @@ const AddNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
             onChange={(e) => setValueB(e.value)}
           ></NumberInput>
         }
-      ></NodeLine>
-      <NodeLine id="sum" type="output" label="Value"></NodeLine>
+      ></NodeHandleLine>
+      <NodeHandleLine id="sum" type="output" label="Value"></NodeHandleLine>
     </NodeShell>
   );
 };

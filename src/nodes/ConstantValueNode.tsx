@@ -1,7 +1,7 @@
 import { FunctionComponent, useCallback } from "react";
 import { NodeProps, Handle, Position, useStore } from "reactflow";
 import NumberInput, { ChangeEvent } from "../components/input/NumberInput";
-import NodeLine from "../components/node/NodeLine";
+import NodeHandleLine from "../components/node/NodeHandleLine";
 import NodeShell from "../components/node/NodeShell";
 import { useDataStore, useInputHandleData } from "../engine/store";
 
@@ -17,7 +17,7 @@ const ConstantValueNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
 
   return (
     <NodeShell title={"Constant Value" + id + " " + value}>
-      <NodeLine
+      <NodeHandleLine
         type="output"
         label="Value"
         id="value"
@@ -30,7 +30,7 @@ const ConstantValueNode: FunctionComponent<NodeProps<any>> = ({ data, id }) => {
             onChange={onChange}
           ></NumberInput>
         }
-      ></NodeLine>
+      ></NodeHandleLine>
     </NodeShell>
   );
 };

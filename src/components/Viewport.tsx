@@ -58,6 +58,8 @@ const initialEdges: Edge<any>[] = [];
 
 const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) => it.component);
 
+const timestep = 1000 / 60;
+
 const Viewport: FunctionComponent<{}> = (props) => {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
@@ -103,14 +105,19 @@ const Viewport: FunctionComponent<{}> = (props) => {
 
   useEffect(() => {
     let timeout: number | null = null;
+    // let last = Date.now();
     function update() {
+      // const delta = Date.now() - last;
+      // last = Date.now();
+      // console.log(1000 / delta);
+
       const result = evaluate(model, data);
       commit(result.toCommit);
 
-      timeout = setTimeout(() => update(), 10) as any;
+      timeout = setTimeout(() => update(), timestep) as any;
     }
     console.log("Starting Updating Loop");
-    timeout = setTimeout(() => update(), 10) as any;
+    timeout = setTimeout(() => update(), timestep) as any;
     return () => {
       if (timeout !== null) {
         console.log("Clearing Updating Loop");
