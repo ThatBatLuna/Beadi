@@ -1,6 +1,8 @@
 import { Node, Edge } from "reactflow";
 import { nodeDefs, NodeExecutor } from "./node";
 
+export type NodeTypeData = Pick<Node<any>, "data" | "id" | "type">;
+
 export type Recipe = {
   dependencies: string[];
   outpus: string[];
@@ -16,12 +18,12 @@ function handleId(nodeId: string, handleId: string) {
   return `${nodeId}__${handleId}`;
 }
 
-export function buildModel(nodes: Node<any>[], edges: Edge<any>[]): Model {
+export function buildModel(nodes: NodeTypeData[], edges: Edge<any>[]): Model {
   //Find all terminating handles
   console.log("Rebuilding Model");
 
   let terminals = [];
-  let nodeDict: Record<string, Node<any>> = {};
+  let nodeDict: Record<string, NodeTypeData> = {};
 
   for (const node of nodes) {
     nodeDict[node.id] = node;
