@@ -15,6 +15,9 @@ import ReactFlow, {
 import { buildModel } from "../engine";
 import _ from "lodash";
 import { nodeDefs } from "../engine/node";
+import { evaluate } from "../engine/evaluate";
+import { useDataStore } from "../engine/store";
+import shallow from "zustand/shallow";
 
 const initialNodes: Node<any>[] = [
   {
@@ -61,6 +64,9 @@ const Viewport: FunctionComponent<{}> = (props) => {
 
   const [model, setModel] = useState<any>(null);
 
+  const data = useDataStore((store) => store.handles, shallow);
+  const commit = useDataStore((store) => store.commitData);
+
   const onNodesChange: OnNodesChange = useCallback(
     (changes) =>
       setNodes((nds) => {
@@ -89,8 +95,29 @@ const Viewport: FunctionComponent<{}> = (props) => {
   );
 
   useEffect(() => {
-    console.log(model);
+    console.log("Model", model);
   }, [model]);
+  useEffect(() => {
+    console.log("Data: ", data);
+  }, [data]);
+
+  useEffect(() => {
+    let timeout: number | null = null;
+    function update() {
+      const result = evaluate(model, data);
+      commit(result.toCommit);
+
+      timeout = setTimeout(() => update(), 10) as any;
+    }
+    console.log("Starting Updating Loop");
+    timeout = setTimeout(() => update(), 10) as any;
+    return () => {
+      if (timeout !== null) {
+        console.log("Clearing Updating Loop");
+        clearTimeout(timeout);
+      }
+    };
+  }, [model, data, commit]);
 
   return (
     <ReactFlow

@@ -17,12 +17,17 @@ export interface InputHandleDef extends HandleDef {
 
 export interface OutputHandleDef extends HandleDef {}
 
+export type NodeExecutor = (
+  input: any[],
+  commit: (handle: string, value: any) => void
+) => any[];
+
 export type NodeDef = {
   type: string;
   component: ComponentType<NodeProps<any>>;
   inputs: InputHandleDef[];
   outputs: OutputHandleDef[];
-  executor: (input: any[]) => any[];
+  executor: NodeExecutor;
 };
 
 const nodeDefList: NodeDef[] = [
@@ -36,7 +41,13 @@ const nodeDefList: NodeDef[] = [
         type: "number",
       },
     ],
-    inputs: [],
+    inputs: [
+      {
+        id: "value",
+        label: "Value",
+        type: "number",
+      },
+    ],
     executor: (i) => {
       return i;
     },
@@ -79,8 +90,9 @@ const nodeDefList: NodeDef[] = [
         type: "number",
       },
     ],
-    executor: ([v]) => {
-      return v;
+    executor: ([v], commit) => {
+      commit("display", v);
+      return [];
     },
   },
   {
@@ -88,7 +100,7 @@ const nodeDefList: NodeDef[] = [
     component: ShowCaseNode,
     outputs: [],
     inputs: [],
-    executor: () => {},
+    executor: () => [],
   },
 ];
 

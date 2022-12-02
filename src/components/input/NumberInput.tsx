@@ -5,11 +5,12 @@ import {
   PointerEventHandler,
   ReactNode,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
 
-type ChangeEvent = {
+export type ChangeEvent = {
   value: number;
 };
 
@@ -17,6 +18,7 @@ type NumberInputProps = {
   id: string;
   name: string;
   onChange?: (e: ChangeEvent) => void;
+  value?: number;
   label?: ReactNode | string;
 };
 
@@ -24,18 +26,29 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   id,
   name,
   onChange,
+  value: officialValue,
   label,
 }) => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(officialValue || 0);
   const [sliding, setSliding] = useState(false);
   const [startX, setStartX] = useState<number | null>(null);
   const [textEdit, setTextEdit] = useState(false);
+
+  useEffect(() => {
+    if (officialValue !== undefined) {
+      setValue(officialValue);
+    }
+  }, [setValue, officialValue]);
 
   const inputElement = useRef(null);
 
   const handleOnChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      const value = parseFloat(e.target.value);
+      let value = parseFloat(e.target.value);
+      if (isNaN(value)) {
+        value = 0;
+      }
+
       setValue(value);
       onChange?.({ value: value });
     },
@@ -59,13 +72,14 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
       if (!textEdit) {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
         setSliding(false);
+        onChange?.({ value: value });
         if (startX === e.pageX) {
           setTextEdit(true);
         }
         setStartX(null);
       }
     },
-    [setSliding, startX, textEdit]
+    [setSliding, startX, textEdit, onChange, value]
   );
 
   const slide: PointerEventHandler<HTMLElement> = useCallback(
