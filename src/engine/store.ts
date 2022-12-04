@@ -25,14 +25,18 @@ interface DisplaySlice {
   onConnect: OnConnect;
   addNode: AddNode;
 }
+
+const initialNodes: Node<any>[] = [];
+const initialEdges: Edge<any>[] = [];
+
 const createDisplaySlice: StateCreator<
   DisplaySlice & DataSlice,
   [],
   [],
   DisplaySlice
 > = (set, get) => ({
-  nodes: [],
-  edges: [],
+  nodes: initialNodes,
+  edges: initialEdges,
   onConnect: (connection) => set({ edges: addEdge(connection, get().edges) }),
   onNodesChange: (changes) =>
     set({ nodes: applyNodeChanges(changes, get().nodes) }),
@@ -61,9 +65,9 @@ const createDisplaySlice: StateCreator<
 
 interface DataSlice {
   handles: Record<string, any>;
-  committed: Record<string, any>;
+  committed: Record<string, Record<string, any>>;
   setHandle: (nodeId: string, handleId: string, data: any) => void;
-  commitData: (data: Record<string, any>) => void;
+  commitData: (data: Record<string, Record<string, any>>) => void;
 }
 const createDataSlice: StateCreator<DataSlice, [], [], DataSlice> = (
   set,
@@ -79,12 +83,23 @@ const createDataSlice: StateCreator<DataSlice, [], [], DataSlice> = (
       },
     })),
   commitData: (data) => {
-    set((state) => ({
-      committed: {
-        ...state.handles,
-        ...data,
-      },
-    }));
+    set((state) => {
+      const newState = {
+        committed: {
+          ...state.committed,
+          ...Object.assign(
+            {},
+            ...Object.entries(data).map(([key, value]) => ({
+              [key]: {
+                ...state.committed[key],
+                ...value,
+              },
+            }))
+          ),
+        },
+      };
+      return newState;
+    });
   },
 });
 
@@ -122,8 +137,8 @@ export function useInputHandleData<T>(
   return useHandleData("input", nodeId, handleId);
 }
 export function useCommittedData<T>(nodeId: string, handleId: string): T {
-  const value = useDataStore(
-    (state) => state.committed[`${nodeId}__commit__${handleId}`]
-  );
+  const value = useDataStore((state) => {
+    return state.committed[nodeId]?.[handleId];
+  });
   return value as T;
 }

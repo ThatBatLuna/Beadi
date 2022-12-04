@@ -7,11 +7,11 @@ import { evaluate } from "../engine/evaluate";
 import { DataStore, useDataStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
 import shallow from "zustand/shallow";
+import { Engine } from "./Engine";
 
 const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) =>
   makeNodeRenderer(it)
 );
-const timestep = 1000 / 60;
 
 const selector = (state: DataStore) => ({
   nodes: state.nodes,
@@ -25,63 +25,21 @@ const Viewport: FunctionComponent<{}> = (props) => {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
     useDataStore(selector, shallow);
 
-  const [model, setModel] = useState<any>(null);
-
-  const data = useDataStore((store) => store.handles);
-  const commit = useDataStore((store) => store.commitData);
-
-  const nodeTypeData = useMemo(() => {
-    return nodes.map((it) => ({ type: it.type, id: it.id, data: it.data }));
-  }, [nodes]);
-
-  useEffect(() => {
-    console.log(nodeTypeData);
-    //TODO Why is this called when nodes are moved???
-    setModel(buildModel(nodeTypeData, edges));
-  }, [nodeTypeData, edges]);
-
-  useEffect(() => {
-    console.log("Model", model);
-  }, [model]);
-  useEffect(() => {
-    console.log("Data: ", data);
-  }, [data]);
-
-  useEffect(() => {
-    let timeout: number | null = null;
-    // let last = Date.now();
-    function update() {
-      // const delta = Date.now() - last;
-      // last = Date.now();
-      // console.log(1000 / delta);
-
-      const result = evaluate(model, data);
-      commit(result.toCommit);
-
-      timeout = setTimeout(() => update(), timestep) as any;
-    }
-    console.log("Starting Updating Loop");
-    timeout = setTimeout(() => update(), timestep) as any;
-    return () => {
-      if (timeout !== null) {
-        console.log("Clearing Updating Loop");
-        clearTimeout(timeout);
-      }
-    };
-  }, [model, data, commit]);
-
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      nodeTypes={nodeTypes}
-    >
-      <Controls></Controls>
-      <Background></Background>
-    </ReactFlow>
+    <>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+      >
+        <Controls></Controls>
+        <Background></Background>
+      </ReactFlow>
+      <Engine edges={edges} nodes={nodes}></Engine>
+    </>
   );
 };
 

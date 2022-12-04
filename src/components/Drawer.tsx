@@ -20,8 +20,15 @@ const Drawer: FunctionComponent<{}> = (a) => {
   return (
     <div className="bg-slate-800 w-60">
       <ul>
-        {nodes.map((node) => (
-          <li onClick={() => handleClick(node.type)}>{node.type}</li>
+        {nodes.map((node, index) => (
+          <li
+            key={index}
+            draggable
+            className="p-1 px-4 text-white"
+            onClick={() => handleClick(node.type)}
+          >
+            {node.type}
+          </li>
         ))}
       </ul>
     </div>
