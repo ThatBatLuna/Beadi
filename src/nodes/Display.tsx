@@ -28,7 +28,7 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   });
 
   const offset = -(min + max) / 2;
-  const scale = HEIGHT / 2 / Math.max(0.1, Math.abs(max - offset));
+  const scale = HEIGHT / 2 / Math.max(0.001, Math.abs(max + offset));
 
   const correctedHistory = tmpHistory.map((it) => (it + offset) * scale);
 
@@ -36,18 +36,18 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
     .fill("")
     .map((_, i) => {
       const realIndex = (i + index) % HISTORY_LENGTH;
-      const point = correctedHistory[realIndex];
-      if (point < min) {
-        min = point;
-      }
-      if (point > max) {
-        max = point;
-      }
+      const point = correctedHistory[realIndex]?.toFixed(4) || 0;
       return `L${i} ${point}`;
     })
     .join(" ");
 
   const start = correctedHistory[index];
+
+  const zero = (0 + offset) * scale;
+  const maxLine = (max + offset) * scale;
+  const minLine = (min + offset) * scale;
+
+  // -min/2 + max/2 * (HEIGHT / 2 / (max - offset))
 
   return (
     <NodeLine>
@@ -58,10 +58,34 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
       >
         <path
           className="stroke-slate-500"
-          d={`M0 ${(0 + offset) * scale} L${HISTORY_LENGTH} ${
-            (0 + offset) * scale
-          }`}
+          d={`M0 ${maxLine} L${HISTORY_LENGTH} ${maxLine}`}
         ></path>
+        <path
+          className="stroke-slate-500"
+          d={`M0 ${minLine} L${HISTORY_LENGTH} ${minLine}`}
+        ></path>
+        <path
+          className="stroke-slate-500"
+          d={`M0 ${zero} L${HISTORY_LENGTH} ${zero}`}
+        ></path>
+        <text x="0" y={zero} className="text-sm stroke-none fill-white">
+          {" "}
+          0
+        </text>
+        <text
+          x="0"
+          y={maxLine - 10}
+          className="text-sm stroke-none fill-white h-[10px]"
+        >
+          {max.toFixed(2)}
+        </text>
+        <text
+          x="0"
+          y={minLine + 10}
+          className="text-sm stroke-none fill-white h-[10px]"
+        >
+          {min.toFixed(2)}
+        </text>
         <path d={`M0 ${start} ${parts}`}></path>
       </svg>
     </NodeLine>
