@@ -1,27 +1,39 @@
+import _ from "lodash";
 import { Model } from ".";
 
 export type EvaluateResult = {
-  toCommit: Record<string, any>;
+  toCommit: Record<string, Record<string, any>>;
 };
 
 export function evaluate(
   model: Model,
-  data: Record<string, any>
+  data: Record<string, any>,
+  committedData: Record<string, Record<string, any>>
 ): EvaluateResult {
   if (model === null) {
     return { toCommit: {} };
   }
 
-  let commit: Record<string, any> = {};
+  let commit: Record<string, Record<string, any>> = {};
 
   for (const step of model.executionPlan) {
     const inputs = step.dependencies.map((it) => data[it]);
+
+    let nodeCommit: Record<string, any> = {};
     const doCommit = (handle: string, value: any) => {
-      commit[`${step.nodeId}__commit__${handle}`] = value;
+      nodeCommit[handle] = value;
     };
-    const outputs = step.func(inputs, doCommit);
+    // const committedData =
+    const outputs = step.func(inputs, {
+      commit: doCommit,
+      committed: committedData[step.nodeId] || {},
+    });
     for (let i = 0; i < step.outpus.length; i++) {
       data[step.outpus[i]] = outputs[i];
+    }
+
+    if (!_.isEmpty(nodeCommit)) {
+      commit[step.nodeId] = nodeCommit;
     }
   }
   return {

@@ -17,10 +17,12 @@ export interface InputHandleDef extends HandleDef {
 
 export interface OutputHandleDef extends HandleDef {}
 
-export type NodeExecutor = (
-  input: any[],
-  commit: (handle: string, value: any) => void
-) => any[];
+export type NodeExecutorProps = {
+  committed: Record<string, any>;
+  commit: (handle: string, value: any) => void;
+};
+
+export type NodeExecutor = (input: any[], props: NodeExecutorProps) => any[];
 
 export type NodeHeaderProps = { id: string; data: any };
 
