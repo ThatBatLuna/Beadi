@@ -1,6 +1,9 @@
 import { NodeDef } from "../engine/node";
+import { categories } from "./category";
 
 export const constantValueNodeDef: NodeDef = {
+  label: "Value",
+  category: categories["generators"],
   type: "constantValue",
   // component: ConstantValueNode,
   outputs: [

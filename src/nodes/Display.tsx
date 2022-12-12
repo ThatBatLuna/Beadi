@@ -2,6 +2,7 @@ import { FunctionComponent, useRef } from "react";
 import NodeLine from "../components/node/NodeLine";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData } from "../engine/store";
+import { categories } from "./category";
 
 const HEIGHT = 100;
 
@@ -95,6 +96,8 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
 const HISTORY_LENGTH = 3 * 60;
 
 export const displayNodeDef: NodeDef = {
+  label: "Display",
+  category: categories["display"],
   type: "display",
   // component: DisplayNode,
   header: DisplayNode,
