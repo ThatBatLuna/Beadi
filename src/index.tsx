@@ -4,6 +4,7 @@ import "./index.css";
 import "reactflow/dist/style.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { setButtplugInstance } from "./adapters/buttplug";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -13,6 +14,16 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+const bpscript = document.createElement("script");
+bpscript.src =
+  "https://cdn.jsdelivr.net/npm/buttplug@1.0.1/dist/web/buttplug.min.js";
+
+bpscript.onload = () => {
+  setButtplugInstance((window as any).Buttplug);
+};
+
+document.head.appendChild(bpscript);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
