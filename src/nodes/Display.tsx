@@ -18,7 +18,7 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   let max = 0;
 
   const tmpHistory = history.map((it) => {
-    const val = -it;
+    const val = it;
     if (val < min) {
       min = val;
     }
@@ -37,8 +37,10 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
     .fill("")
     .map((_, i) => {
       const realIndex = (i + index) % HISTORY_LENGTH;
-      const point = correctedHistory[realIndex]?.toFixed(4) || 0;
-      return `L${i} ${point}`;
+      const point = correctedHistory[realIndex] || 0;
+
+      const coords = -point;
+      return `L${i} ${coords.toFixed(4)}`;
     })
     .join(" ");
 
@@ -59,35 +61,35 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
       >
         <path
           className="stroke-slate-500"
-          d={`M0 ${maxLine} L${HISTORY_LENGTH} ${maxLine}`}
+          d={`M0 ${-maxLine} L${HISTORY_LENGTH} ${-maxLine}`}
         ></path>
         <path
           className="stroke-slate-500"
-          d={`M0 ${minLine} L${HISTORY_LENGTH} ${minLine}`}
+          d={`M0 ${-minLine} L${HISTORY_LENGTH} ${-minLine}`}
         ></path>
         <path
           className="stroke-slate-500"
-          d={`M0 ${zero} L${HISTORY_LENGTH} ${zero}`}
+          d={`M0 ${-zero} L${HISTORY_LENGTH} ${-zero}`}
         ></path>
-        <text x="0" y={zero} className="text-sm stroke-none fill-white">
+        <text x="0" y={-zero} className="text-sm stroke-none fill-white">
           {" "}
           0
         </text>
         <text
           x="0"
-          y={maxLine - 10}
+          y={-maxLine + 10}
           className="text-sm stroke-none fill-white h-[10px]"
         >
           {max.toFixed(2)}
         </text>
         <text
           x="0"
-          y={minLine + 10}
+          y={-minLine - 10}
           className="text-sm stroke-none fill-white h-[10px]"
         >
           {min.toFixed(2)}
         </text>
-        <path d={`M0 ${start} ${parts}`}></path>
+        <path d={`M0 ${-start} ${parts}`}></path>
       </svg>
     </NodeLine>
   );
