@@ -1,6 +1,9 @@
 import { NodeDef } from "../engine/node";
+import { categories } from "./category";
 
 export const waveNodeDef: NodeDef = {
+  label: "Wave Generator",
+  category: categories["generators"],
   type: "wave",
   // component: WaveNode,
   outputs: [

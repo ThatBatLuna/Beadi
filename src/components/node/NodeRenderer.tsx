@@ -32,7 +32,7 @@ export function makeNodeRenderer(
     }, [edges, id]);
 
     return (
-      <NodeShell title={def.type + " " + id}>
+      <NodeShell title={def.label} color={def.category.color}>
         {HeaderComponent && (
           <HeaderComponent id={id} data={data}></HeaderComponent>
         )}

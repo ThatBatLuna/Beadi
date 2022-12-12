@@ -1,6 +1,9 @@
 import { NodeDef } from "../engine/node";
+import { categories } from "./category";
 
 export const addNodeDef: NodeDef = {
+  label: "Add",
+  category: categories["math"],
   type: "add",
   // component: makeNodeRenderer,
   outputs: [
