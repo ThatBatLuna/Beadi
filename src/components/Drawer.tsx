@@ -29,7 +29,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
     <div className="bg-slate-800 w-60">
       <ul>
         {nodes.map((category, index) => (
-          <li>
+          <li key={category.name}>
             <h2
               className="px-2 py-1"
               style={{ backgroundColor: category.color }}
