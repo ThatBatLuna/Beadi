@@ -4,7 +4,7 @@ import "./index.css";
 import "reactflow/dist/style.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { setButtplugInstance } from "./adapters/ButtplugInstanceProvider";
+import { setButtplugInstance } from "./adapters/store";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
