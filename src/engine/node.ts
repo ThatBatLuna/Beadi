@@ -1,5 +1,6 @@
 import { ComponentType } from "react";
 import { addNodeDef } from "../nodes/AddNode";
+import { buttplugNodeDef } from "../nodes/ButtplugNode";
 import { constantValueNodeDef } from "../nodes/ConstantValueNode";
 import { displayNodeDef } from "../nodes/Display";
 import { waveNodeDef } from "../nodes/WaveNode";
@@ -46,6 +47,7 @@ const nodeDefList: NodeDef[] = [
   constantValueNodeDef,
   waveNodeDef,
   addNodeDef,
+  buttplugNodeDef,
 ];
 
 export const nodeDefs: Record<string, NodeDef> = Object.assign(

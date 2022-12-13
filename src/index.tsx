@@ -4,7 +4,7 @@ import "./index.css";
 import "reactflow/dist/style.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { setButtplugInstance } from "./adapters/buttplug";
+import { setButtplugInstance } from "./adapters/ButtplugInstanceProvider";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -20,7 +20,10 @@ bpscript.src =
   "https://cdn.jsdelivr.net/npm/buttplug@1.0.1/dist/web/buttplug.min.js";
 
 bpscript.onload = () => {
-  setButtplugInstance((window as any).Buttplug);
+  let buttplug = (window as any).Buttplug;
+  buttplug.buttplugInit().then(() => {
+    setButtplugInstance(buttplug);
+  });
 };
 
 document.head.appendChild(bpscript);
