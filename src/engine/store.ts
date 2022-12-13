@@ -3,16 +3,13 @@ import {
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
-  Connection,
   Edge,
   Node,
-  NodeChange,
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
 } from "reactflow";
 import create, { StateCreator } from "zustand";
-import { devtools, persist } from "zustand/middleware";
 import { nodeDefs } from "./node";
 
 type AddNode = (type: string) => void;

@@ -1,6 +1,5 @@
-import { FunctionComponent, useEffect, useRef, useState } from "react";
-import { ButtplugClientHandle, useButtplugStore } from "../adapters/store";
-import NodeLine from "../components/node/NodeLine";
+import { FunctionComponent, useEffect, useState } from "react";
+import { useButtplugStore } from "../adapters/store";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData } from "../engine/store";
 import { categories } from "./category";
@@ -27,7 +26,7 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
 
   useEffect(() => {
     deviceHandle?.vibrate(value);
-  }, [value, device]);
+  }, [value, deviceHandle]);
 
   return (
     <div>
