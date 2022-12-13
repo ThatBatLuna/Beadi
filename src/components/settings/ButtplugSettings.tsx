@@ -1,5 +1,5 @@
 import { FormEvent, FunctionComponent, useCallback, useState } from "react";
-import { ButtplugInstance } from "../../adapters/ButtplugInstanceProvider";
+import { ButtplugInstance } from "../../adapters/store";
 import { ButtplugClientConfig, useButtplugStore } from "../../adapters/store";
 
 type AddButtplugClientFormProps = {

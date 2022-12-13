@@ -5,7 +5,7 @@ import {
   ButtplugWebsocketConnectorOptions,
 } from "buttplug";
 import _ from "lodash";
-import { ButtplugInstance } from "./ButtplugInstanceProvider";
+import { ButtplugInstance } from "./store";
 import {
   ButtplugClientActions,
   ButtplugClientConfig,

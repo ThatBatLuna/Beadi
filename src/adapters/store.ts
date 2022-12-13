@@ -1,6 +1,5 @@
 import { devtools } from "zustand/middleware";
 import create from "zustand";
-import { ButtplugInstance } from "./ButtplugInstanceProvider";
 import _ from "lodash";
 import { ButtplugClientState, syncClientState } from "./buttplug";
 import { ButtplugClient, ButtplugClientDevice } from "buttplug";
@@ -109,3 +108,11 @@ export const useButtplugStore = create<ButtplugState>()(
     }
   )
 );
+
+export type ButtplugInstance = any;
+
+export function setButtplugInstance(instance: ButtplugInstance) {
+  unstable_batchedUpdates(() => {
+    useButtplugStore.getState().setInstance(instance);
+  });
+}
