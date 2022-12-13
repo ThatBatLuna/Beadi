@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef } from "react";
+import { FunctionComponent } from "react";
 import NodeLine from "../components/node/NodeLine";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData } from "../engine/store";
