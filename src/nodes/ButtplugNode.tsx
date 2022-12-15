@@ -1,56 +1,57 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import _ from "lodash";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useButtplugStore } from "../adapters/store";
+import { Select } from "../components/input/Select";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData } from "../engine/store";
 import { categories } from "./category";
 
+type DeviceSelection = {
+  client: string;
+  device: number;
+  label: string;
+};
+
 const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const value = useCommittedData<number>(id, "value");
 
-  const [client, setClient] = useState<string | null>(null);
-  const [device, setDevice] = useState<number | null>(-1);
+  const [device, setDevice] = useState<DeviceSelection | null>(null);
 
   const clients = useButtplugStore((store) => store.clients);
-  const devices = useButtplugStore((store) =>
-    client === null ? null : store.clients[client]?.state.devices
-  );
   const deviceHandle = useButtplugStore((store) =>
-    client === null || device === null
+    device === null
       ? null
-      : store.clients[client]?.devices[device]
+      : store.clients[device.client]?.devices[device.device]
   );
 
+  const allDevices: DeviceSelection[] = useMemo(() => {
+    const single = Object.values(clients).length === 1;
+    return _.flatMap(clients, (client) =>
+      client.state.devices.map((device, i) => ({
+        client: client.config.id,
+        device: i,
+        label: single
+          ? client.devices[i].Name
+          : `${client.config.name}:${client.devices[i].Name}`,
+      }))
+    );
+  }, [clients]);
+
   console.log("Value: ", value);
-  console.log("Deviceds: ", devices);
-  console.log("Deviceds: ", client);
+  console.log("Value: ", allDevices);
 
   useEffect(() => {
     deviceHandle?.vibrate(value);
   }, [value, deviceHandle]);
 
   return (
-    <div>
-      <select onChange={(e) => setClient(e.target.value)} className="bg-black">
-        <option value={""}></option>
-        {Object.entries(clients).map(([key, value]) => (
-          <option key={key} value={key}>
-            {value.config.name}
-          </option>
-        ))}
-      </select>
-      {devices !== null && (
-        <select
-          onChange={(e) => setDevice(parseInt(e.target.value))}
-          className="bg-black"
-        >
-          <option value={-1}></option>
-          {devices.map((value, key) => (
-            <option key={key} value={key}>
-              {value}
-            </option>
-          ))}
-        </select>
-      )}
+    <div className="flex flex-col px-4">
+      <Select
+        options={allDevices}
+        onSelect={setDevice}
+        renderOption={(it) => it.label}
+        selected={device}
+      ></Select>
     </div>
   );
 };
@@ -68,6 +69,8 @@ export const buttplugNodeDef: NodeDef = {
       label: "Value",
       type: "number",
       default: 0.0,
+      min: 0.0,
+      max: 1.0,
     },
   ],
   executor: ([v], { commit }) => {

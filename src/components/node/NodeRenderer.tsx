@@ -49,6 +49,7 @@ export function makeNodeRenderer(
                 name={input.id}
                 label={input.label}
                 min={input.min}
+                max={input.max}
                 value={store[index].value}
                 onChange={(e) => store[index].setValue(e.value)}
               ></NumberInput>
