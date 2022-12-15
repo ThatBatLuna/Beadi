@@ -1,5 +1,10 @@
 import { ComponentType } from "react";
-import { addNodeDef } from "../nodes/AddNode";
+import {
+  addNodeDef,
+  divideNodeDef,
+  multiplyNodeDef,
+  subtractNodeDef,
+} from "../nodes/AddNode";
 import { buttplugNodeDef } from "../nodes/ButtplugNode";
 import { constantValueNodeDef } from "../nodes/ConstantValueNode";
 import { displayNodeDef } from "../nodes/Display";
@@ -48,6 +53,9 @@ const nodeDefList: NodeDef[] = [
   constantValueNodeDef,
   waveNodeDef,
   addNodeDef,
+  subtractNodeDef,
+  divideNodeDef,
+  multiplyNodeDef,
   buttplugNodeDef,
 ];
 
