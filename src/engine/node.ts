@@ -19,6 +19,7 @@ export interface InputHandleDef extends HandleDef {
   terminal?: boolean;
   default: any;
   min?: number;
+  max?: number;
 }
 
 export interface OutputHandleDef extends HandleDef {}

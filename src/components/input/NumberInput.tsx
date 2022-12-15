@@ -6,6 +6,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -21,6 +22,7 @@ type NumberInputProps = {
   value?: number;
   label?: ReactNode | string;
   min?: number;
+  max?: number;
 };
 
 const NumberInput: FunctionComponent<NumberInputProps> = ({
@@ -30,6 +32,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   value: officialValue,
   label,
   min,
+  max,
 }) => {
   const [value, setValue] = useState(officialValue || 0);
   const [sliding, setSliding] = useState(false);
@@ -103,6 +106,9 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           if (min !== undefined) {
             num = Math.max(num, min);
           }
+          if (max !== undefined) {
+            num = Math.min(num, max);
+          }
 
           return Number(num.toFixed(3));
         });
@@ -118,6 +124,14 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
   const stopProp = useCallback((e: any) => {
     e.stopPropagation();
   }, []);
+
+  const sliderWidth = useMemo(() => {
+    if (min !== undefined && max !== undefined) {
+      return `${(value / (max - min)) * 100}%`;
+    }
+    return null;
+  }, [min, max, value]);
+  console.log(sliderWidth);
 
   return (
     <div
@@ -141,9 +155,15 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           ref={inputElement}
         />
       ) : (
-        <div className="flex flex-row w-full h-full px-4 text-white rounded-md bg-slate-800 cursor-ew-resize hover:bg-neutral-800">
-          {label && <span className="grow">{label}</span>}
-          <span>{value}</span>
+        <div className="flex flex-row w-full h-full px-4 text-white rounded-md bg-slate-800 cursor-ew-resize hover:bg-neutral-800 relative overflow-hidden">
+          {sliderWidth !== null && (
+            <div
+              className="bg-blue-900 absolute h-full top-0 left-0 z-0"
+              style={{ width: sliderWidth }}
+            ></div>
+          )}
+          {label && <span className="grow z-10">{label}</span>}
+          <span className="z-10">{value}</span>
         </div>
       )}
     </div>
