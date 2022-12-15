@@ -37,9 +37,6 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
     );
   }, [clients]);
 
-  console.log("Value: ", value);
-  console.log("Value: ", allDevices);
-
   useEffect(() => {
     const actualValue = Math.max(0, Math.min(value));
     deviceHandle?.vibrate(actualValue);
