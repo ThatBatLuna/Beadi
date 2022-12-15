@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import NodeLine from "../components/node/NodeLine";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData } from "../engine/store";
@@ -9,6 +9,8 @@ const HEIGHT = 100;
 const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const history = useCommittedData<number[]>(id, "history");
   const index = useCommittedData<number>(id, "index");
+
+  const fixed = useState(true);
 
   if (history === undefined) {
     return <NodeLine></NodeLine>;
@@ -27,6 +29,11 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
     }
     return val;
   });
+
+  if (fixed) {
+    min = 0.0;
+    max = 1.0;
+  }
 
   const offset = -(min + max) / 2;
   const scale = HEIGHT / 2 / Math.max(0.001, Math.abs(max + offset));

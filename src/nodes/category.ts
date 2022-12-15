@@ -5,6 +5,10 @@ export const categories: Record<string, Category> = {
     label: "Math",
     color: "#FFFD82",
   },
+  control: {
+    label: "Control",
+    color: "#FFaDa2",
+  },
   generators: {
     label: "Generators",
     color: "#FF9B71",

@@ -8,6 +8,9 @@ import {
 import { buttplugNodeDef } from "../nodes/ButtplugNode";
 import { constantValueNodeDef } from "../nodes/ConstantValueNode";
 import { displayNodeDef } from "../nodes/Display";
+import { hysteresisNodeDef } from "../nodes/HysteresisNode";
+import { mixNodeDef } from "../nodes/MixNode";
+import { positiveWaveNodeDef } from "../nodes/PositiveWave";
 import { waveNodeDef } from "../nodes/WaveNode";
 
 export type Category = {
@@ -52,11 +55,14 @@ const nodeDefList: NodeDef[] = [
   displayNodeDef,
   constantValueNodeDef,
   waveNodeDef,
+  positiveWaveNodeDef,
   addNodeDef,
   subtractNodeDef,
   divideNodeDef,
   multiplyNodeDef,
   buttplugNodeDef,
+  mixNodeDef,
+  hysteresisNodeDef,
 ];
 
 export const nodeDefs: Record<string, NodeDef> = Object.assign(
