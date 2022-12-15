@@ -131,7 +131,6 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
     }
     return null;
   }, [min, max, value]);
-  console.log(sliderWidth);
 
   return (
     <div
