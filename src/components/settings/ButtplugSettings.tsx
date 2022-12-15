@@ -1,6 +1,16 @@
-import { FormEvent, FunctionComponent, useCallback, useState } from "react";
+import {
+  FormEvent,
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { ButtplugInstance } from "../../adapters/store";
 import { ButtplugClientConfig, useButtplugStore } from "../../adapters/store";
+import { Button } from "../input/Button";
+import { TextInput } from "../input/TextInput";
+import { HiStatusOffline, HiStatusOnline } from "react-icons/hi";
+import clsx from "clsx";
 
 type AddButtplugClientFormProps = {
   onAdd: (config: ButtplugClientConfig) => void;
@@ -8,7 +18,7 @@ type AddButtplugClientFormProps = {
 const AddButtplugClientForm: FunctionComponent<AddButtplugClientFormProps> = ({
   onAdd,
 }) => {
-  const [name, setName] = useState("L");
+  const [name, setName] = useState("Localhost");
   const [connection, setConnection] = useState("localhost:12345");
 
   const onSubmit = useCallback(
@@ -26,18 +36,20 @@ const AddButtplugClientForm: FunctionComponent<AddButtplugClientFormProps> = ({
   );
 
   return (
-    <form onSubmit={onSubmit}>
-      <input
-        onChange={(e) => setName(e.target.value)}
-        placeholder="name"
+    <form onSubmit={onSubmit} className="flex flex-col gap-2">
+      <TextInput
+        id="name"
+        onChange={(e) => setName(e)}
+        label="Name"
         value={name}
       />
-      <input
-        onChange={(e) => setConnection(e.target.value)}
-        placeholder="connection"
+      <TextInput
+        id="connection"
+        onChange={(e) => setConnection(e)}
+        label="Connection"
         value={connection}
       />
-      <button type="submit">Add Remote Server</button>
+      <Button type="submit">Add Remote Intiface Server</Button>
     </form>
   );
 };
@@ -56,31 +68,70 @@ const ButtplugSettingsInner: FunctionComponent<{
     });
   }, [addClient]);
 
+  const bluetooth = useMemo(() => {
+    return (navigator as any).bluetooth !== undefined;
+  }, []);
+
   return (
-    <div className="w-full">
-      <ul className="w-full overflow-x-hidden">
+    <div className="w-full flex flex-col gap-2 p-2">
+      <h1 className="text-white font-bold text-lg">Servers</h1>
+      <ul className="w-full overflow-x-hidden rounded-md overflow-hidden my-2">
         {Object.values(clients).map((it) => (
-          <li key={it.config.id} className="flex flex-col w-full">
-            <div>{JSON.stringify(it.config)}</div>
-            <div>{JSON.stringify(it.state)}</div>
-            <div>
+          <li
+            key={it.config.id}
+            className="flex flex-col w-full bg-slate-800 items-stretch gap-2 p-2 text-white"
+          >
+            <div className="flex flex-row items-center">
+              <div className="grow">
+                <h2 className="font-bold mb-0">{it.config.name}</h2>
+                <div>{it.config.connection}</div>
+              </div>
               {it.state.connected ? (
-                <button onClick={it.actions.disconnect}>Disconnect</button>
+                <HiStatusOnline className="h-6 w-6"></HiStatusOnline>
               ) : (
-                <button onClick={it.actions.connect}>Connect</button>
-              )}
-              {it.state.scanning ? (
-                <button onClick={it.actions.stopScan}>Stop Scan</button>
-              ) : (
-                <button onClick={it.actions.scan}>Scan</button>
+                <HiStatusOffline className="h-6 w-6"></HiStatusOffline>
               )}
             </div>
+            <ul
+              className={clsx("bg-slate-900 rounded-md p-2", {
+                "animate-pulse": it.state.scanning,
+              })}
+            >
+              {it.state.devices.map((it, i) => (
+                <li key={i}>{it}</li>
+              ))}
+            </ul>
+            {it.state.connected ? (
+              <Button onClick={it.actions.disconnect}>Disconnect</Button>
+            ) : (
+              <Button onClick={it.actions.connect}>Connect</Button>
+            )}
+            {it.state.scanning ? (
+              <Button onClick={it.actions.stopScan}>Stop Scan</Button>
+            ) : (
+              <Button onClick={it.actions.scan}>Scan</Button>
+            )}
           </li>
         ))}
       </ul>
 
-      <button onClick={connectEmbedded}>Start embedded server</button>
+      <h1 className="text-white font-bold text-lg">Add Server</h1>
+
       <AddButtplugClientForm onAdd={addClient}></AddButtplugClientForm>
+      <Button onClick={connectEmbedded} disabled={!bluetooth}>
+        Start embedded server
+      </Button>
+      {!bluetooth && (
+        <span className="text-slate-500">
+          Embedded Servers / Direction Connection requires the Bluetooth browser
+          api (available in Chrome). You can still connect to remote servers
+          (e.g{" "}
+          <a className="underline" href="https://intiface.com/central/">
+            Intiface
+          </a>
+          )
+        </span>
+      )}
     </div>
   );
 };
