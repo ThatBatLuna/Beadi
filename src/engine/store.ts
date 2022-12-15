@@ -34,7 +34,20 @@ const createDisplaySlice: StateCreator<
 > = (set, get) => ({
   nodes: initialNodes,
   edges: initialEdges,
-  onConnect: (connection) => set({ edges: addEdge(connection, get().edges) }),
+  onConnect: (connection) => {
+    set({
+      edges: addEdge(
+        connection,
+        get().edges.filter(
+          (edge) =>
+            !(
+              edge.target === connection.target &&
+              edge.targetHandle === connection.targetHandle
+            )
+        )
+      ),
+    });
+  },
   onNodesChange: (changes) =>
     set({ nodes: applyNodeChanges(changes, get().nodes) }),
   onEdgesChange: (changes) =>
