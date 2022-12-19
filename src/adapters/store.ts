@@ -41,11 +41,23 @@ interface ButtplugState {
   syncClients: () => void;
 }
 
+function loadClientConfigs(): Record<string, ButtplugClientConfig> {
+  const json = localStorage.getItem("beadi-clients");
+  if (json !== undefined && json !== null) {
+    try {
+      const parsed = JSON.parse(json);
+      //TODO Check schema of parsed
+      return parsed as any;
+    } catch {}
+  }
+  return {};
+}
+
 export const useButtplugStore = create<ButtplugState>()(
   devtools(
     (set, get) => ({
       instance: null,
-      clientConfigs: {},
+      clientConfigs: loadClientConfigs(), //SetInstance should call syncClients()
       clients: {},
 
       setInstance: (instance) => {
@@ -71,6 +83,10 @@ export const useButtplugStore = create<ButtplugState>()(
       },
 
       syncClients: () => {
+        localStorage.setItem(
+          "beadi-clients",
+          JSON.stringify(get().clientConfigs)
+        );
         set((store) => ({
           clients: syncClientState(
             store.clients,

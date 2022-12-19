@@ -24,6 +24,11 @@ export interface DisplayStore {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addNode: AddNode;
+  overwrite: (
+    nodes: Node[],
+    edges: Edge[],
+    handles: Record<string, any>
+  ) => void;
 }
 
 const initialNodes: Node<any>[] = [];
@@ -34,6 +39,13 @@ export const useDisplayStore = create<DisplayStore>()(
     nodes: initialNodes,
     edges: initialEdges,
     handles: {},
+    overwrite: (nodes, edges, handles) => {
+      set(() => ({
+        nodes,
+        edges,
+        handles,
+      }));
+    },
     setHandle: (nodeId, handleId, data) =>
       set((state) => ({
         handles: {

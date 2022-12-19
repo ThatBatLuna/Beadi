@@ -2,6 +2,7 @@ import _ from "lodash";
 import { FunctionComponent, useCallback, useMemo } from "react";
 import { nodeDefs } from "../engine/node";
 import { useDisplayStore } from "../engine/store";
+import { Typo } from "./Typo";
 
 const Drawer: FunctionComponent<{}> = (a) => {
   const nodes = useMemo(() => {
@@ -28,9 +29,9 @@ const Drawer: FunctionComponent<{}> = (a) => {
     <div className="bg-primary-900 w-60">
       <ul>
         {nodes.map((category, index) => (
-          <li key={category.name}>
+          <li key={category.name} className="mb-2">
             <h2
-              className="px-2 py-1"
+              className="px-2 py-1 font-bold text-black"
               style={{ backgroundColor: category.color }}
             >
               {category.name}

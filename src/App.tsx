@@ -4,7 +4,7 @@ import Viewport from "./components/Viewport";
 
 function App() {
   return (
-    <div className="flex flex-row w-full h-full bg-black">
+    <div className="flex flex-row w-full h-full text-white bg-black">
       <Drawer />
       <Viewport />
       <Settings />
