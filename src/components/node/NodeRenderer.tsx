@@ -10,11 +10,12 @@ export function makeNodeRenderer(
   def: NodeDef
 ): FunctionComponent<NodeProps<any>> {
   const HeaderComponent = def.header;
+  const inputs = def.inputs.filter((it) => it.hidden !== true);
 
   return ({ id, data }) => {
     const edges = useEdges();
 
-    const store = def.inputs.map((input) => {
+    const store = inputs.map((input) => {
       const [value, setValue] = useInputHandleData<any>(id, input.id);
       return {
         value,
@@ -23,7 +24,7 @@ export function makeNodeRenderer(
     });
 
     const connections = useMemo(() => {
-      return def.inputs.map(
+      return inputs.map(
         (input) =>
           edges.findIndex(
             (it) => it.target === id && it.targetHandle === input.id
@@ -36,7 +37,7 @@ export function makeNodeRenderer(
         {HeaderComponent && (
           <HeaderComponent id={id} data={data}></HeaderComponent>
         )}
-        {def.inputs.map((input, index) => (
+        {inputs.map((input, index) => (
           <NodeHandleLine
             key={input.id}
             type="input"

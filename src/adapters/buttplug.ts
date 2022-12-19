@@ -144,7 +144,9 @@ export function destroyClient(
   instance: ButtplugInstance
 ) {
   console.log("Destroyed Client: ", client);
-  client.actions.disconnect();
+  if (client.client.Connected) {
+    client.actions.disconnect();
+  }
 }
 
 export function syncClientState(

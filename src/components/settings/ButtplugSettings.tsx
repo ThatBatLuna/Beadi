@@ -59,6 +59,7 @@ const ButtplugSettingsInner: FunctionComponent<{
 }> = ({ instance }) => {
   const clients = useButtplugStore((it) => it.clients);
   const addClient = useButtplugStore((it) => it.addClient);
+  const deleteClient = useButtplugStore((it) => it.deleteClient);
 
   const connectEmbedded = useCallback(() => {
     addClient({
@@ -73,27 +74,28 @@ const ButtplugSettingsInner: FunctionComponent<{
   }, []);
 
   return (
-    <div className="w-full flex flex-col gap-2 p-2">
-      <h1 className="text-white font-bold text-lg">Servers</h1>
-      <ul className="w-full overflow-x-hidden rounded-md overflow-hidden my-2">
+    <div className="flex flex-col w-full gap-2 p-2">
+      <h1 className="text-lg font-bold text-white">Servers</h1>
+      <ul className="w-full my-2 overflow-hidden overflow-x-hidden rounded-md">
         {Object.values(clients).map((it) => (
           <li
             key={it.config.id}
-            className="flex flex-col w-full bg-slate-800 items-stretch gap-2 p-2 text-white"
+            className="flex flex-col items-stretch w-full gap-2 p-2 text-white bg-primary-700"
           >
             <div className="flex flex-row items-center">
               <div className="grow">
-                <h2 className="font-bold mb-0">{it.config.name}</h2>
+                <h2 className="mb-0 font-bold">{it.config.name}</h2>
                 <div>{it.config.connection}</div>
               </div>
               {it.state.connected ? (
-                <HiStatusOnline className="h-6 w-6"></HiStatusOnline>
+                <HiStatusOnline className="w-6 h-6"></HiStatusOnline>
               ) : (
-                <HiStatusOffline className="h-6 w-6"></HiStatusOffline>
+                <HiStatusOffline className="w-6 h-6"></HiStatusOffline>
               )}
+              <Button onClick={() => deleteClient(it.config.id)}>Del</Button>
             </div>
             <ul
-              className={clsx("bg-slate-900 rounded-md p-2", {
+              className={clsx("bg-primary-900 rounded-md p-2", {
                 "animate-pulse": it.state.scanning,
               })}
             >
@@ -115,7 +117,7 @@ const ButtplugSettingsInner: FunctionComponent<{
         ))}
       </ul>
 
-      <h1 className="text-white font-bold text-lg">Add Server</h1>
+      <h1 className="text-lg font-bold text-white">Add Server</h1>
 
       <AddButtplugClientForm onAdd={addClient}></AddButtplugClientForm>
       <Button onClick={connectEmbedded} disabled={!bluetooth}>

@@ -9,14 +9,17 @@ import {
   OnEdgesChange,
   OnNodesChange,
 } from "reactflow";
-import create, { StateCreator } from "zustand";
+import create from "zustand";
+import { persist } from "zustand/middleware";
 import { nodeDefs } from "./node";
 
 type AddNode = (type: string) => void;
 
-interface DisplaySlice {
+export interface DisplayStore {
   nodes: Node[];
   edges: Edge[];
+  handles: Record<string, any>;
+  setHandle: (nodeId: string, handleId: string, data: any) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -26,72 +29,64 @@ interface DisplaySlice {
 const initialNodes: Node<any>[] = [];
 const initialEdges: Edge<any>[] = [];
 
-const createDisplaySlice: StateCreator<
-  DisplaySlice & DataSlice,
-  [],
-  [],
-  DisplaySlice
-> = (set, get) => ({
-  nodes: initialNodes,
-  edges: initialEdges,
-  onConnect: (connection) => {
-    set({
-      edges: addEdge(
-        connection,
-        get().edges.filter(
-          (edge) =>
-            !(
-              edge.target === connection.target &&
-              edge.targetHandle === connection.targetHandle
-            )
-        )
-      ),
-    });
-  },
-  onNodesChange: (changes) =>
-    set({ nodes: applyNodeChanges(changes, get().nodes) }),
-  onEdgesChange: (changes) =>
-    set({ edges: applyEdgeChanges(changes, get().edges) }),
-  addNode: (type) => {
-    const id = "" + Date.now();
-    nodeDefs[type].inputs.forEach((input) => {
-      get().setHandle(id, `input__${input.id}`, input.default);
-    });
-    set({
-      nodes: get().nodes.concat([
-        {
-          data: {},
-          id: id,
-          position: {
-            x: 0,
-            y: 0,
-          },
-          type: type,
+export const useDisplayStore = create<DisplayStore>()(
+  persist((set, get) => ({
+    nodes: initialNodes,
+    edges: initialEdges,
+    handles: {},
+    setHandle: (nodeId, handleId, data) =>
+      set((state) => ({
+        handles: {
+          ...state.handles,
+          [`${nodeId}__${handleId}`]: data,
         },
-      ]),
-    });
-  },
-});
+      })),
+    onConnect: (connection) => {
+      set({
+        edges: addEdge(
+          connection,
+          get().edges.filter(
+            (edge) =>
+              !(
+                edge.target === connection.target &&
+                edge.targetHandle === connection.targetHandle
+              )
+          )
+        ),
+      });
+    },
+    onNodesChange: (changes) =>
+      set({ nodes: applyNodeChanges(changes, get().nodes) }),
+    onEdgesChange: (changes) =>
+      set({ edges: applyEdgeChanges(changes, get().edges) }),
+    addNode: (type) => {
+      const id = "" + Date.now();
+      nodeDefs[type].inputs.forEach((input) => {
+        get().setHandle(id, `input__${input.id}`, input.default);
+      });
+      set({
+        nodes: get().nodes.concat([
+          {
+            data: {},
+            id: id,
+            position: {
+              x: 0,
+              y: 0,
+            },
+            type: type,
+          },
+        ]),
+      });
+    },
+  }))
+);
 
-interface DataSlice {
-  handles: Record<string, any>;
+export interface DataStore {
   committed: Record<string, Record<string, any>>;
-  setHandle: (nodeId: string, handleId: string, data: any) => void;
   commitData: (data: Record<string, Record<string, any>>) => void;
 }
-const createDataSlice: StateCreator<DataSlice, [], [], DataSlice> = (
-  set,
-  get
-) => ({
-  handles: {},
+export const useDataStore = create<DataStore>()((set, get) => ({
   committed: {},
-  setHandle: (nodeId, handleId, data) =>
-    set((state) => ({
-      handles: {
-        ...state.handles,
-        [`${nodeId}__${handleId}`]: data,
-      },
-    })),
   commitData: (data) => {
     set((state) => {
       const newState = {
@@ -111,13 +106,6 @@ const createDataSlice: StateCreator<DataSlice, [], [], DataSlice> = (
       return newState;
     });
   },
-});
-
-export type DataStore = DataSlice & DisplaySlice;
-
-export const useDataStore = create<DataStore>()((...a) => ({
-  ...createDataSlice(...a),
-  ...createDisplaySlice(...a),
 }));
 
 export type HandleData<T> = [T, (value: T) => void];
@@ -126,10 +114,10 @@ export function useHandleData<T>(
   nodeId: string,
   handleId: string
 ): HandleData<T> {
-  const value = useDataStore((state) => {
+  const value = useDisplayStore((state) => {
     return state.handles[`${nodeId}__input__${handleId}`];
   });
-  const setHandle = useDataStore((state) => state.setHandle);
+  const setHandle = useDisplayStore((state) => state.setHandle);
   const setValue = useCallback(
     (value: T) => {
       setHandle(nodeId, `${handleType}__${handleId}`, value);

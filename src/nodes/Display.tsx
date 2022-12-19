@@ -1,16 +1,15 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import NodeLine from "../components/node/NodeLine";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
-import { useCommittedData } from "../engine/store";
+import { useCommittedData, useHandleData } from "../engine/store";
 import { categories } from "./category";
 
 const HEIGHT = 100;
 
 const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
-  const history = useCommittedData<number[]>(id, "history");
+  const history = useCommittedData<(number | undefined)[]>(id, "history");
   const index = useCommittedData<number>(id, "index");
-
-  const fixed = useState(true);
+  const [fixed, setFixed] = useHandleData<boolean>("input", id, "fixed");
 
   if (history === undefined) {
     return <NodeLine></NodeLine>;
@@ -20,7 +19,7 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   let max = 0;
 
   const tmpHistory = history.map((it) => {
-    const val = it;
+    const val = it || 0.0;
     if (val < min) {
       min = val;
     }
@@ -60,45 +59,54 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   // -min/2 + max/2 * (HEIGHT / 2 / (max - offset))
 
   return (
-    <NodeLine>
-      <svg
-        viewBox={`0 ${-HEIGHT / 2} ${HISTORY_LENGTH} ${HEIGHT + 5}`}
-        height="100"
-        className="stroke-white fill-none"
-      >
-        <path
-          className="stroke-slate-500"
-          d={`M0 ${-maxLine} L${HISTORY_LENGTH} ${-maxLine}`}
-        ></path>
-        <path
-          className="stroke-slate-500"
-          d={`M0 ${-minLine} L${HISTORY_LENGTH} ${-minLine}`}
-        ></path>
-        <path
-          className="stroke-slate-500"
-          d={`M0 ${-zero} L${HISTORY_LENGTH} ${-zero}`}
-        ></path>
-        <text x="0" y={-zero} className="text-sm stroke-none fill-white">
-          {" "}
-          0
-        </text>
-        <text
-          x="0"
-          y={-maxLine + 10}
-          className="text-sm stroke-none fill-white h-[10px]"
+    <>
+      <NodeLine>
+        <input
+          type="checkbox"
+          onChange={(e) => setFixed(e.target.checked)}
+          checked={fixed}
+        ></input>
+      </NodeLine>
+      <NodeLine>
+        <svg
+          viewBox={`0 ${-HEIGHT / 2} ${HISTORY_LENGTH} ${HEIGHT + 5}`}
+          height="100"
+          className="stroke-white fill-none"
         >
-          {max.toFixed(2)}
-        </text>
-        <text
-          x="0"
-          y={-minLine - 10}
-          className="text-sm stroke-none fill-white h-[10px]"
-        >
-          {min.toFixed(2)}
-        </text>
-        <path d={`M0 ${-start} ${parts}`}></path>
-      </svg>
-    </NodeLine>
+          <path
+            className="stroke-slate-500"
+            d={`M0 ${-maxLine} L${HISTORY_LENGTH} ${-maxLine}`}
+          ></path>
+          <path
+            className="stroke-slate-500"
+            d={`M0 ${-minLine} L${HISTORY_LENGTH} ${-minLine}`}
+          ></path>
+          <path
+            className="stroke-slate-500"
+            d={`M0 ${-zero} L${HISTORY_LENGTH} ${-zero}`}
+          ></path>
+          <text x="0" y={-zero} className="text-sm stroke-none fill-white">
+            {" "}
+            0
+          </text>
+          <text
+            x="0"
+            y={-maxLine + 10}
+            className="text-sm stroke-none fill-white h-[10px]"
+          >
+            {max.toFixed(2)}
+          </text>
+          <text
+            x="0"
+            y={-minLine - 10}
+            className="text-sm stroke-none fill-white h-[10px]"
+          >
+            {min.toFixed(2)}
+          </text>
+          <path d={`M0 ${-start} ${parts}`}></path>
+        </svg>
+      </NodeLine>
+    </>
   );
 };
 
@@ -118,6 +126,13 @@ export const displayNodeDef: NodeDef = {
       label: "Value",
       type: "number",
       default: 0.0,
+    },
+    {
+      id: "fixed",
+      label: "Fixed",
+      type: "boolean",
+      default: false,
+      hidden: true,
     },
   ],
   executor: ([v], { commit, committed }) => {

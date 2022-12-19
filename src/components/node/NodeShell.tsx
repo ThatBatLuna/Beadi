@@ -19,7 +19,7 @@ const NodeShell: FunctionComponent<NodeShellProps> = ({
       >
         <h1 className="px-1">{title}</h1>
       </div>
-      <div className="flex-col py-2 text-white rounded-sm bg-slate-900 rounded-b-md">
+      <div className="flex-col py-2 text-white rounded-sm bg-primary-900 rounded-b-md">
         {children}
       </div>
     </div>
