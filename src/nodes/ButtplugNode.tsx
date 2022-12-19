@@ -28,7 +28,7 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const deviceHandle = useButtplugStore((store) =>
     device === null
       ? null
-      : store.clients[device.client]?.devices[device.device]
+      : store.clients[device.client]?.devices[device.device] || null
   );
   const connected = useButtplugStore((store) =>
     device === null ? false : store.clients[device.client]?.state.connected

@@ -1,46 +1,42 @@
-# Getting Started with Create React App
+<p align="center">
+    <img src="docs/asset/Logo.svg" alt="Beadi Logo" class="fill-white">
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Node-based visual editor for adult entertainment. This is inspired by [buttplug-editor](https://github.com/MaidKun/buttplug-editor).
 
-## Available Scripts
+This webapp enables you to create node-based flows and patterns for a variety of Toys which are compatible with the [Buttplug.io Protocol](https://buttplug.io/).
 
-In the project directory, you can run:
+![A screenshot of the Beadi Interface](docs/thumb.png)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Connectivity
+  - Connect using your Browsers Bluetooth (Chrome only)
+  - Connect using a seperate [Intiface](https://intiface.com/) Server
+  - Connect to multiple servers (but i am curious as to why one would do this.)
+  - Support for advanced Toys that have multiple actuators (Support for rotators and linear actuators is currently incomplete but probably usable)
+  - (Planned) Connect to more than just your toys (like lights, video playback, ...) to create a truly extravagant experience
+- Extensible Architecture
+  - It is easy to add new nodes - maybe sometime in the future there will even be a plugin system, so you can unleash your creativity.
+- Pretty nice UX
+  - The Interface is inspired by the Blender node-editor.
+- Complex and event based flows (Planned)
+  - Use triggers, switches, randomizers and conditionals to create complex structures, that are more "intelligent" than a simple pattern and react dynamically to sensors or time.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+![A screenshot of the Beadi Interface](docs/preview.gif)
 
-### `npm test`
+> As this is small a side project of mine I am very happy to accept pull requests for bugfixes or features. However at the current state the code is a bit messy and I plan to change a lot of the internals, so coordination via Issues/Discussions will probably be helpful.
+> I'd love to hear from You!
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<p align="right">
+ — Luna the Bat
+</p>
 
-### `npm run build`
+# Contributing
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+I don't really expect a lot of traffic here, so feel free to create Discussion threads or Issues for whatever you want. But please adhere to our [Code of Conduct](CODE_OF_CONDUCT.md) and be
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Nice and respectful to everyone (where 'everyone' should be understood in the most inclusive sense possible)
+- aware that github has no age-restriction - so **be responsible** with what you write. Things that I deem too explicit will be removed. If you plan to interact with this project, I strongly recommend to read the [Github After Dark](https://buttplug-developer-guide.docs.buttplug.io/intro/buttplug-ethics.html#github-after-dark) section of buttplug.io.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Fun is sure a nice thing, but we may in no case forget to be responsible with what we do.

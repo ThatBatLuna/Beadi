@@ -61,11 +61,14 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   return (
     <>
       <NodeLine>
-        <input
-          type="checkbox"
-          onChange={(e) => setFixed(e.target.checked)}
-          checked={fixed}
-        ></input>
+        <label>
+          <input
+            type="checkbox"
+            onChange={(e) => setFixed(e.target.checked)}
+            checked={fixed}
+          ></input>
+          <span className="pl-2">Fix Scale</span>
+        </label>
       </NodeLine>
       <NodeLine>
         <svg
