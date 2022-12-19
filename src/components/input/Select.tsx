@@ -1,11 +1,5 @@
 import _ from "lodash";
-import {
-  ChangeEventHandler,
-  FunctionComponent,
-  ReactNode,
-  useCallback,
-  useMemo,
-} from "react";
+import { ChangeEventHandler, ReactNode, useCallback, useMemo } from "react";
 
 type SelectProps<T> = {
   options: T[];
