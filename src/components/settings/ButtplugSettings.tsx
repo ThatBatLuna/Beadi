@@ -138,7 +138,7 @@ const ButtplugSettingsInner: FunctionComponent<{
   );
 };
 
-export const ButtplugSettings: FunctionComponent<{}> = ({}) => {
+export const ButtplugSettings: FunctionComponent<{}> = () => {
   const instance = useButtplugStore((it) => it.instance);
   if (instance == null) {
     return <p>Buttplug is loading...</p>;

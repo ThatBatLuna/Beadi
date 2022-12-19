@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 import { useButtplugStore } from "../adapters/store";
 import { Select } from "../components/input/Select";
 import { NodeDef, NodeHeaderProps } from "../engine/node";

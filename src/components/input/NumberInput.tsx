@@ -115,7 +115,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
         });
       }
     },
-    [setValue, sliding, textEdit]
+    [setValue, sliding, textEdit, min, max]
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = (e) => {

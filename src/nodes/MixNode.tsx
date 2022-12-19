@@ -33,7 +33,7 @@ export const mixNodeDef: NodeDef = {
       min: 0.0,
     },
   ],
-  executor: ([a, b, amount], {}) => {
+  executor: ([a, b, amount]) => {
     return [a * amount + b * (1 - amount)];
   },
 };

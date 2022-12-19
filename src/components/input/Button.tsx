@@ -3,7 +3,6 @@ import {
   ButtonHTMLAttributes,
   DetailedHTMLProps,
   FunctionComponent,
-  HTMLProps,
   ReactNode,
 } from "react";
 

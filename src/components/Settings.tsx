@@ -25,7 +25,7 @@ const tabs: Record<string, Tab> = {
   },
 };
 
-export const Settings: FunctionComponent<{}> = ({}) => {
+export const Settings: FunctionComponent<{}> = () => {
   const [tab, setTab] = useState<string | null>(null);
 
   const Component = useMemo(() => {
