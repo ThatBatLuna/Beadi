@@ -2,9 +2,9 @@
     <img src="docs/asset/Logo.svg" alt="Beadi Logo" class="fill-white">
 </p>
 
-Node-based visual editor for adult entertainment. This is inspired by [buttplug-editor](https://github.com/MaidKun/buttplug-editor).
+Node-based visual editor for _adult_ entertainment. This is inspired by [buttplug-editor](https://github.com/MaidKun/buttplug-editor).
 
-This webapp enables you to create node-based flows and patterns for a variety of Toys which are compatible with the [Buttplug.io Protocol](https://buttplug.io/).
+This webapp enables you to create node-based programs and patterns for a variety of Toys which are compatible with the [Buttplug.io Protocol](https://buttplug.io/).
 
 ![A screenshot of the Beadi Interface](docs/thumb.png)
 
@@ -12,8 +12,8 @@ This webapp enables you to create node-based flows and patterns for a variety of
 
 - Connectivity
   - Connect using your Browsers Bluetooth (Chrome only)
-  - Connect using a seperate [Intiface](https://intiface.com/) Server
-  - Connect to multiple servers (but i am curious as to why one would do this.)
+  - Connect using a remote server, e.g running [Intiface](https://intiface.com/)
+  - Connect to multiple servers (but i am indeed curious about the use-cases of this...)
   - Support for advanced Toys that have multiple actuators (Support for rotators and linear actuators is currently incomplete but probably usable)
   - (Planned) Connect to more than just your toys (like lights, video playback, ...) to create a truly extravagant experience
 - Extensible Architecture
