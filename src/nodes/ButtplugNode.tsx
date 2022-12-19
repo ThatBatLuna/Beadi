@@ -10,6 +10,8 @@ type DeviceSelection = {
   client: string;
   device: number;
   label: string;
+  deviceType: "rotate" | "linear" | "vibrate";
+  index: number;
 };
 
 const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
@@ -21,6 +23,7 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   );
   const device = deviceH || null;
 
+  const instance = useButtplugStore((store) => store.instance);
   const clients = useButtplugStore((store) => store.clients);
   const deviceHandle = useButtplugStore((store) =>
     device === null
@@ -34,22 +37,76 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const allDevices: DeviceSelection[] = useMemo(() => {
     const single = Object.values(clients).length === 1;
     return _.flatMap(clients, (client) =>
-      client.state.devices.map((device, i) => ({
-        client: client.config.id,
-        device: i,
-        label: single
-          ? client.devices[i].Name
-          : `${client.config.name}:${client.devices[i].Name}`,
-      }))
+      client.state.devices.flatMap((device, i) => {
+        const vibrators = client.devices[i].messageAttributes(0);
+        const linears = client.devices[i].messageAttributes(1);
+        const rotators = client.devices[i].messageAttributes(2);
+        const common = {
+          client: client.config.id,
+          device: i,
+          label: single
+            ? client.devices[i].Name
+            : `${client.config.name}:${client.devices[i].Name}`,
+        };
+
+        console.log(vibrators, linears, rotators);
+        return [
+          ...(vibrators === undefined
+            ? []
+            : new Array(vibrators.featureCount).fill(undefined).map((_, i) => ({
+                deviceType: "vibrate" as const,
+                index: i,
+                ...common,
+                label: `${common.label} - Vibrator ${i}`,
+              }))),
+          ...(linears === undefined
+            ? []
+            : new Array(linears.featureCount).fill(undefined).map((_, i) => ({
+                deviceType: "linear" as const,
+                index: i,
+                ...common,
+                label: `${common.label} - Linear ${i}`,
+              }))),
+          ...(rotators === undefined
+            ? []
+            : new Array(rotators.featureCount).fill(undefined).map((_, i) => ({
+                deviceType: "rotate" as const,
+                index: i,
+                ...common,
+                label: `${common.label} - Rotator ${i}`,
+              }))),
+        ];
+      })
     );
   }, [clients]);
 
   useEffect(() => {
-    if (connected) {
-      const actualValue = Math.max(0, Math.min(value));
-      deviceHandle?.vibrate(actualValue);
+    if (connected && deviceHandle !== null && device !== null) {
+      let actualValue = Math.max(0, Math.min(value));
+      if (isNaN(actualValue)) {
+        actualValue = 0.0;
+      }
+      if (device.deviceType === "vibrate") {
+        deviceHandle.vibrate([
+          new instance.VibrationCmd(device.index, actualValue),
+        ]);
+      }
+      if (device.deviceType === "rotate") {
+        const TODO_CLOCKWISE = true;
+        deviceHandle.rotate(
+          [new instance.RotationCmd(device.index, actualValue, TODO_CLOCKWISE)],
+          undefined
+        ); //TODO Counterclockwise rotation with negative numbers
+      }
+      if (device.deviceType === "linear") {
+        const TODO_DURATION = 500.0;
+        deviceHandle.linear(
+          [new instance.VectorCmd(device.index, TODO_DURATION, actualValue)],
+          undefined
+        );
+      }
     }
-  }, [value, deviceHandle, connected]);
+  }, [value, device, deviceHandle, connected, instance]);
 
   return (
     <div className="flex flex-col px-4">
