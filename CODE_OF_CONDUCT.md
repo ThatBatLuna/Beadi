@@ -59,7 +59,7 @@ defined and clarified by project maintainers.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior
-May be reported by contacting the project maintainer at mona.mayrhofer@proton.me. All complaints will be reviewed and investigated
+May be reported by contacting the project maintainer at lunathebat@proton.me. All complaints will be reviewed and investigated
 and will result in a response that is deemed necessary and appropriate
 to the circumstances. The project team is obligated to maintain
 confidentiality with regard to the reporter of an incident. Further

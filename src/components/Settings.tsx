@@ -26,7 +26,7 @@ const tabs: Record<string, Tab> = {
 };
 
 export const Settings: FunctionComponent<{}> = () => {
-  const [tab, setTab] = useState<string | null>(null);
+  const [tab, setTab] = useState<string | null>("buttplug");
 
   const Component = useMemo(() => {
     if (tab == null) {
@@ -40,7 +40,11 @@ export const Settings: FunctionComponent<{}> = () => {
     <div className="flex flex-row shadow-sm bg-primary-1100">
       <ul className="flex flex-col text-white">
         {Object.entries(tabs).map(([key, value]) => (
-          <li key={key} onClick={() => setTab(key)} className="w-6 h-6">
+          <li
+            key={key}
+            onClick={() => setTab(key)}
+            className="w-10 h-10 p-2 rounded-l-md bg-primary-900"
+          >
             {value.icon}
           </li>
         ))}
