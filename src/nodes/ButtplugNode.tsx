@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { FunctionComponent, useEffect, useMemo } from "react";
 import { useButtplugStore } from "../adapters/store";
+import { Checkbox } from "../components/input/Checkbox";
 import { Select } from "../components/input/Select";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData, useInputHandleData } from "../engine/store";
@@ -16,6 +17,7 @@ type DeviceSelection = {
 
 const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const value = useCommittedData<number>(id, "value");
+  const [enabled, setEnabled] = useInputHandleData<boolean>(id, "enable");
 
   const [deviceH, setDevice] = useInputHandleData<DeviceSelection | null>(
     id,
@@ -39,13 +41,10 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   });
   const connected = useButtplugStore((store) => {
     if (device !== null) {
-      console.log("A");
       if (store.clients[device.client]?.state.connected) {
-        console.log("B", store.clients[device.client]?.devices);
         if (
           store.clients[device.client]?.devices[device.device] !== undefined
         ) {
-          console.log("C");
           return true;
         }
       }
@@ -102,7 +101,7 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   useEffect(() => {
     if (connected && deviceHandle !== null && device !== null) {
       let actualValue = Math.max(0, Math.min(value));
-      if (isNaN(actualValue)) {
+      if (isNaN(actualValue) || !enabled) {
         actualValue = 0.0;
       }
       if (device.deviceType === "vibrate") {
@@ -125,10 +124,15 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
         );
       }
     }
-  }, [value, device, deviceHandle, connected, instance]);
+  }, [value, device, deviceHandle, connected, instance, enabled]);
 
   return (
-    <div className="flex flex-col px-4">
+    <div className="flex flex-col gap-1 px-4">
+      <Checkbox
+        checked={enabled}
+        onChange={setEnabled}
+        label="Enabled"
+      ></Checkbox>
       <Select
         options={allDevices}
         onSelect={setDevice}
@@ -163,6 +167,13 @@ export const buttplugNodeDef: NodeDef = {
       label: "Device",
       type: "object",
       default: null,
+      hidden: true,
+    },
+    {
+      id: "enable",
+      label: "Enable",
+      type: "boolean",
+      default: true,
       hidden: true,
     },
   ],

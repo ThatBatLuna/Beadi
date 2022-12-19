@@ -13,7 +13,6 @@ import { memoryNodeDef } from "../nodes/MemoryNode";
 import { mixNodeDef } from "../nodes/MixNode";
 import { positiveWaveNodeDef } from "../nodes/PositiveWave";
 import { randomNodeDef } from "../nodes/RandomNode";
-import { waveNodeDef } from "../nodes/WaveNode";
 
 export type Category = {
   label: string;
@@ -57,7 +56,6 @@ export type NodeDef = {
 const nodeDefList: NodeDef[] = [
   displayNodeDef,
   constantValueNodeDef,
-  waveNodeDef,
   positiveWaveNodeDef,
   addNodeDef,
   subtractNodeDef,
