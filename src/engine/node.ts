@@ -13,6 +13,7 @@ import { memoryNodeDef } from "../nodes/MemoryNode";
 import { mixNodeDef } from "../nodes/MixNode";
 import { positiveWaveNodeDef } from "../nodes/PositiveWave";
 import { randomNodeDef } from "../nodes/RandomNode";
+import { timerNodeDef } from "../nodes/TimerNode";
 
 export type Category = {
   label: string;
@@ -66,6 +67,7 @@ const nodeDefList: NodeDef[] = [
   hysteresisNodeDef,
   memoryNodeDef,
   randomNodeDef,
+  timerNodeDef,
 ];
 
 export const nodeDefs: Record<string, NodeDef> = Object.assign(
