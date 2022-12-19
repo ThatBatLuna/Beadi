@@ -3,7 +3,7 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Edge, Node } from "reactflow";
 import { buildModel } from "../engine";
 import { evaluate } from "../engine/evaluate";
-import { useDataStore } from "../engine/store";
+import { useDataStore, useDisplayStore } from "../engine/store";
 import { useDeepDebounced } from "../hooks/useDeepDebounced";
 
 const timestep = 1000 / 60;
@@ -15,7 +15,7 @@ type EngineProps = {
 export const Engine: FunctionComponent<EngineProps> = ({ nodes, edges }) => {
   const [model, setModel] = useState<any>(null);
 
-  const data = useDataStore((store) => store.handles);
+  const data = useDisplayStore((store) => store.handles);
   const commit = useDataStore((store) => store.commitData);
   const committedData = useDataStore((store) => store.committed, _.isEqual);
 

@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { FunctionComponent, useCallback, useMemo } from "react";
-import { useReactFlow } from "reactflow";
 import { nodeDefs } from "../engine/node";
-import { useDataStore } from "../engine/store";
+import { useDisplayStore } from "../engine/store";
 
 const Drawer: FunctionComponent<{}> = (a) => {
   const nodes = useMemo(() => {
@@ -16,7 +15,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
       .value();
   }, []);
 
-  const addNode = useDataStore((state) => state.addNode);
+  const addNode = useDisplayStore((state) => state.addNode);
 
   const handleClick = useCallback(
     (type: string) => {
@@ -26,7 +25,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
   );
 
   return (
-    <div className="bg-slate-800 w-60">
+    <div className="bg-primary-900 w-60">
       <ul>
         {nodes.map((category, index) => (
           <li key={category.name}>

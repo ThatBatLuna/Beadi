@@ -36,6 +36,7 @@ interface ButtplugState {
   setInstance: (instance: ButtplugInstance) => void;
 
   addClient: (client: ButtplugClientConfig) => void;
+  deleteClient: (clientId: string) => void;
 
   syncClients: () => void;
 }
@@ -56,6 +57,15 @@ export const useButtplugStore = create<ButtplugState>()(
       addClient: (client) => {
         set((store) => ({
           clientConfigs: { ...store.clientConfigs, [client.id]: client },
+        }));
+        get().syncClients();
+      },
+
+      deleteClient: (client) => {
+        set((store) => ({
+          clientConfigs: {
+            ..._.omit(store.clientConfigs, client),
+          },
         }));
         get().syncClients();
       },

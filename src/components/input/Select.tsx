@@ -42,16 +42,26 @@ export function Select<T>({
     [selected]
   );
 
+  const selectedKey = useMemo(() => {
+    for (const key in optionMap) {
+      if (_.isEqual(optionMap[key], selected)) {
+        return key;
+      }
+    }
+    return "none";
+  }, [optionMap, selected]);
+
   return (
     <select
       onChange={onChange}
-      className="bg-slate-800 text-white rounded-md h-6 px-4"
+      className="h-6 px-4 text-white rounded-md bg-primary-1100"
+      value={selectedKey}
     >
       {(isSelected(null) || allowUnselect === true) && (
-        <option key="none" selected={isSelected(null)}></option>
+        <option key="none"></option>
       )}
       {Object.entries(optionMap).map(([key, value]) => (
-        <option key={key} value={key} selected={isSelected(value)}>
+        <option key={key} value={key}>
           {renderOption(value)}
         </option>
       ))}

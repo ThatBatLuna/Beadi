@@ -3,7 +3,7 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useButtplugStore } from "../adapters/store";
 import { Select } from "../components/input/Select";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
-import { useCommittedData } from "../engine/store";
+import { useCommittedData, useInputHandleData } from "../engine/store";
 import { categories } from "./category";
 
 type DeviceSelection = {
@@ -15,13 +15,20 @@ type DeviceSelection = {
 const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const value = useCommittedData<number>(id, "value");
 
-  const [device, setDevice] = useState<DeviceSelection | null>(null);
+  const [deviceH, setDevice] = useInputHandleData<DeviceSelection | null>(
+    id,
+    "device"
+  );
+  const device = deviceH || null;
 
   const clients = useButtplugStore((store) => store.clients);
   const deviceHandle = useButtplugStore((store) =>
     device === null
       ? null
       : store.clients[device.client]?.devices[device.device]
+  );
+  const connected = useButtplugStore((store) =>
+    device === null ? false : store.clients[device.client]?.state.connected
   );
 
   const allDevices: DeviceSelection[] = useMemo(() => {
@@ -38,9 +45,11 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   }, [clients]);
 
   useEffect(() => {
-    const actualValue = Math.max(0, Math.min(value));
-    deviceHandle?.vibrate(actualValue);
-  }, [value, deviceHandle]);
+    if (connected) {
+      const actualValue = Math.max(0, Math.min(value));
+      deviceHandle?.vibrate(actualValue);
+    }
+  }, [value, deviceHandle, connected]);
 
   return (
     <div className="flex flex-col px-4">
@@ -50,6 +59,7 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
         renderOption={(it) => it.label}
         selected={device}
       ></Select>
+      {!connected && <span>{device?.label} Disconnected</span>}
     </div>
   );
 };
@@ -69,6 +79,13 @@ export const buttplugNodeDef: NodeDef = {
       default: 0.0,
       min: 0.0,
       max: 1.0,
+    },
+    {
+      id: "device",
+      label: "Device",
+      type: "object",
+      default: null,
+      hidden: true,
     },
   ],
   executor: ([v], { commit }) => {
