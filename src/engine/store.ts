@@ -8,12 +8,16 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  XYPosition,
 } from "reactflow";
 import create from "zustand";
 import { persist } from "zustand/middleware";
 import { nodeDefs } from "./node";
 
-type AddNode = (type: string, pos: [number, number]) => void;
+type NodeId = string;
+
+type AddNode = (type: string, pos: XYPosition) => NodeId;
+type AddEdge = (edge: Edge) => void;
 
 export interface DisplayStore {
   nodes: Node[];
@@ -24,6 +28,7 @@ export interface DisplayStore {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addNode: AddNode;
+  addEdge: AddEdge;
   overwrite: (
     nodes: Node[],
     edges: Edge[],
@@ -71,6 +76,11 @@ export const useDisplayStore = create<DisplayStore>()(
       set({ nodes: applyNodeChanges(changes, get().nodes) }),
     onEdgesChange: (changes) =>
       set({ edges: applyEdgeChanges(changes, get().edges) }),
+    addEdge: (edge) => {
+      set({
+        edges: addEdge(edge, get().edges),
+      });
+    },
     addNode: (type, pos) => {
       const id = "" + Date.now();
       nodeDefs[type].inputs.forEach((input) => {
@@ -82,13 +92,14 @@ export const useDisplayStore = create<DisplayStore>()(
             data: {},
             id: id,
             position: {
-              x: pos[0],
-              y: pos[1],
+              x: pos.x,
+              y: pos.y,
             },
             type: type,
           },
         ]),
       });
+      return id;
     },
   }))
 );
