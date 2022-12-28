@@ -50,7 +50,8 @@ const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({
   onNodeDrop,
   wrapper,
 }) => {
-  const viewport = useViewport();
+  const { project } = useReactFlow();
+
   const [_, drop] = useDrop(
     () => ({
       accept: "Node",
@@ -60,17 +61,16 @@ const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({
 
         const viewportPos = position(wrapper.current!!);
         console.log(drop);
-        const [clientX, clientY] = [
-          (offset?.x || 0) - (viewportPos[0] || 0) - viewport.x,
-          (offset?.y || 0) - (viewportPos[1] || 0) - viewport.y,
-        ];
+        const pos = project({
+          x: (offset?.x || 0) - (viewportPos[0] || 0),
+          y: (offset?.y || 0) - (viewportPos[1] || 0),
+        });
         console.log("L", viewportPos);
 
-        console.log(clientX, clientY);
-        onNodeDrop?.({ x: clientX, y: clientY }, (item as any).type);
+        onNodeDrop?.(pos, (item as any).type);
       },
     }),
-    [viewport]
+    [project]
   );
 
   return (
