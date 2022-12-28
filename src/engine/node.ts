@@ -5,6 +5,7 @@ import {
   multiplyNodeDef,
   subtractNodeDef,
 } from "../nodes/AddNode";
+import { buttonNodeDef } from "../nodes/ButtonNode";
 import { buttplugNodeDef } from "../nodes/ButtplugNode";
 import { constantValueNodeDef } from "../nodes/ConstantValueNode";
 import { displayNodeDef } from "../nodes/Display";
@@ -68,6 +69,7 @@ const nodeDefList: NodeDef[] = [
   memoryNodeDef,
   randomNodeDef,
   timerNodeDef,
+  buttonNodeDef,
 ];
 
 export const nodeDefs: Record<string, NodeDef> = Object.assign(

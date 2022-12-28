@@ -40,7 +40,8 @@ export function makeNodeRenderer(
         {inputs.map((input, index) => (
           <NodeHandleLine
             key={input.id}
-            type="input"
+            kind="input"
+            type={input.type}
             label={input.label}
             id={input.id}
             connected={connections[index]}
@@ -61,7 +62,8 @@ export function makeNodeRenderer(
           <NodeHandleLine
             key={output.id}
             id={output.id}
-            type="output"
+            kind="output"
+            type={output.type}
             label={output.label}
           ></NodeHandleLine>
         ))}
