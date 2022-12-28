@@ -1,7 +1,8 @@
 import _ from "lodash";
-import { FunctionComponent, useCallback, useMemo } from "react";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { nodeDefs } from "../engine/node";
 import { useDisplayStore } from "../engine/store";
+import { Entry } from "./drawer/Entry";
 import { Typo } from "./Typo";
 
 const Drawer: FunctionComponent<{}> = (a) => {
@@ -16,15 +17,6 @@ const Drawer: FunctionComponent<{}> = (a) => {
       .value();
   }, []);
 
-  const addNode = useDisplayStore((state) => state.addNode);
-
-  const handleClick = useCallback(
-    (type: string) => {
-      addNode(type);
-    },
-    [addNode]
-  );
-
   return (
     <div className="bg-primary-900 w-60">
       <ul>
@@ -38,14 +30,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
             </h2>
             <ul>
               {category.items.map((node, index) => (
-                <li
-                  key={index}
-                  draggable
-                  className="p-1 px-4 text-white cursor-pointer"
-                  onClick={() => handleClick(node.type)}
-                >
-                  {node.label}
-                </li>
+                <Entry key={index} nodeDef={node}></Entry>
               ))}
             </ul>
           </li>

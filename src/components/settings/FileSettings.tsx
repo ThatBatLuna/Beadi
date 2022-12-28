@@ -18,6 +18,7 @@ import { IDBPDatabase, openDB } from "idb";
 import create from "zustand";
 import { Edge, Node } from "reactflow";
 import clsx from "clsx";
+import { Buttplug } from "buttplug/dist/module/buttplug_ffi";
 
 export function getNewFileName(): string {
   const time = DateTime.now().toFormat("yyyy-LL-dd-HH-mm");
@@ -161,6 +162,10 @@ export const FileSettings: FunctionComponent<{}> = () => {
     [loadFromDb, overwriteStoreData, setName]
   );
 
+  const reset = useCallback(() => {
+    overwriteStoreData([], [], {});
+  }, [overwriteStoreData]);
+
   const remove = useCallback(
     (it: string) => {
       removeInDb(it);
@@ -175,6 +180,8 @@ export const FileSettings: FunctionComponent<{}> = () => {
   return (
     <div className="flex flex-col w-full gap-2 p-2">
       <Typo>File</Typo>
+      <Button onClick={reset}>Discard current File</Button>
+      <Typo>Save</Typo>
       <TextInput
         label="Name"
         id="name"

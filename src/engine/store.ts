@@ -13,7 +13,7 @@ import create from "zustand";
 import { persist } from "zustand/middleware";
 import { nodeDefs } from "./node";
 
-type AddNode = (type: string) => void;
+type AddNode = (type: string, pos: [number, number]) => void;
 
 export interface DisplayStore {
   nodes: Node[];
@@ -71,7 +71,7 @@ export const useDisplayStore = create<DisplayStore>()(
       set({ nodes: applyNodeChanges(changes, get().nodes) }),
     onEdgesChange: (changes) =>
       set({ edges: applyEdgeChanges(changes, get().edges) }),
-    addNode: (type) => {
+    addNode: (type, pos) => {
       const id = "" + Date.now();
       nodeDefs[type].inputs.forEach((input) => {
         get().setHandle(id, `input__${input.id}`, input.default);
@@ -82,8 +82,8 @@ export const useDisplayStore = create<DisplayStore>()(
             data: {},
             id: id,
             position: {
-              x: 0,
-              y: 0,
+              x: pos[0],
+              y: pos[1],
             },
             type: type,
           },
