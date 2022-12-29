@@ -2,9 +2,9 @@ import { FunctionComponent, ReactNode, useCallback } from "react";
 import { Connection, Handle, Position } from "reactflow";
 import clsx from "clsx";
 import { useDisplayStore } from "../../engine/store";
-import { nodeDefs } from "../../engine/node";
 import { handleConversions, handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
+import { nodeDefs } from "../../nodes/nodes";
 
 type NodeHandleLineProps = {
   input?: ReactNode;

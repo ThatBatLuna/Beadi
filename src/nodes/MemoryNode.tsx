@@ -27,8 +27,6 @@ export const memoryNodeDef: NodeDef = {
     },
   ],
   executor: ([value, save], { commit, committed }) => {
-    console.log(save);
-
     const out = committed["value"] || value;
 
     if (save) {

@@ -8,14 +8,13 @@ const ButtonNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const push = usePushEphermalData(id, "signal");
 
   const fire = useCallback(() => {
-    console.log("FIRE");
     push(true);
   }, [push]);
 
   return (
-    <>
-      <Button onClick={fire}>Fire</Button>
-    </>
+    <div className="mx-auto w-fit">
+      <Button onClick={fire}>Send Signal</Button>
+    </div>
   );
 };
 

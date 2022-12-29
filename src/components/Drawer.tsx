@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { nodeDefs } from "../engine/node";
 import { useDisplayStore } from "../engine/store";
+import { nodeDefs } from "../nodes/nodes";
 import { Entry } from "./drawer/Entry";
 import { Typo } from "./Typo";
 

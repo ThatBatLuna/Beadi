@@ -20,7 +20,6 @@ import ReactFlow, {
   OnConnectStartParams,
 } from "reactflow";
 import _ from "lodash";
-import { nodeDefs } from "../engine/node";
 import { DisplayStore, useDisplayStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
 import shallow from "zustand/shallow";
@@ -29,6 +28,7 @@ import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
+import { nodeDefs } from "../nodes/nodes";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -60,17 +60,13 @@ const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({
     () => ({
       accept: "Node",
       drop: (item, monitor) => {
-        console.log(item);
         const offset = monitor.getClientOffset();
 
         const viewportPos = position(wrapper.current!!);
-        console.log(drop);
         const pos = project({
           x: (offset?.x || 0) - (viewportPos[0] || 0),
           y: (offset?.y || 0) - (viewportPos[1] || 0),
         });
-        console.log("L", viewportPos);
-
         onNodeDrop?.(pos, (item as any).type);
       },
     }),

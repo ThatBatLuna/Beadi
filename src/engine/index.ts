@@ -1,5 +1,6 @@
 import { Node, Edge } from "reactflow";
-import { nodeDefs, NodeExecutor } from "./node";
+import { nodeDefs } from "../nodes/nodes";
+import { NodeExecutor } from "./node";
 
 export type NodeTypeData = Pick<Node<any>, "data" | "id" | "type">;
 

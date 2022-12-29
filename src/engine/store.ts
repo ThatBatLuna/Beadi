@@ -12,7 +12,7 @@ import {
 } from "reactflow";
 import create from "zustand";
 import { persist } from "zustand/middleware";
-import { nodeDefs } from "./node";
+import { nodeDefs } from "../nodes/nodes";
 
 type NodeId = string;
 

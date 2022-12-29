@@ -34,7 +34,7 @@ export const Button: FunctionComponent<ButtonProps> = ({
         className,
         {
           "px-2 py-2 h-8 w-8": isIcon,
-          "px-2 h-6": isIcon,
+          "px-2 h-6": !isIcon,
         }
       )}
     >

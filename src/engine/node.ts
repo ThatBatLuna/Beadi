@@ -1,20 +1,4 @@
 import { ComponentType } from "react";
-import {
-  addNodeDef,
-  divideNodeDef,
-  multiplyNodeDef,
-  subtractNodeDef,
-} from "../nodes/AddNode";
-import { buttonNodeDef } from "../nodes/ButtonNode";
-import { buttplugNodeDef } from "../nodes/ButtplugNode";
-import { constantValueNodeDef } from "../nodes/ConstantValueNode";
-import { displayNodeDef } from "../nodes/Display";
-import { hysteresisNodeDef } from "../nodes/HysteresisNode";
-import { memoryNodeDef } from "../nodes/MemoryNode";
-import { mixNodeDef } from "../nodes/MixNode";
-import { positiveWaveNodeDef } from "../nodes/PositiveWave";
-import { randomNodeDef } from "../nodes/RandomNode";
-import { timerNodeDef } from "../nodes/TimerNode";
 
 export type Category = {
   label: string;
@@ -55,25 +39,3 @@ export type NodeDef = {
   outputs: OutputHandleDef[];
   executor: NodeExecutor;
 };
-
-const nodeDefList: NodeDef[] = [
-  displayNodeDef,
-  constantValueNodeDef,
-  positiveWaveNodeDef,
-  addNodeDef,
-  subtractNodeDef,
-  divideNodeDef,
-  multiplyNodeDef,
-  buttplugNodeDef,
-  mixNodeDef,
-  hysteresisNodeDef,
-  memoryNodeDef,
-  randomNodeDef,
-  timerNodeDef,
-  buttonNodeDef,
-];
-
-export const nodeDefs: Record<string, NodeDef> = Object.assign(
-  {},
-  ...nodeDefList.map((it) => ({ [it.type]: it }))
-);

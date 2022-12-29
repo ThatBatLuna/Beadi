@@ -3,8 +3,45 @@ import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
-import { NodeDef } from "../../engine/node";
+import { InputHandleDef, NodeDef } from "../../engine/node";
 import { useInputHandleData } from "../../engine/store";
+type HandleInputProps = {
+  input: InputHandleDef;
+  nodeId: string;
+};
+const NumberHandleInput: FunctionComponent<HandleInputProps> = ({
+  nodeId,
+  input,
+}) => {
+  const [value, setValue] = useInputHandleData<any>(nodeId, input.id);
+
+  return (
+    <NumberInput
+      id={input.id}
+      name={input.id}
+      label={input.label}
+      min={input.min}
+      max={input.max}
+      value={value}
+      onChange={(e) => setValue(e.value)}
+    ></NumberInput>
+  );
+};
+const inputs: Record<string, FunctionComponent<HandleInputProps>> = {
+  number: NumberHandleInput,
+};
+type HandleInputCProps = {
+  type: string;
+  input: InputHandleDef;
+  nodeId: string;
+};
+function getHandleInput({ type, input, nodeId }: HandleInputCProps) {
+  const Component = inputs[type];
+  if (Component !== undefined) {
+    return <Component input={input} nodeId={nodeId}></Component>;
+  }
+  return undefined;
+}
 
 export function makeNodeRenderer(
   def: NodeDef
@@ -14,14 +51,6 @@ export function makeNodeRenderer(
 
   return ({ id, data }) => {
     const edges = useEdges();
-
-    const store = inputs.map((input) => {
-      const [value, setValue] = useInputHandleData<any>(id, input.id);
-      return {
-        value,
-        setValue,
-      };
-    });
 
     const connections = useMemo(() => {
       return inputs.map(
@@ -45,17 +74,11 @@ export function makeNodeRenderer(
             label={input.label}
             id={input.id}
             connected={connections[index]}
-            input={
-              <NumberInput
-                id={input.id}
-                name={input.id}
-                label={input.label}
-                min={input.min}
-                max={input.max}
-                value={store[index].value}
-                onChange={(e) => store[index].setValue(e.value)}
-              ></NumberInput>
-            }
+            input={getHandleInput({
+              type: input.type,
+              input: input,
+              nodeId: id,
+            })}
           ></NodeHandleLine>
         ))}
         {def.outputs.map((output) => (
