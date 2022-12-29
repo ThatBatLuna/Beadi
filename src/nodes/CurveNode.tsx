@@ -105,7 +105,7 @@ const CurveNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
         viewBox="0 0 100 100"
         onPointerDown={(e) => addPoint(e)}
         ref={editor}
-        className="stroke-white stroke_[0.01]"
+        className="stroke-white stroke_[0.01] cursor-crosshair"
         onPointerUp={endDrag}
         onPointerMoveCapture={(e) => doDrag(e)}
         onMouseMoveCapture={(e) => e.stopPropagation()}
@@ -147,7 +147,7 @@ const CurveNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
             cy={(1.0 - point.y) * 100}
             r={3}
             key={index}
-            className="stroke-primary-800 fill-white hover:fill-blue-700"
+            className="stroke-primary-800 fill-white hover:fill-blue-700 cursor-grab"
             onPointerDown={(e) => beginDrag(e, index)}
           ></circle>
         ))}
