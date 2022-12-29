@@ -142,7 +142,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
       const newId = addNode(type, data.pos);
 
       addEdge({
-        id: `${data.source}__${data.sourceHandle}___${newId}__${handle}`,
+        id: `reactflow__edge-${data.source}${data.sourceHandle}-${newId}${handle}`,
         source: data.source,
         target: newId,
         sourceHandle: data.sourceHandle,

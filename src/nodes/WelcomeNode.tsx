@@ -6,16 +6,25 @@ import { useDisplayStore } from "../engine/store";
 import ChangeLog from "CHANGELOG";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
-const examples = [
-  {
-    name: "Simple Wave",
-    data: "",
-  },
-  {
-    name: "Button Control",
-    data: "",
-  },
-];
+// import SimpleWaveExample from "EXAMPLES/SimpleNodes.json";
+
+// const examples = [
+//   {
+//     name: "Simple Wave",
+//     data: SimpleWaveExample,
+//   },
+//   {
+//     name: "Button Control",
+//     data: "",
+//   },
+// ];
+
+const examples: Record<string, any> = {};
+
+function importAll(r: any) {
+  r.keys().forEach((key: any) => (examples[key] = r(key)));
+}
+importAll((require as any).context("../../examples", false, /\.json$/));
 
 export const WelcomeNode: FunctionComponent<NodeProps> = ({}) => {
   const overwriteStore = useDisplayStore((it) => it.overwrite);
@@ -57,17 +66,18 @@ export const WelcomeNode: FunctionComponent<NodeProps> = ({}) => {
           just dragging in some nodes from the drawer on the left, but don't
           forget to connect your toys or a server in the server tab on the
           right. You can delete this message, by selecting the node and pressing{" "}
-          <code>Backspace</code>
+          <code>Backspace</code>, and if you want to view it again, go to the
+          File tab on the right, and discard your current File.
         </p>
         <Typo variant="h2">Examples</Typo>
         <ul>
-          {examples.map((it) => (
-            <li key={it.name}>
+          {Object.entries(examples).map(([key, value]) => (
+            <li key={key}>
               <button
-                onClick={loadExample}
+                onClick={() => loadExample(value)}
                 className="text-purple-400 underline"
               >
-                {it.name}
+                {value.name || key}
               </button>
             </li>
           ))}
