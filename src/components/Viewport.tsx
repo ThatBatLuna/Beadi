@@ -121,11 +121,15 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
     if (sourceNodeType !== undefined) {
       const handleType = nodeDefs[sourceNodeType].outputs.find(
         (output) => output.id === data.sourceHandle
-      )?.type!!;
+      )!!;
 
       return Object.values(nodeDefs)
         .flatMap((def) => def.inputs.map((it) => ({ node: def, input: it })))
-        .filter((it) => handlesCompatible(it.input.type, handleType));
+        .filter(
+          (it) =>
+            handlesCompatible(it.input.type, handleType!!.type) &&
+            it.input.hidden !== true
+        );
     } else {
       return [];
     }
