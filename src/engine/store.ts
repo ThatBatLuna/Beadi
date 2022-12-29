@@ -106,10 +106,33 @@ export const useDisplayStore = create<DisplayStore>()(
 
 export interface DataStore {
   committed: Record<string, Record<string, any>>;
+  ephermal: Record<string, Record<string, any>>;
   commitData: (data: Record<string, Record<string, any>>) => void;
+  pushEphermalData: (nodeId: string, handleId: string, data: any) => void;
+  popEphermalData: () => Record<string, Record<string, any>>;
 }
 export const useDataStore = create<DataStore>()((set, get) => ({
   committed: {},
+  ephermal: {},
+  popEphermalData: () => {
+    const values = get().ephermal;
+    set(() => ({ ephermal: {} }));
+    return values;
+  },
+  pushEphermalData: (nodeId, handleId, data) => {
+    set((state) => {
+      const newState = {
+        ephermal: {
+          ...state.ephermal,
+          [nodeId]: {
+            ...state.ephermal[nodeId],
+            [handleId]: data,
+          },
+        },
+      };
+      return newState;
+    });
+  },
   commitData: (data) => {
     set((state) => {
       const newState = {
@@ -162,4 +185,14 @@ export function useCommittedData<T>(nodeId: string, handleId: string): T {
     return state.committed[nodeId]?.[handleId];
   });
   return value as T;
+}
+export function usePushEphermalData<T>(nodeId: string, handleId: string) {
+  const push = useDataStore((state) => state.pushEphermalData);
+
+  return useCallback(
+    (data: T) => {
+      push(nodeId, handleId, data);
+    },
+    [push, nodeId, handleId]
+  );
 }

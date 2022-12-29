@@ -38,6 +38,7 @@ export interface OutputHandleDef extends HandleDef {}
 
 export type NodeExecutorProps = {
   committed: Record<string, any>;
+  ephermal: Record<string, any>;
   commit: (handle: string, value: any) => void;
 };
 

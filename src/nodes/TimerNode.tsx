@@ -26,7 +26,7 @@ const TimerNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
 };
 
 export const timerNodeDef: NodeDef = {
-  label: "Timer Node",
+  label: "Toggle Timer Node",
   category: categories["generators"],
   type: "timer",
   header: TimerNode,
@@ -34,12 +34,12 @@ export const timerNodeDef: NodeDef = {
     {
       id: "value",
       label: "Value",
-      type: "number",
+      type: "boolean",
     },
     {
       id: "progress",
       label: "Progress",
-      type: "progress",
+      type: "number",
     },
   ],
   inputs: [

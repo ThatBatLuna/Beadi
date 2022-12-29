@@ -3,6 +3,7 @@ import {
   ReactNode,
   RefObject,
   useCallback,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -25,6 +26,8 @@ import { makeNodeRenderer } from "./node/NodeRenderer";
 import shallow from "zustand/shallow";
 import { Engine } from "./Engine";
 import { useDrop } from "react-dnd";
+import { handlesCompatible } from "../engine/handles";
+import { NodeHandleDisplay } from "./node/NodeHandle";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -108,22 +111,36 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
   data,
   onClose,
 }) => {
-  const { addNode, addEdge } = useDisplayStore(
-    (s) => ({ addNode: s.addNode, addEdge: s.addEdge }),
+  const { addNode, addEdge, nodes } = useDisplayStore(
+    (s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.nodes }),
     shallow
   );
 
+  const handles = useMemo(() => {
+    const sourceNodeType = nodes.find((it) => it.id === data.source)?.type;
+    if (sourceNodeType !== undefined) {
+      const handleType = nodeDefs[sourceNodeType].outputs.find(
+        (output) => output.id === data.sourceHandle
+      )?.type!!;
+
+      return Object.values(nodeDefs)
+        .flatMap((def) => def.inputs.map((it) => ({ node: def, input: it })))
+        .filter((it) => handlesCompatible(it.input.type, handleType));
+    } else {
+      return [];
+    }
+  }, [data.source, data.sourceHandle, nodes]);
+
   const complete = useCallback(
-    (type: string) => {
+    (type: string, handle: string) => {
       const newId = addNode(type, data.pos);
-      const targetHandle = nodeDefs[type].inputs[0];
 
       addEdge({
-        id: `${data.source}__${data.sourceHandle}___${newId}__${targetHandle.id}`,
+        id: `${data.source}__${data.sourceHandle}___${newId}__${handle}`,
         source: data.source,
         target: newId,
         sourceHandle: data.sourceHandle,
-        targetHandle: targetHandle.id,
+        targetHandle: handle,
       });
     },
     [addNode, addEdge, data]
@@ -132,12 +149,18 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
   return (
     <div className="fixed top-0 bottom-0 left-0 right-0" onClick={onClose}>
       <div
-        className="absolute z-50 p-2 text-white border bg-black/90 border-primary-700"
+        className="absolute z-50 text-white border rounded-md bg-black/90 border-primary-700"
         style={{ top: data.screenPos.y, left: data.screenPos.x }}
       >
-        <ul>
-          {Object.values(nodeDefs).map((it) => (
-            <li onClick={() => complete(it.type)}>{it.label}</li>
+        <ul className="overflow-y-scroll max-h-60">
+          {handles.map((it) => (
+            <li
+              onClick={() => complete(it.node.type, it.input.id)}
+              className="flex flex-row items-center gap-2 px-2 hover:bg-primary-800"
+            >
+              <NodeHandleDisplay type={it.input.type}></NodeHandleDisplay>
+              {it.node.label} - {it.input.label}
+            </li>
           ))}
         </ul>
       </div>

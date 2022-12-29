@@ -8,7 +8,8 @@ export type EvaluateResult = {
 export function evaluate(
   model: Model,
   data: Record<string, any>,
-  committedData: Record<string, Record<string, any>>
+  committedData: Record<string, Record<string, any>>,
+  ephermalData: Record<string, Record<string, any>>
 ): EvaluateResult {
   if (model === null) {
     return { toCommit: {} };
@@ -27,6 +28,7 @@ export function evaluate(
     const outputs = step.func(inputs, {
       commit: doCommit,
       committed: committedData[step.nodeId] || {},
+      ephermal: ephermalData[step.nodeId] || {},
     });
     for (let i = 0; i < step.outpus.length; i++) {
       data[step.outpus[i]] = outputs[i];

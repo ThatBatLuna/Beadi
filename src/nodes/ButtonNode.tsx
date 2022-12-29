@@ -1,16 +1,16 @@
 import { FunctionComponent, useCallback } from "react";
 import { Button } from "../components/input/Button";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
-import { useHandleData } from "../engine/store";
+import { usePushEphermalData } from "../engine/store";
 import { categories } from "./category";
 
 const ButtonNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
-  const [value, setValue] = useHandleData("input", id, "signal");
+  const push = usePushEphermalData(id, "signal");
 
   const fire = useCallback(() => {
     console.log("FIRE");
-    setValue(true);
-  }, [setValue]);
+    push(true);
+  }, [push]);
 
   return (
     <>
@@ -24,6 +24,7 @@ export const buttonNodeDef: NodeDef = {
   category: categories["control"],
   type: "button",
   header: ButtonNode,
+  inputs: [],
   outputs: [
     {
       id: "signal",
@@ -31,15 +32,7 @@ export const buttonNodeDef: NodeDef = {
       type: "impulse",
     },
   ],
-  inputs: [
-    {
-      id: "signal",
-      label: "Signal",
-      type: "impulse",
-      default: false,
-    },
-  ],
-  executor: ([v], { commit }) => {
-    return [v];
+  executor: ([v], { ephermal }) => {
+    return [ephermal["signal"] || false];
   },
 };
