@@ -29,6 +29,7 @@ export interface DisplayStore {
   onConnect: OnConnect;
   addNode: AddNode;
   addEdge: AddEdge;
+  reset: () => void;
   overwrite: (
     nodes: Node[],
     edges: Edge[],
@@ -36,7 +37,17 @@ export interface DisplayStore {
   ) => void;
 }
 
-const initialNodes: Node<any>[] = [];
+const initialNodes: Node<any>[] = [
+  {
+    id: "welcome",
+    type: "welcome",
+    position: {
+      x: 0,
+      y: 0,
+    },
+    data: {},
+  },
+];
 const initialEdges: Edge<any>[] = [];
 
 export const useDisplayStore = create<DisplayStore>()(
@@ -80,6 +91,13 @@ export const useDisplayStore = create<DisplayStore>()(
       set({
         edges: addEdge(edge, get().edges),
       });
+    },
+    reset: () => {
+      set(() => ({
+        nodes: initialNodes,
+        edges: initialEdges,
+        handles: [],
+      }));
     },
     addNode: (type, pos) => {
       const id = "" + Date.now();

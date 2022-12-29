@@ -130,6 +130,7 @@ export const FileSettings: FunctionComponent<{}> = () => {
   const saves = useDatabaseStore((store) => store.files);
 
   const overwriteStoreData = useDisplayStore((store) => store.overwrite);
+  const resetStoreData = useDisplayStore((store) => store.reset);
   const data = useDisplayStore((store) => ({
     nodes: store.nodes.map((node) =>
       _.pick(node, ["data", "id", "position", "type", "width", "height"])
@@ -162,10 +163,6 @@ export const FileSettings: FunctionComponent<{}> = () => {
     [loadFromDb, overwriteStoreData, setName]
   );
 
-  const reset = useCallback(() => {
-    overwriteStoreData([], [], {});
-  }, [overwriteStoreData]);
-
   const remove = useCallback(
     (it: string) => {
       removeInDb(it);
@@ -180,7 +177,7 @@ export const FileSettings: FunctionComponent<{}> = () => {
   return (
     <div className="flex flex-col w-full gap-2 p-2">
       <Typo>File</Typo>
-      <Button onClick={reset}>Discard current File</Button>
+      <Button onClick={resetStoreData}>Discard current File</Button>
       <Typo>Save</Typo>
       <TextInput
         label="Name"

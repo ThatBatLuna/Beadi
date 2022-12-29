@@ -28,6 +28,7 @@ import { Engine } from "./Engine";
 import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
+import { WelcomeNode } from "../nodes/WelcomeNode";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -83,9 +84,10 @@ const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({
   );
 };
 
-const nodeTypes: NodeTypes = _.mapValues(nodeDefs, (it) =>
-  makeNodeRenderer(it)
-);
+const nodeTypes: NodeTypes = {
+  ..._.mapValues(nodeDefs, (it) => makeNodeRenderer(it)),
+  welcome: WelcomeNode,
+};
 
 const selector = (state: DisplayStore) => ({
   nodes: state.nodes,

@@ -28,12 +28,14 @@ export function buildModel(nodes: NodeTypeData[], edges: Edge<any>[]): Model {
   for (const node of nodes) {
     nodeDict[node.id] = node;
     let nodeType = nodeDefs[node.type!!];
-    for (const input of nodeType.inputs) {
-      if (input.terminal) {
-        terminals.push({
-          node: node.id,
-          handle: input.id,
-        });
+    if (nodeType !== undefined) {
+      for (const input of nodeType.inputs) {
+        if (input.terminal) {
+          terminals.push({
+            node: node.id,
+            handle: input.id,
+          });
+        }
       }
     }
   }
