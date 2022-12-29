@@ -5,6 +5,7 @@ import { useDisplayStore } from "../../engine/store";
 import { handleConversions, handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeDefs } from "../../nodes/nodes";
+import _ from "lodash";
 
 type NodeHandleLineProps = {
   input?: ReactNode;
@@ -29,6 +30,7 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
     (connection: Connection) => {
       const targetType = nodes.find((it) => it.id === connection.target)?.type;
       const sourceType = nodes.find((it) => it.id === connection.source)?.type;
+      console.log(connection, targetType, sourceType, nodes);
       if (targetType !== undefined && sourceType !== undefined) {
         return (
           connection.source !== connection.target &&

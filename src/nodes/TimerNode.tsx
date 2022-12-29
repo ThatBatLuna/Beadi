@@ -76,23 +76,23 @@ export const timerNodeDef: NodeDef = {
     [onTime, onTimeDev, offTime, offTimeDev],
     { commit, committed }
   ) => {
-    const last = committed["last"] || 0.0;
+    const last = committed["last"] || false;
     const toggle = committed["toggleTime"] || new Date().getTime();
     const lastTime = committed["lastTime"] || new Date().getTime();
 
     if (new Date().getTime() >= toggle) {
       //Toggle
 
-      if (last === 0.0) {
+      if (last === false) {
         const dev = gaussianRandom(0, onTimeDev * onTime);
         commit("toggleTime", new Date().getTime() + (onTime + dev) * 1000);
         commit("lastTime", toggle);
-        commit("last", 1.0);
+        commit("last", true);
       } else {
         const dev = gaussianRandom(0, offTimeDev * offTime);
         commit("toggleTime", new Date().getTime() + (offTime + dev) * 1000);
         commit("lastTime", toggle);
-        commit("last", 0.0);
+        commit("last", false);
       }
     }
 

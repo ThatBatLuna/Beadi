@@ -18,7 +18,9 @@ export function evaluate(
   let commit: Record<string, Record<string, any>> = {};
 
   for (const step of model.executionPlan) {
-    const inputs = step.dependencies.map((it) => data[it]);
+    const inputs = step.dependencies.map((it) =>
+      it.convert ? it.convert(data[it.id]) : data[it.id]
+    );
 
     let nodeCommit: Record<string, any> = {};
     const doCommit = (handle: string, value: any) => {

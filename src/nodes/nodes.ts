@@ -16,6 +16,8 @@ import { mixNodeDef } from "../nodes/MixNode";
 import { positiveWaveNodeDef } from "../nodes/PositiveWave";
 import { randomNodeDef } from "../nodes/RandomNode";
 import { timerNodeDef } from "../nodes/TimerNode";
+import { clampNodeDef } from "./ClampNode";
+import { curveNodeDef } from "./CurveNode";
 import { toggleNodeDef } from "./ToggleNode";
 
 const nodeDefList: NodeDef[] = [
@@ -34,6 +36,8 @@ const nodeDefList: NodeDef[] = [
   timerNodeDef,
   buttonNodeDef,
   toggleNodeDef,
+  clampNodeDef,
+  curveNodeDef,
 ];
 
 export const nodeDefs: Record<string, NodeDef> = Object.assign(
