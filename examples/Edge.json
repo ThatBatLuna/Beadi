@@ -1,0 +1,259 @@
+{
+  "name": "Edge",
+  "nodes": [
+    {
+      "data": {},
+      "id": "1673440400488",
+      "position": {
+        "x": 1030.5523038034707,
+        "y": -46.44714734412574
+      },
+      "type": "buttplug",
+      "width": 200,
+      "height": 148
+    },
+    {
+      "data": {},
+      "id": "1673440406084",
+      "position": {
+        "x": -284.8277708634269,
+        "y": -258.2084125298395
+      },
+      "type": "wave",
+      "width": 200,
+      "height": 192
+    },
+    {
+      "data": {},
+      "id": "1673440414783",
+      "position": {
+        "x": 29.0464366892038,
+        "y": -146.27006760473657
+      },
+      "type": "add",
+      "width": 200,
+      "height": 136
+    },
+    {
+      "data": {},
+      "id": "1673440430159",
+      "position": {
+        "x": 1029.210307217208,
+        "y": 94.3675481785597
+      },
+      "type": "display",
+      "width": 200,
+      "height": 212
+    },
+    {
+      "data": {},
+      "id": "1673440454846",
+      "position": {
+        "x": 778.6421633537707,
+        "y": 73.83495638304375
+      },
+      "type": "constantValue",
+      "width": 200,
+      "height": 104
+    },
+    {
+      "data": {},
+      "id": "1673440466559",
+      "position": {
+        "x": -580.8846360514118,
+        "y": 234.78414397591914
+      },
+      "type": "button",
+      "width": 200,
+      "height": 96
+    },
+    {
+      "data": {},
+      "id": "1673440923561",
+      "position": {
+        "x": -300.4925327208638,
+        "y": 202.12813224747384
+      },
+      "type": "delay",
+      "width": 200,
+      "height": 248
+    },
+    {
+      "data": {},
+      "id": "1673441306356",
+      "position": {
+        "x": 539.1866284588081,
+        "y": 230.38613185882323
+      },
+      "type": "mix",
+      "width": 200,
+      "height": 168
+    },
+    {
+      "data": {},
+      "id": "1673441588073",
+      "position": {
+        "x": 285.453100328139,
+        "y": 385.15336522036466
+      },
+      "type": "mix",
+      "width": 200,
+      "height": 168
+    },
+    {
+      "data": {},
+      "id": "1673441614983",
+      "position": {
+        "x": 903.5441975468241,
+        "y": 530.7210842826884
+      },
+      "type": "display",
+      "width": 200,
+      "height": 212
+    },
+    {
+      "data": {},
+      "id": "1673442728040",
+      "position": {
+        "x": -581.1324630998017,
+        "y": 133.57341198631562
+      },
+      "type": "curve",
+      "width": 200,
+      "height": 91
+    }
+  ],
+  "edges": [
+    {
+      "source": "1673440406084",
+      "sourceHandle": "value",
+      "target": "1673440414783",
+      "targetHandle": "a",
+      "id": "reactflow__edge-1673440406084value-1673440414783a"
+    },
+    {
+      "source": "1673440454846",
+      "sourceHandle": "value",
+      "target": "1673440400488",
+      "targetHandle": "value",
+      "id": "reactflow__edge-1673440454846value-1673440400488value"
+    },
+    {
+      "source": "1673440454846",
+      "sourceHandle": "value",
+      "target": "1673440430159",
+      "targetHandle": "value",
+      "id": "reactflow__edge-1673440454846value-1673440430159value"
+    },
+    {
+      "source": "1673440466559",
+      "sourceHandle": "signal",
+      "target": "1673440923561",
+      "targetHandle": "signal",
+      "id": "reactflow__edge-1673440466559signal-1673440923561signal"
+    },
+    {
+      "source": "1673441306356",
+      "sourceHandle": "value",
+      "target": "1673440454846",
+      "targetHandle": "value",
+      "id": "reactflow__edge-1673441306356value-1673440454846value"
+    },
+    {
+      "source": "1673440414783",
+      "sourceHandle": "sum",
+      "target": "1673441306356",
+      "targetHandle": "b",
+      "id": "reactflow__edge-1673440414783sum-1673441306356b"
+    },
+    {
+      "source": "1673440923561",
+      "sourceHandle": "running",
+      "target": "1673441588073",
+      "targetHandle": "amount",
+      "id": "reactflow__edge-1673440923561running-1673441588073amount"
+    },
+    {
+      "source": "1673441588073",
+      "sourceHandle": "value",
+      "target": "1673441306356",
+      "targetHandle": "amount",
+      "id": "reactflow__edge-1673441588073value-1673441306356amount"
+    },
+    {
+      "source": "1673441588073",
+      "sourceHandle": "value",
+      "target": "1673441614983",
+      "targetHandle": "value",
+      "id": "reactflow__edge-1673441588073value-1673441614983value"
+    }
+  ],
+  "handles": {
+    "1673440400488__input__value": 0,
+    "1673440400488__input__enable": false,
+    "1673440406084__input__positive": true,
+    "1673440406084__input__amplitude": 0.5,
+    "1673440406084__input__frequency": 1.2,
+    "1673440406084__input__phase": 0,
+    "1673440406084__value": 0.13902833424485667,
+    "1673440414783__input__a": 0,
+    "1673440414783__input__b": 0.5,
+    "1673440414783__sum": 0.6390283342448566,
+    "1673440430159__input__value": 0,
+    "1673440430159__input__fixed": false,
+    "1673440448015__input__a": 1,
+    "1673440448015__input__b": 0,
+    "1673440448015__input__toggle": false,
+    "1673440454846__input__value": 0,
+    "1673440454846__value": 0.6390283342448566,
+    "1673440448015__value": 1,
+    "1673440466559__signal": false,
+    "1673440923561__input__delayTime": 20,
+    "1673440923561__input__delayTimeDeviation": 0.5,
+    "1673440923561__input__signal": false,
+    "1673440923561__signal": false,
+    "1673440955389__input__value": 0,
+    "1673440955389__input__save": 0,
+    "1673440923561__progress": 0,
+    "1673441262339__input__value": 0,
+    "1673441262339__input__fixed": true,
+    "1673441295026__input__curve": [
+      {
+        "x": 0,
+        "y": 0
+      },
+      {
+        "x": 0.409708251953125,
+        "y": 0
+      },
+      {
+        "x": 0.824708251953125,
+        "y": 0.048541717529296924
+      },
+      {
+        "x": 1,
+        "y": 1
+      }
+    ],
+    "1673441295026__input__value": 1,
+    "1673441306356__input__a": 0,
+    "1673441306356__input__b": 0,
+    "1673441306356__input__amount": 1,
+    "1673441295026__value": 0,
+    "1673441306356__value": 0.6390283342448566,
+    "1673440923561__running": false,
+    "1673441569041__input__a": 1,
+    "1673441569041__input__b": 0,
+    "1673441578722__input__a": 0,
+    "1673441578722__input__b": 0,
+    "1673441588073__input__a": 1,
+    "1673441588073__input__b": 0,
+    "1673441588073__input__amount": 1,
+    "1673441588073__value": 1,
+    "1673441614983__input__value": 0,
+    "1673441614983__input__fixed": true,
+    "1673441665520__input__value": 0,
+    "1673441665520__input__fixed": false,
+    "1673442728040__input__text": "Press the Button, to pause the wave for a random amount of time "
+  }
+}

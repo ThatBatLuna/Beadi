@@ -1,0 +1,66 @@
+{
+  "name": "SimpleNodes",
+  "nodes": [
+    {
+      "data": {},
+      "id": "1672318156592",
+      "position": {
+        "x": 257,
+        "y": 271
+      },
+      "type": "wave",
+      "width": 200,
+      "height": 192
+    },
+    {
+      "data": {},
+      "id": "1672318158133",
+      "position": {
+        "x": 650,
+        "y": 184
+      },
+      "type": "display",
+      "width": 200,
+      "height": 212
+    },
+    {
+      "data": {},
+      "id": "1672318165742",
+      "position": {
+        "x": 650,
+        "y": 412
+      },
+      "type": "buttplug",
+      "width": 200,
+      "height": 148
+    }
+  ],
+  "edges": [
+    {
+      "source": "1672318156592",
+      "sourceHandle": "value",
+      "target": "1672318158133",
+      "targetHandle": "value",
+      "id": "reactflow__edge-1672318156592value-1672318158133value"
+    },
+    {
+      "source": "1672318156592",
+      "sourceHandle": "value",
+      "target": "1672318165742",
+      "targetHandle": "value",
+      "id": "reactflow__edge-1672318156592value-1672318165742value"
+    }
+  ],
+  "handles": {
+    "1672318156592__input__positive": true,
+    "1672318156592__input__amplitude": 1,
+    "1672318156592__input__frequency": 1,
+    "1672318156592__input__phase": 0,
+    "1672318158133__input__value": 0,
+    "1672318158133__input__fixed": false,
+    "1672318156592__value": 0.9187640740588141,
+    "1672318165742__input__value": 0,
+    "1672318165742__input__device": null,
+    "1672318165742__input__enable": true
+  }
+}

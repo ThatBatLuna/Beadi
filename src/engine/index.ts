@@ -1,10 +1,16 @@
 import { Node, Edge } from "reactflow";
-import { nodeDefs, NodeExecutor } from "./node";
+import { nodeDefs } from "../nodes/nodes";
+import { getConversionFunction } from "./handles";
+import { NodeExecutor } from "./node";
 
 export type NodeTypeData = Pick<Node<any>, "data" | "id" | "type">;
 
+export type RecipeDependency = {
+  id: string;
+  convert?: (it: any) => any;
+};
 export type Recipe = {
-  dependencies: string[];
+  dependencies: RecipeDependency[];
   outpus: string[];
   nodeId: string;
   func: NodeExecutor;
@@ -18,6 +24,11 @@ function handleId(nodeId: string, handleId: string) {
   return `${nodeId}__${handleId}`;
 }
 
+type OutputDataEntry = {
+  id: string;
+  type: string;
+};
+
 export function buildModel(nodes: NodeTypeData[], edges: Edge<any>[]): Model {
   //Find all terminating handles
   console.log("Rebuilding Model");
@@ -28,12 +39,14 @@ export function buildModel(nodes: NodeTypeData[], edges: Edge<any>[]): Model {
   for (const node of nodes) {
     nodeDict[node.id] = node;
     let nodeType = nodeDefs[node.type!!];
-    for (const input of nodeType.inputs) {
-      if (input.terminal) {
-        terminals.push({
-          node: node.id,
-          handle: input.id,
-        });
+    if (nodeType !== undefined) {
+      for (const input of nodeType.inputs) {
+        if (input.terminal) {
+          terminals.push({
+            node: node.id,
+            handle: input.id,
+          });
+        }
       }
     }
   }
@@ -46,23 +59,32 @@ export function buildModel(nodes: NodeTypeData[], edges: Edge<any>[]): Model {
       // console.group("Resolving ", nodeId);
       const nodeType = nodeDefs[nodeDict[nodeId].type!!];
       let suppliers = edges.filter((edge) => edge.target === nodeId);
-      let outputForInput: Record<string, string> = {};
+      let outputForInput: Record<string, OutputDataEntry> = {};
       for (const edge of suppliers) {
         const supplierNode = edge.source;
-        outputForInput[edge.targetHandle || "??"] = handleId(
-          edge.source,
-          edge.sourceHandle || "??"
-        );
+
+        const supplierType = nodeDefs[
+          nodeDict[supplierNode].type!!
+        ].outputs.find((it) => it.id === edge.sourceHandle)?.type;
+
+        outputForInput[edge.targetHandle || "??"] = {
+          type: supplierType!!,
+          id: handleId(edge.source, edge.sourceHandle || "??"),
+        };
         //Resolve the supplier Node
         resolveInputHandles(supplierNode);
       }
 
       executionPlan.push({
-        dependencies: nodeType.inputs.map(
-          (inputHandle) =>
-            outputForInput[inputHandle.id] ||
-            `${nodeId}__input__${inputHandle.id}`
-        ),
+        dependencies: nodeType.inputs.map((inputHandle) => ({
+          convert: getConversionFunction(
+            outputForInput[inputHandle.id]?.type || inputHandle.type,
+            inputHandle.type
+          ),
+          id:
+            outputForInput[inputHandle.id]?.id ||
+            `${nodeId}__input__${inputHandle.id}`,
+        })),
         outpus: nodeType.outputs.map((outputHandle) =>
           handleId(nodeId, outputHandle.id)
         ),

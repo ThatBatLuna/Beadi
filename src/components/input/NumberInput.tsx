@@ -3,6 +3,7 @@ import {
   ChangeEventHandler,
   FocusEventHandler,
   FunctionComponent,
+  KeyboardEventHandler,
   PointerEventHandler,
   ReactNode,
   useCallback,
@@ -122,6 +123,12 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
     setTextEdit(false);
   };
 
+  const blurOnEnter: KeyboardEventHandler = (e) => {
+    if (e.code === "Enter") {
+      (e.target as HTMLElement).blur();
+    }
+  };
+
   const stopProp = useCallback((e: any) => {
     e.stopPropagation();
   }, []);
@@ -149,6 +156,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
           id={id}
           name={name}
           onChange={handleOnChange}
+          onKeyDown={blurOnEnter}
           value={value}
           onBlur={onBlur}
           autoFocus={true}

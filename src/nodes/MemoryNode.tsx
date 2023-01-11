@@ -20,21 +20,19 @@ export const memoryNodeDef: NodeDef = {
       default: 0.0,
     },
     {
-      id: "transparent",
-      label: "Transparent",
-      type: "number",
+      id: "save",
+      label: "Save",
+      type: "impulse",
       default: 0.0,
     },
   ],
-  executor: ([value, transparent], { commit, committed }) => {
+  executor: ([value, save], { commit, committed }) => {
     const out = committed["value"] || value;
-    const oldTransparent = committed["oldTransparent"] || transparent;
 
-    if (transparent >= 1.0 && oldTransparent < 1.0) {
+    if (save) {
       commit("value", value);
     }
 
-    commit("oldTransparent", transparent);
     return [out];
   },
 };

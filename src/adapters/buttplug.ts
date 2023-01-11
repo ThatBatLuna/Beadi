@@ -52,7 +52,7 @@ export function makeClient(
   }
   console.log("Created new Client ", config);
   let client: ButtplugClient = new instance.ButtplugClient(
-    `Beady Client '${config.name}'`
+    `Beadi Client '${config.name}'`
   );
 
   const actions: ButtplugClientActions = {

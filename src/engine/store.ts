@@ -8,12 +8,16 @@ import {
   OnConnect,
   OnEdgesChange,
   OnNodesChange,
+  XYPosition,
 } from "reactflow";
 import create from "zustand";
 import { persist } from "zustand/middleware";
-import { nodeDefs } from "./node";
+import { nodeDefs } from "../nodes/nodes";
 
-type AddNode = (type: string) => void;
+type NodeId = string;
+
+type AddNode = (type: string, pos: XYPosition) => NodeId;
+type AddEdge = (edge: Edge) => void;
 
 export interface DisplayStore {
   nodes: Node[];
@@ -24,9 +28,26 @@ export interface DisplayStore {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addNode: AddNode;
+  addEdge: AddEdge;
+  reset: () => void;
+  overwrite: (
+    nodes: Node[],
+    edges: Edge[],
+    handles: Record<string, any>
+  ) => void;
 }
 
-const initialNodes: Node<any>[] = [];
+const initialNodes: Node<any>[] = [
+  {
+    id: "welcome",
+    type: "welcome",
+    position: {
+      x: 0,
+      y: 0,
+    },
+    data: {},
+  },
+];
 const initialEdges: Edge<any>[] = [];
 
 export const useDisplayStore = create<DisplayStore>()(
@@ -34,6 +55,13 @@ export const useDisplayStore = create<DisplayStore>()(
     nodes: initialNodes,
     edges: initialEdges,
     handles: {},
+    overwrite: (nodes, edges, handles) => {
+      set(() => ({
+        nodes,
+        edges,
+        handles,
+      }));
+    },
     setHandle: (nodeId, handleId, data) =>
       set((state) => ({
         handles: {
@@ -59,7 +87,19 @@ export const useDisplayStore = create<DisplayStore>()(
       set({ nodes: applyNodeChanges(changes, get().nodes) }),
     onEdgesChange: (changes) =>
       set({ edges: applyEdgeChanges(changes, get().edges) }),
-    addNode: (type) => {
+    addEdge: (edge) => {
+      set({
+        edges: addEdge(edge, get().edges),
+      });
+    },
+    reset: () => {
+      set(() => ({
+        nodes: initialNodes,
+        edges: initialEdges,
+        handles: [],
+      }));
+    },
+    addNode: (type, pos) => {
       const id = "" + Date.now();
       nodeDefs[type].inputs.forEach((input) => {
         get().setHandle(id, `input__${input.id}`, input.default);
@@ -70,23 +110,47 @@ export const useDisplayStore = create<DisplayStore>()(
             data: {},
             id: id,
             position: {
-              x: 0,
-              y: 0,
+              x: pos.x,
+              y: pos.y,
             },
             type: type,
           },
         ]),
       });
+      return id;
     },
   }))
 );
 
 export interface DataStore {
   committed: Record<string, Record<string, any>>;
+  ephermal: Record<string, Record<string, any>>;
   commitData: (data: Record<string, Record<string, any>>) => void;
+  pushEphermalData: (nodeId: string, handleId: string, data: any) => void;
+  popEphermalData: () => Record<string, Record<string, any>>;
 }
 export const useDataStore = create<DataStore>()((set, get) => ({
   committed: {},
+  ephermal: {},
+  popEphermalData: () => {
+    const values = get().ephermal;
+    set(() => ({ ephermal: {} }));
+    return values;
+  },
+  pushEphermalData: (nodeId, handleId, data) => {
+    set((state) => {
+      const newState = {
+        ephermal: {
+          ...state.ephermal,
+          [nodeId]: {
+            ...state.ephermal[nodeId],
+            [handleId]: data,
+          },
+        },
+      };
+      return newState;
+    });
+  },
   commitData: (data) => {
     set((state) => {
       const newState = {
@@ -139,4 +203,14 @@ export function useCommittedData<T>(nodeId: string, handleId: string): T {
     return state.committed[nodeId]?.[handleId];
   });
   return value as T;
+}
+export function usePushEphermalData<T>(nodeId: string, handleId: string) {
+  const push = useDataStore((state) => state.pushEphermalData);
+
+  return useCallback(
+    (data: T) => {
+      push(nodeId, handleId, data);
+    },
+    [push, nodeId, handleId]
+  );
 }

@@ -1,10 +1,11 @@
 import { NodeDef } from "../engine/node";
 import { categories } from "./category";
 
-export const mixNodeDef: NodeDef = {
-  label: "Mix",
+export const clampNodeDef: NodeDef = {
+  label: "Clamp",
   category: categories["math"],
-  type: "mix",
+  type: "clamp",
+  // component: WaveNode,
   outputs: [
     {
       id: "value",
@@ -14,27 +15,25 @@ export const mixNodeDef: NodeDef = {
   ],
   inputs: [
     {
-      id: "a",
-      label: "Value 0",
-      type: "number",
-      default: 0.0,
-    },
-    {
-      id: "b",
-      label: "Value 1",
-      type: "number",
-      default: 0.0,
-    },
-    {
-      id: "amount",
-      label: "Amount",
+      id: "max",
+      label: "Max",
       type: "number",
       default: 1.0,
-      min: 0.0,
-      max: 1.0,
+    },
+    {
+      id: "min",
+      label: "Min",
+      type: "number",
+      default: 0.0,
+    },
+    {
+      id: "value",
+      label: "Value",
+      type: "number",
+      default: 0.0,
     },
   ],
-  executor: ([a, b, amount]) => {
-    return [b * amount + a * (1 - amount)];
+  executor: ([max, min, value]) => {
+    return [Math.min(max, Math.max(min, value))];
   },
 };

@@ -1,10 +1,30 @@
-import { NodeDef } from "../engine/node";
+import { FunctionComponent } from "react";
+import { NodeDef, NodeHeaderProps } from "../engine/node";
+import { useInputHandleData } from "../engine/store";
 import { categories } from "./category";
 
+const PositiveWaveNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
+  const [positive, setPositive] = useInputHandleData<boolean>(id, "positive");
+
+  return (
+    <div className="px-2">
+      <label>
+        <input
+          type="checkbox"
+          checked={positive}
+          onChange={(e) => setPositive(e.target.checked)}
+        />
+        <span className="pl-2">Positive Only</span>
+      </label>
+    </div>
+  );
+};
+
 export const positiveWaveNodeDef: NodeDef = {
-  label: "Wave Generator (Positive)",
+  label: "Wave Generator",
   category: categories["generators"],
-  type: "wavepositive",
+  type: "wave",
+  header: PositiveWaveNode,
   // component: WaveNode,
   outputs: [
     {
@@ -15,12 +35,20 @@ export const positiveWaveNodeDef: NodeDef = {
   ],
   inputs: [
     {
+      id: "positive",
+      label: "Positive",
+      type: "boolean",
+      default: true,
+      hidden: true,
+    },
+    {
       id: "amplitude",
       label: "Height",
       type: "number",
       default: 1.0,
       min: 0.0,
     },
+
     {
       id: "frequency",
       label: "Frequency",
@@ -28,8 +56,19 @@ export const positiveWaveNodeDef: NodeDef = {
       default: 1.0,
       min: 0.0,
     },
+    {
+      id: "phase",
+      label: "Phase Shift",
+      type: "number",
+      default: 0.0,
+      min: 0.0,
+      max: Math.PI * 2,
+    },
   ],
-  executor: ([amplitude, frequency], { commit, committed }) => {
+  executor: (
+    [positive, amplitude, frequency, phaseShift],
+    { commit, committed }
+  ) => {
     const seconds = Date.now() / 1000;
     const committedFreq = committed["frequency"];
     let offset = committed["offset"] || 0;
@@ -54,9 +93,12 @@ export const positiveWaveNodeDef: NodeDef = {
       offset = newOffset;
     }
 
-    return [
-      (Math.sin(phase * frequency + offset) * amplitude) / 2.0 +
-        amplitude / 2.0,
-    ];
+    const sine = Math.sin(phase * frequency + offset + phaseShift) * amplitude;
+
+    if (positive) {
+      return [sine / 2.0 + amplitude / 2.0];
+    } else {
+      return [sine];
+    }
   },
 };

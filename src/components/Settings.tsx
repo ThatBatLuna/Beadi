@@ -6,8 +6,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { BsFillPlugFill } from "react-icons/bs";
+import { BsChevronBarRight, BsFile, BsFillPlugFill } from "react-icons/bs";
 import { ButtplugSettings } from "./settings/ButtplugSettings";
+import { FileSettings } from "./settings/FileSettings";
 
 type Tab = {
   name: string;
@@ -22,6 +23,12 @@ const tabs: Record<string, Tab> = {
     label: "Buttplug",
     icon: <BsFillPlugFill className="w-full h-full"></BsFillPlugFill>,
     tab: ButtplugSettings,
+  },
+  file: {
+    name: "file",
+    label: "File",
+    icon: <BsFile className="w-full h-full"></BsFile>,
+    tab: FileSettings,
   },
 };
 
@@ -38,16 +45,30 @@ export const Settings: FunctionComponent<{}> = () => {
 
   return (
     <div className="flex flex-row shadow-sm bg-primary-1100">
-      <ul className="flex flex-col text-white">
+      <ul className="flex flex-col gap-1 text-white">
         {Object.entries(tabs).map(([key, value]) => (
           <li
             key={key}
             onClick={() => setTab(key)}
-            className="w-10 h-10 p-2 rounded-l-md bg-primary-900"
+            className={clsx(
+              "w-10 h-10 p-2 rounded-l-md cursor-pointer",
+              tab === key ? "bg-primary-900" : "bg-primary-1000"
+            )}
           >
             {value.icon}
           </li>
         ))}
+        <li
+          className={clsx(
+            "w-10 h-10 p-2 mt-auto cursor-pointer transition-all",
+            {
+              "opacity-0": tab === null,
+            }
+          )}
+          onClick={() => setTab(null)}
+        >
+          <BsChevronBarRight className="w-full h-full"></BsChevronBarRight>
+        </li>
       </ul>
       <div
         className={clsx("transition-all flex flex-col bg-primary-900", {

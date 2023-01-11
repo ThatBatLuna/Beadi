@@ -18,6 +18,7 @@ export const Engine: FunctionComponent<EngineProps> = ({ nodes, edges }) => {
   const data = useDisplayStore((store) => store.handles);
   const commit = useDataStore((store) => store.commitData);
   const committedData = useDataStore((store) => store.committed, _.isEqual);
+  const popEphermalData = useDataStore((store) => store.popEphermalData);
 
   const nodeTypeDataI = useMemo(() => {
     return nodes.map((it) => ({ type: it.type, id: it.id, data: undefined }));
@@ -37,8 +38,10 @@ export const Engine: FunctionComponent<EngineProps> = ({ nodes, edges }) => {
       // const delta = Date.now() - last;
       // last = Date.now();
       // console.log(1000 / delta);
+      //
+      const ephermal = popEphermalData();
 
-      const result = evaluate(model, data, committedData);
+      const result = evaluate(model, data, committedData, ephermal);
       commit(result.toCommit);
 
       timeout = setTimeout(() => update(), timestep) as any;
@@ -51,6 +54,6 @@ export const Engine: FunctionComponent<EngineProps> = ({ nodes, edges }) => {
         clearTimeout(timeout);
       }
     };
-  }, [model, data, commit, committedData]);
+  }, [model, data, commit, committedData, popEphermalData]);
   return <></>;
 };

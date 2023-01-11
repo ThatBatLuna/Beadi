@@ -11,6 +11,8 @@ import { Button } from "../input/Button";
 import { TextInput } from "../input/TextInput";
 import { HiStatusOffline, HiStatusOnline } from "react-icons/hi";
 import clsx from "clsx";
+import { Typo } from "../Typo";
+import { BsFillTrashFill } from "react-icons/bs";
 
 type AddButtplugClientFormProps = {
   onAdd: (config: ButtplugClientConfig) => void;
@@ -75,7 +77,7 @@ const ButtplugSettingsInner: FunctionComponent<{
 
   return (
     <div className="flex flex-col w-full gap-2 p-2">
-      <h1 className="text-lg font-bold text-white">Servers</h1>
+      <Typo className="text-lg font-bold text-white">Servers</Typo>
       <ul className="w-full my-2 overflow-hidden overflow-x-hidden rounded-md">
         {Object.values(clients).map((it) => (
           <li
@@ -92,7 +94,11 @@ const ButtplugSettingsInner: FunctionComponent<{
               ) : (
                 <HiStatusOffline className="w-6 h-6"></HiStatusOffline>
               )}
-              <Button onClick={() => deleteClient(it.config.id)}>Del</Button>
+              <Button
+                className="mx-2"
+                onClick={() => deleteClient(it.config.id)}
+                icon={<BsFillTrashFill></BsFillTrashFill>}
+              ></Button>
             </div>
             <ul
               className={clsx("bg-primary-900 rounded-md p-2", {
@@ -103,6 +109,9 @@ const ButtplugSettingsInner: FunctionComponent<{
                 <li key={i}>{it}</li>
               ))}
             </ul>
+            {it.state.error && (
+              <p className="text-sm text-red-400">{it.state.error}</p>
+            )}
             {it.state.connected ? (
               <Button onClick={it.actions.disconnect}>Disconnect</Button>
             ) : (
@@ -117,7 +126,7 @@ const ButtplugSettingsInner: FunctionComponent<{
         ))}
       </ul>
 
-      <h1 className="text-lg font-bold text-white">Add Server</h1>
+      <Typo className="text-lg font-bold text-white">Add Server</Typo>
 
       <AddButtplugClientForm onAdd={addClient}></AddButtplugClientForm>
       <Button onClick={connectEmbedded} disabled={!bluetooth}>

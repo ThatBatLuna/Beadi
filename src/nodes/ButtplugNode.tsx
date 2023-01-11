@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { FunctionComponent, useEffect, useMemo } from "react";
 import { useButtplugStore } from "../adapters/store";
+import { Checkbox } from "../components/input/Checkbox";
 import { Select } from "../components/input/Select";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData, useInputHandleData } from "../engine/store";
@@ -16,6 +17,7 @@ type DeviceSelection = {
 
 const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const value = useCommittedData<number>(id, "value");
+  const [enabled, setEnabled] = useInputHandleData<boolean>(id, "enable");
 
   const [deviceH, setDevice] = useInputHandleData<DeviceSelection | null>(
     id,
@@ -25,14 +27,30 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
 
   const instance = useButtplugStore((store) => store.instance);
   const clients = useButtplugStore((store) => store.clients);
-  const deviceHandle = useButtplugStore((store) =>
-    device === null
-      ? null
-      : store.clients[device.client]?.devices[device.device] || null
-  );
-  const connected = useButtplugStore((store) =>
-    device === null ? false : store.clients[device.client]?.state.connected
-  );
+  const deviceHandle = useButtplugStore((store) => {
+    if (device === null) {
+      return null;
+    } else {
+      const handle =
+        store.clients[device.client]?.devices[device.device] || null;
+      if (handle === null) {
+        return null;
+      }
+      return handle;
+    }
+  });
+  const connected = useButtplugStore((store) => {
+    if (device !== null) {
+      if (store.clients[device.client]?.state.connected) {
+        if (
+          store.clients[device.client]?.devices[device.device] !== undefined
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
 
   const allDevices: DeviceSelection[] = useMemo(() => {
     const single = Object.values(clients).length === 1;
@@ -83,7 +101,7 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   useEffect(() => {
     if (connected && deviceHandle !== null && device !== null) {
       let actualValue = Math.max(0, Math.min(value));
-      if (isNaN(actualValue)) {
+      if (isNaN(actualValue) || !enabled) {
         actualValue = 0.0;
       }
       if (device.deviceType === "vibrate") {
@@ -106,17 +124,24 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
         );
       }
     }
-  }, [value, device, deviceHandle, connected, instance]);
+  }, [value, device, deviceHandle, connected, instance, enabled]);
 
   return (
-    <div className="flex flex-col px-4">
+    <div className="flex flex-col gap-1 px-4">
+      <Checkbox
+        checked={enabled}
+        onChange={setEnabled}
+        label="Enabled"
+      ></Checkbox>
       <Select
         options={allDevices}
         onSelect={setDevice}
         renderOption={(it) => it.label}
         selected={device}
       ></Select>
-      {!connected && <span>{device?.label} Disconnected</span>}
+      {!connected && (
+        <span className="text-sm">{device?.label} Disconnected</span>
+      )}
     </div>
   );
 };
@@ -142,6 +167,13 @@ export const buttplugNodeDef: NodeDef = {
       label: "Device",
       type: "object",
       default: null,
+      hidden: true,
+    },
+    {
+      id: "enable",
+      label: "Enable",
+      type: "boolean",
+      default: true,
       hidden: true,
     },
   ],

@@ -8,3 +8,9 @@ body,
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  .markdown h1 {
+    @apply text-xl mt-2 mb-1;
+  }
+}

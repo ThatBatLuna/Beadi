@@ -1,10 +1,16 @@
-import { FunctionComponent, ReactNode } from "react";
-import { Handle, Position } from "reactflow";
+import { FunctionComponent, ReactNode, useCallback } from "react";
+import { Connection, Handle, Position } from "reactflow";
 import clsx from "clsx";
+import { useDisplayStore } from "../../engine/store";
+import { handleConversions, handlesCompatible } from "../../engine/handles";
+import { NodeHandleDisplay } from "./NodeHandle";
+import { nodeDefs } from "../../nodes/nodes";
+import _ from "lodash";
 
 type NodeHandleLineProps = {
   input?: ReactNode;
-  type: "input" | "output";
+  kind: "input" | "output";
+  type: string;
   label: string;
   connected?: boolean;
   id: string;
@@ -12,25 +18,54 @@ type NodeHandleLineProps = {
 
 const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
   input,
+  kind,
   type,
   label,
   id,
   connected,
 }) => {
+  const nodes = useDisplayStore((store) => store.nodes);
+
+  const isValidConnection = useCallback(
+    (connection: Connection) => {
+      const targetType = nodes.find((it) => it.id === connection.target)?.type;
+      const sourceType = nodes.find((it) => it.id === connection.source)?.type;
+      console.log(connection, targetType, sourceType, nodes);
+      if (targetType !== undefined && sourceType !== undefined) {
+        return (
+          connection.source !== connection.target &&
+          handlesCompatible(
+            nodeDefs[sourceType].outputs.find(
+              (output) => output.id === connection.sourceHandle
+            )?.type || "",
+            nodeDefs[targetType].inputs.find(
+              (input) => input.id === connection.targetHandle
+            )?.type || ""
+          )
+        );
+      }
+      return false;
+    },
+    [nodes]
+  );
+
   return (
     <div className="flex flex-row items-center mt-2">
-      {type === "input" && (
+      {kind === "input" && (
         <Handle
           type="target"
           id={id}
+          isValidConnection={isValidConnection}
           position={Position.Left}
-          className="!static !translate-y-0 !w-3 !h-3 !-ml-1.5"
-        ></Handle>
+          className="!static !translate-y-0 !w-fit !h-fit !-ml-1.5 !bg-transparent !border-none"
+        >
+          <NodeHandleDisplay type={type}></NodeHandleDisplay>
+        </Handle>
       )}
       <div
         className={clsx("grow", {
-          "mr-1.5 ml-3": type === "output",
-          "mr-3 ml-1.5": type === "input",
+          "mr-1.5 ml-3": kind === "output",
+          "mr-3 ml-1.5": kind === "input",
         })}
       >
         {input && connected !== true ? (
@@ -38,8 +73,8 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
         ) : (
           <span
             className={clsx("block px-2", {
-              "text-start": type === "input",
-              "text-end": type === "output",
+              "text-start": kind === "input",
+              "text-end": kind === "output",
             })}
           >
             {label}
@@ -47,13 +82,16 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
         )}
       </div>
 
-      {type === "output" && (
+      {kind === "output" && (
         <Handle
           type="source"
           id={id}
           position={Position.Right}
-          className="!static !translate-y-0 !w-3 !h-3 !-mr-1.5"
-        ></Handle>
+          isValidConnection={isValidConnection}
+          className="!static !translate-y-0 !-mr-1.5 !w-fit !h-fit !bg-transparent !border-none"
+        >
+          <NodeHandleDisplay type={type}></NodeHandleDisplay>
+        </Handle>
       )}
     </div>
   );

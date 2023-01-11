@@ -1,27 +1,58 @@
-import { FunctionComponent, useMemo } from "react";
+import { ComponentType, FunctionComponent, useMemo } from "react";
 import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
-import { NodeDef } from "../../engine/node";
+import { InputHandleDef, NodeDef } from "../../engine/node";
 import { useInputHandleData } from "../../engine/store";
+type HandleInputProps = {
+  input: InputHandleDef;
+  nodeId: string;
+};
+const NumberHandleInput: FunctionComponent<HandleInputProps> = ({
+  nodeId,
+  input,
+}) => {
+  const [value, setValue] = useInputHandleData<any>(nodeId, input.id);
 
-export function makeNodeRenderer(
-  def: NodeDef
-): FunctionComponent<NodeProps<any>> {
+  return (
+    <NumberInput
+      id={input.id}
+      name={input.id}
+      label={input.label}
+      min={input.min}
+      max={input.max}
+      value={value}
+      onChange={(e) => setValue(e.value)}
+    ></NumberInput>
+  );
+};
+const inputs: Record<string, FunctionComponent<HandleInputProps>> = {
+  number: NumberHandleInput,
+};
+type HandleInputCProps = {
+  type: string;
+  input: InputHandleDef;
+  nodeId: string;
+};
+function getHandleInput({ type, input, nodeId }: HandleInputCProps) {
+  const Component = inputs[type];
+  if (Component !== undefined) {
+    return <Component input={input} nodeId={nodeId}></Component>;
+  }
+  return undefined;
+}
+
+export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
   const HeaderComponent = def.header;
   const inputs = def.inputs.filter((it) => it.hidden !== true);
 
+  if (def.nodeComponent) {
+    return def.nodeComponent;
+  }
+
   return ({ id, data }) => {
     const edges = useEdges();
-
-    const store = inputs.map((input) => {
-      const [value, setValue] = useInputHandleData<any>(id, input.id);
-      return {
-        value,
-        setValue,
-      };
-    });
 
     const connections = useMemo(() => {
       return inputs.map(
@@ -40,28 +71,24 @@ export function makeNodeRenderer(
         {inputs.map((input, index) => (
           <NodeHandleLine
             key={input.id}
-            type="input"
+            kind="input"
+            type={input.type}
             label={input.label}
             id={input.id}
             connected={connections[index]}
-            input={
-              <NumberInput
-                id={input.id}
-                name={input.id}
-                label={input.label}
-                min={input.min}
-                max={input.max}
-                value={store[index].value}
-                onChange={(e) => store[index].setValue(e.value)}
-              ></NumberInput>
-            }
+            input={getHandleInput({
+              type: input.type,
+              input: input,
+              nodeId: id,
+            })}
           ></NodeHandleLine>
         ))}
         {def.outputs.map((output) => (
           <NodeHandleLine
             key={output.id}
             id={output.id}
-            type="output"
+            kind="output"
+            type={output.type}
             label={output.label}
           ></NodeHandleLine>
         ))}
