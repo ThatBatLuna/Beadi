@@ -1,9 +1,7 @@
 import _ from "lodash";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { useDisplayStore } from "../engine/store";
+import { FunctionComponent, useMemo } from "react";
 import { nodeDefs } from "../nodes/nodes";
 import { Entry } from "./drawer/Entry";
-import { Typo } from "./Typo";
 
 const Drawer: FunctionComponent<{}> = (a) => {
   const nodes = useMemo(() => {

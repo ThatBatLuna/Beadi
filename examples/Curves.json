@@ -259,13 +259,6 @@
     "1672344554117__input__frequency": 1,
     "1672344554117__input__phase": 0,
     "1672344560166__input__value": 0,
-    "1672344560166__input__device": {
-      "deviceType": "vibrate",
-      "index": 0,
-      "client": "localhost:12345",
-      "device": 1,
-      "label": "Lovense Domi - Vibrator 0"
-    },
     "1672344560166__input__enable": true,
     "1672344565407__input__value": 0.29,
     "1672344568149__input__value": 0,
@@ -432,13 +425,6 @@
     "1672346616481__input__value": 1,
     "1672346616481__value": 0.3673976596197484,
     "1672346744090__input__value": 0,
-    "1672346744090__input__device": {
-      "deviceType": "vibrate",
-      "index": 0,
-      "client": "localhost:12345",
-      "device": 0,
-      "label": "Lovense Gravity - Vibrator 0"
-    },
     "1672346744090__input__enable": true,
     "1672348536479__input__curve": [
       {
@@ -540,13 +526,6 @@
     "1672349881699__input__value": 1,
     "1672349881699__value": 0.9202625172302654,
     "1672350014820__input__value": 0,
-    "1672350014820__input__device": {
-      "deviceType": "vibrate",
-      "index": 0,
-      "client": "localhost:12345",
-      "device": 0,
-      "label": "Lovense Gravity - Vibrator 0"
-    },
     "1672350014820__input__enable": false,
     "1672351033354__input__positive": true,
     "1672351033354__input__amplitude": 0,

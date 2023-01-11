@@ -15,13 +15,13 @@ export const toggleNodeDef: NodeDef = {
   inputs: [
     {
       id: "a",
-      label: "Value",
+      label: "Off Value",
       type: "number",
       default: 0.0,
     },
     {
       id: "b",
-      label: "Value",
+      label: "On Value",
       type: "number",
       default: 0.0,
     },
@@ -31,12 +31,30 @@ export const toggleNodeDef: NodeDef = {
       type: "impulse",
       default: false,
     },
+    {
+      id: "on",
+      label: "On",
+      type: "impulse",
+      default: false,
+    },
+    {
+      id: "off",
+      label: "Off",
+      type: "impulse",
+      default: false,
+    },
   ],
-  executor: ([a, b, toggle], { commit, committed }) => {
+  executor: ([a, b, toggle, on, off], { commit, committed }) => {
     const out = committed["switch"] || false;
 
     if (toggle) {
       commit("switch", !out);
+    }
+    if (on) {
+      commit("switch", true);
+    }
+    if (off) {
+      commit("switch", false);
     }
 
     return [out ? b : a];

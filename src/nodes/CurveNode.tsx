@@ -217,7 +217,11 @@ export const curveNodeDef: NodeDef = {
     }
 
     let amount = (value - a.x) / (b.x - a.x);
+    if (b.x - a.x === 0) {
+      amount = 0;
+    }
 
-    return [a.y + (b.y - a.y) * amount];
+    let out = a.y + (b.y - a.y) * amount;
+    return [out];
   },
 };

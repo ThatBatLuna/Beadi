@@ -29,6 +29,7 @@ import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
 import { nodeDefs } from "../nodes/nodes";
+import { CommentNode } from "../nodes/CommentNode";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;

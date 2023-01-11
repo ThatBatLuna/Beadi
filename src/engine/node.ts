@@ -1,4 +1,5 @@
 import { ComponentType } from "react";
+import { NodeProps } from "reactflow";
 
 export type Category = {
   label: string;
@@ -31,6 +32,7 @@ export type NodeExecutor = (input: any[], props: NodeExecutorProps) => any[];
 export type NodeHeaderProps = { id: string; data: any };
 
 export type NodeDef = {
+  nodeComponent?: ComponentType<NodeProps>;
   label: string;
   category: Category;
   type: string;

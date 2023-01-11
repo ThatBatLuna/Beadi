@@ -1,4 +1,4 @@
-import { FunctionComponent, useMemo } from "react";
+import { ComponentType, FunctionComponent, useMemo } from "react";
 import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
@@ -43,11 +43,13 @@ function getHandleInput({ type, input, nodeId }: HandleInputCProps) {
   return undefined;
 }
 
-export function makeNodeRenderer(
-  def: NodeDef
-): FunctionComponent<NodeProps<any>> {
+export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
   const HeaderComponent = def.header;
   const inputs = def.inputs.filter((it) => it.hidden !== true);
+
+  if (def.nodeComponent) {
+    return def.nodeComponent;
+  }
 
   return ({ id, data }) => {
     const edges = useEdges();
