@@ -8,7 +8,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { createSemanticDiagnosticsBuilderProgram } from "typescript";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData, useInputHandleData } from "../engine/store";
 import { categories } from "./category";

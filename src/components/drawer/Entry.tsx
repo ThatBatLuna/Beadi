@@ -6,7 +6,8 @@ type EntryProps = {
   nodeDef: NodeDef;
 };
 export const Entry: FunctionComponent<EntryProps> = ({ nodeDef }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
+  //eslint-disable-next-line
+  const [_, drag] = useDrag(() => ({
     type: "Node",
     item: { type: nodeDef.type },
     collect: (monitor) => ({

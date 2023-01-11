@@ -3,8 +3,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useReducer,
-  useRef,
   useState,
 } from "react";
 import { Button } from "../input/Button";
@@ -18,7 +16,6 @@ import { IDBPDatabase, openDB } from "idb";
 import create from "zustand";
 import { Edge, Node } from "reactflow";
 import clsx from "clsx";
-import { Buttplug } from "buttplug/dist/module/buttplug_ffi";
 
 export function getNewFileName(): string {
   const time = DateTime.now().toFormat("yyyy-LL-dd-HH-mm");

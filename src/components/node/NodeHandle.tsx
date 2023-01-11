@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-const ImpulseHandle: FunctionComponent<{}> = ({}) => {
+const ImpulseHandle: FunctionComponent<{}> = () => {
   return (
     <svg
       viewBox="0 0 18 12"
@@ -13,13 +13,13 @@ const ImpulseHandle: FunctionComponent<{}> = ({}) => {
   );
 };
 
-const NumberHandle: FunctionComponent<{}> = ({}) => {
+const NumberHandle: FunctionComponent<{}> = () => {
   return (
     <div className="w-3 h-3 border border-black rounded-full pointer-events-none bg-primary-500"></div>
   );
 };
 
-const BooleanHandle: FunctionComponent<{}> = ({}) => {
+const BooleanHandle: FunctionComponent<{}> = () => {
   return (
     <div className="w-3 h-3 bg-red-700 border border-black rounded-full pointer-events-none"></div>
   );
