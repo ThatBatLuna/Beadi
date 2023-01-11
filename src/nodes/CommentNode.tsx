@@ -10,7 +10,7 @@ export const CommentNode: FunctionComponent<NodeProps> = ({ id }) => {
 
   const className = "bg-transparent outline-none w-full h-full";
   return (
-    <div className="bg-black/50 min-w-[200px] min-h-[4em] p-2 rounded-md border-primary-700 border-2">
+    <div className="bg-black/50 w-[200px] min-h-[4em] p-2 rounded-md border-primary-700 border-2">
       {editing ? (
         <textarea
           className={className}
