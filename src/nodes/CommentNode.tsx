@@ -35,7 +35,7 @@ export const commentNodeDef: NodeDef = {
   nodeComponent: CommentNode,
   label: "Comment",
   category: categories["extra"],
-  type: "curve",
+  type: "comment",
   outputs: [],
   inputs: [],
   executor: () => [],
