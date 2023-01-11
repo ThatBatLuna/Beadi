@@ -26,7 +26,7 @@ function importAll(r: any) {
 }
 importAll((require as any).context("../../examples", false, /\.json$/));
 
-export const WelcomeNode: FunctionComponent<NodeProps> = ({}) => {
+export const WelcomeNode: FunctionComponent<NodeProps> = () => {
   const overwriteStore = useDisplayStore((it) => it.overwrite);
 
   const [changelog, setChangelog] = useState("");

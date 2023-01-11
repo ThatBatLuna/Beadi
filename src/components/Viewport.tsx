@@ -11,7 +11,6 @@ import ReactFlow, {
   Controls,
   Background,
   NodeTypes,
-  useViewport,
   ReactFlowProvider,
   useReactFlow,
   OnConnectEnd,
@@ -29,7 +28,6 @@ import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
 import { nodeDefs } from "../nodes/nodes";
-import { CommentNode } from "../nodes/CommentNode";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -57,6 +55,7 @@ const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({
 }) => {
   const { project } = useReactFlow();
 
+  //eslint-disable-next-line
   const [_, drop] = useDrop(
     () => ({
       accept: "Node",
