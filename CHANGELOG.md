@@ -1,3 +1,7 @@
+# Version 0.2a
+
+Quick fix to allow build and install under NodeJs 18.13.0 and npm 9.3.1
+
 # Version 0.2
 
 To make beadi a bit more accessible to new users, there is now a welcome message, which should present an easy starting point.
