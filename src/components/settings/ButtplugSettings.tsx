@@ -74,6 +74,7 @@ const ButtplugSettingsInner: FunctionComponent<{
   const bluetooth = useMemo(() => {
     return (navigator as any).bluetooth !== undefined;
   }, []);
+  console.log("NAVI", bluetooth, (navigator as any).bluetooth);
 
   return (
     <div className="flex flex-col w-full gap-2 p-2">
@@ -135,12 +136,13 @@ const ButtplugSettingsInner: FunctionComponent<{
       {!bluetooth && (
         <span className="text-slate-500">
           Embedded Servers / Direction Connection requires the Bluetooth browser
-          api (available in Chrome). You can still connect to remote servers
+          api (available e.g in Chrome). You can still connect to remote servers
           (e.g{" "}
           <a className="underline" href="https://intiface.com/central/">
             Intiface
           </a>
-          )
+          ) on other Browsers. If you are already on Chrome - check if you
+          computer/phone's bluetooth is enabled.
         </span>
       )}
     </div>

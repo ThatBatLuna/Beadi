@@ -21,6 +21,7 @@ export const Typo: FunctionComponent<TypoProps> = ({
     <El
       className={clsx(
         {
+          "font-bold text-3xl": variant === "h0",
           "font-bold text-2xl": variant === "h1",
           "font-bold text-xl": variant === "h2",
         },

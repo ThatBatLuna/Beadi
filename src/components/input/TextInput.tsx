@@ -16,9 +16,9 @@ export const TextInput: FunctionComponent<TextInputProps> = ({
   const [editing, setEditing] = useState(false);
 
   return (
-    <div className="flex flex-row h-6 px-4 text-white rounded-md bg-primary-600 hover:bg-primary-500 hover:focus-within:bg-primary-1100 focus-within:bg-primary-1100">
+    <div className="flex flex-row h-12 px-4 text-white rounded-md md:h-6 bg-primary-600 hover:bg-primary-500 hover:focus-within:bg-primary-1100 focus-within:bg-primary-1100">
       {!editing && (
-        <label htmlFor={id} className="block grow">
+        <label htmlFor={id} className="block my-auto grow">
           {label}
         </label>
       )}

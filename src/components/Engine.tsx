@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Edge, Node } from "reactflow";
+import shallow from "zustand/shallow";
 import { buildModel } from "../engine";
 import { evaluate } from "../engine/evaluate";
 import { useDataStore, useDisplayStore } from "../engine/store";
@@ -8,11 +9,12 @@ import { useDeepDebounced } from "../hooks/useDeepDebounced";
 
 const timestep = 1000 / 60;
 
-type EngineProps = {
-  nodes: Node<any>[];
-  edges: Edge<any>[];
-};
-export const Engine: FunctionComponent<EngineProps> = ({ nodes, edges }) => {
+type EngineProps = {};
+export const Engine: FunctionComponent<EngineProps> = () => {
+  const { nodes, edges } = useDisplayStore(
+    (store) => ({ nodes: store.nodes, edges: store.edges }),
+    shallow
+  );
   const [model, setModel] = useState<any>(null);
 
   const data = useDisplayStore((store) => store.handles);

@@ -18,10 +18,11 @@ const ButtonNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   );
 };
 
+export const BUTTON_NODE_TYPE = "button";
 export const buttonNodeDef: NodeDef = {
   label: "Button",
   category: categories["control"],
-  type: "button",
+  type: BUTTON_NODE_TYPE,
   header: ButtonNode,
   inputs: [],
   outputs: [

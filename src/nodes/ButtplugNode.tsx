@@ -5,6 +5,7 @@ import { Checkbox } from "../components/input/Checkbox";
 import { Select } from "../components/input/Select";
 import { NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData, useInputHandleData } from "../engine/store";
+import { BUTTON_NODE_TYPE } from "./ButtonNode";
 import { categories } from "./category";
 
 type DeviceSelection = {
@@ -15,7 +16,9 @@ type DeviceSelection = {
   index: number;
 };
 
-const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
+export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
+  id,
+}) => {
   const value = useCommittedData<number>(id, "value");
   const [enabled, setEnabled] = useInputHandleData<boolean>(id, "enable");
 
@@ -146,11 +149,13 @@ const ButtplugNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   );
 };
 
+export const BUTTPLUG_NODE_TYPE = "buttplug";
+
 export const buttplugNodeDef: NodeDef = {
   label: "Buttplug",
   category: categories["display"],
-  type: "buttplug",
-  header: ButtplugNode,
+  type: BUTTPLUG_NODE_TYPE,
+  header: ButtplugNodeInterface,
   outputs: [],
   inputs: [
     {

@@ -236,7 +236,6 @@ const Viewport: FunctionComponent<{
         <Controls></Controls>
         <Background className="bg-primary-1100"></Background>
       </ReactFlow>
-      <Engine edges={edges} nodes={nodes}></Engine>
       {nodeDropdownData && (
         <NewNodeDropdown
           data={nodeDropdownData}
