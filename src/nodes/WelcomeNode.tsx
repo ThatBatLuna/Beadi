@@ -1,9 +1,8 @@
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { NodeProps } from "reactflow";
 import NodeShell from "../components/node/NodeShell";
 import { Typo } from "../components/Typo";
 import { useDisplayStore } from "../engine/store";
-import ChangeLog from "CHANGELOG";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
 // import SimpleWaveExample from "EXAMPLES/SimpleNodes.json";
@@ -29,13 +28,7 @@ importAll((require as any).context("../../examples", false, /\.json$/));
 export const WelcomeNode: FunctionComponent<NodeProps> = () => {
   const overwriteStore = useDisplayStore((it) => it.overwrite);
 
-  const [changelog, setChangelog] = useState("");
-
-  useEffect(() => {
-    fetch(ChangeLog)
-      .then((it) => it.text())
-      .then((it) => setChangelog(it));
-  });
+  const changelog = BEADI_CHANGELOG;
 
   const loadExample = useCallback(
     (data: any) => {
