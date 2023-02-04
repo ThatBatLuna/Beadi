@@ -9,7 +9,7 @@ const BottomBarContainer: FunctionComponent<BottomBarContainerProps> = ({
   onClick,
 }) => {
   return (
-    <button onClick={onClick} className="flex flex-col grow">
+    <button onClick={onClick} className="flex flex-col p-4 grow">
       {children}
     </button>
   );
@@ -17,10 +17,11 @@ const BottomBarContainer: FunctionComponent<BottomBarContainerProps> = ({
 
 type TabDef = {
   label: string;
+  icon: ReactNode;
 };
 type BottomBarProps = {
   tabs: TabDef[];
-  onTabChange: (tab: TabDef) => void;
+  onTabChange: (index: number) => void;
 };
 export const BottomBar: FunctionComponent<BottomBarProps> = ({
   tabs,
@@ -28,8 +29,9 @@ export const BottomBar: FunctionComponent<BottomBarProps> = ({
 }) => {
   return (
     <div className="flex flex-row h-20 bg-primary-700">
-      {tabs.map((it) => (
-        <BottomBarContainer onClick={() => onTabChange(it)} key={it.label}>
+      {tabs.map((it, index) => (
+        <BottomBarContainer onClick={() => onTabChange(index)} key={it.label}>
+          {it.icon}
           {it.label}
         </BottomBarContainer>
       ))}

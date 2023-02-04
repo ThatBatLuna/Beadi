@@ -101,7 +101,9 @@
       "height": 168
     },
     {
-      "data": {},
+      "data": {
+        "mobileVisible": false
+      },
       "id": "1673441614983",
       "position": {
         "x": 903.5441975468241,

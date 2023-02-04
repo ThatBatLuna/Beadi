@@ -30,6 +30,7 @@ export type NodeExecutorProps = {
 export type NodeExecutor = (input: any[], props: NodeExecutorProps) => any[];
 
 export type NodeHeaderProps = { id: string; data: any };
+export type MobileViewProps = { id: string; data: any };
 
 export type NodeDef = {
   nodeComponent?: ComponentType<NodeProps>;
@@ -37,6 +38,7 @@ export type NodeDef = {
   category: Category;
   type: string;
   header?: ComponentType<NodeHeaderProps>;
+  mobileView?: ComponentType<MobileViewProps>;
   inputs: InputHandleDef[];
   outputs: OutputHandleDef[];
   executor: NodeExecutor;

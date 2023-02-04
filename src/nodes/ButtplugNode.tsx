@@ -129,6 +129,15 @@ export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
     }
   }, [value, device, deviceHandle, connected, instance, enabled]);
 
+  if (allDevices.length === 0) {
+    return (
+      <div className="px-4">
+        It looks like you don't have any devices connected. Head over to the
+        Settings to connect some.
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-1 px-4">
       <Checkbox
@@ -156,6 +165,7 @@ export const buttplugNodeDef: NodeDef = {
   category: categories["display"],
   type: BUTTPLUG_NODE_TYPE,
   header: ButtplugNodeInterface,
+  mobileView: ButtplugNodeInterface,
   outputs: [],
   inputs: [
     {

@@ -1,20 +1,17 @@
 import { FunctionComponent } from "react";
 import NodeLine from "../components/node/NodeLine";
-import { NodeDef, NodeHeaderProps } from "../engine/node";
+import { MobileViewProps, NodeDef, NodeHeaderProps } from "../engine/node";
 import { useCommittedData, useHandleData } from "../engine/store";
 import { categories } from "./category";
 
 const HEIGHT = 100;
 
-const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
-  const history = useCommittedData<(number | undefined)[]>(id, "history");
-  const index = useCommittedData<number>(id, "index");
-  const [fixed, setFixed] = useHandleData<boolean>("input", id, "fixed");
-
-  if (history === undefined) {
-    return <NodeLine></NodeLine>;
-  }
-
+type GraphProps = {
+  history: (number | undefined)[];
+  index: number;
+  fixed: boolean;
+};
+const Graph: FunctionComponent<GraphProps> = ({ history, index, fixed }) => {
   let min = 0;
   let max = 0;
 
@@ -56,6 +53,78 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   const maxLine = (max + offset) * scale;
   const minLine = (min + offset) * scale;
 
+  return (
+    <svg
+      viewBox={`0 ${-HEIGHT / 2} ${HISTORY_LENGTH} ${HEIGHT + 5}`}
+      height="100"
+      className="stroke-white fill-none"
+    >
+      <path
+        className="stroke-slate-500"
+        d={`M0 ${-maxLine} L${HISTORY_LENGTH} ${-maxLine}`}
+      ></path>
+      <path
+        className="stroke-slate-500"
+        d={`M0 ${-minLine} L${HISTORY_LENGTH} ${-minLine}`}
+      ></path>
+      <path
+        className="stroke-slate-500"
+        d={`M0 ${-zero} L${HISTORY_LENGTH} ${-zero}`}
+      ></path>
+      <text x="0" y={-zero} className="text-sm stroke-none fill-white">
+        {" "}
+        0
+      </text>
+      <text
+        x="0"
+        y={-maxLine + 10}
+        className="text-sm stroke-none fill-white h-[10px]"
+      >
+        {max.toFixed(2)}
+      </text>
+      <text
+        x="0"
+        y={-minLine - 10}
+        className="text-sm stroke-none fill-white h-[10px]"
+      >
+        {min.toFixed(2)}
+      </text>
+      <path d={`M0 ${-start} ${parts}`}></path>
+    </svg>
+  );
+};
+
+const DisplayMobileView: FunctionComponent<MobileViewProps> = ({
+  id,
+  data,
+}) => {
+  const history = useCommittedData<(number | undefined)[]>(id, "history");
+  const index = useCommittedData<number>(id, "index");
+  const [fixed, _] = useHandleData<boolean>("input", id, "fixed");
+
+  if (history === undefined) {
+    return <></>;
+  }
+
+  // -min/2 + max/2 * (HEIGHT / 2 / (max - offset))
+
+  return (
+    <div className="mx-auto bg-primary-900 w-fit">
+      <Graph history={history} index={index} fixed={fixed}></Graph>
+    </div>
+  );
+};
+
+const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
+  const history = useCommittedData<(number | undefined)[]>(id, "history");
+  const index = useCommittedData<number>(id, "index");
+
+  const [fixed, setFixed] = useHandleData<boolean>("input", id, "fixed");
+
+  if (history === undefined) {
+    return <NodeLine></NodeLine>;
+  }
+
   // -min/2 + max/2 * (HEIGHT / 2 / (max - offset))
 
   return (
@@ -71,43 +140,7 @@ const DisplayNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
         </label>
       </NodeLine>
       <NodeLine>
-        <svg
-          viewBox={`0 ${-HEIGHT / 2} ${HISTORY_LENGTH} ${HEIGHT + 5}`}
-          height="100"
-          className="stroke-white fill-none"
-        >
-          <path
-            className="stroke-slate-500"
-            d={`M0 ${-maxLine} L${HISTORY_LENGTH} ${-maxLine}`}
-          ></path>
-          <path
-            className="stroke-slate-500"
-            d={`M0 ${-minLine} L${HISTORY_LENGTH} ${-minLine}`}
-          ></path>
-          <path
-            className="stroke-slate-500"
-            d={`M0 ${-zero} L${HISTORY_LENGTH} ${-zero}`}
-          ></path>
-          <text x="0" y={-zero} className="text-sm stroke-none fill-white">
-            {" "}
-            0
-          </text>
-          <text
-            x="0"
-            y={-maxLine + 10}
-            className="text-sm stroke-none fill-white h-[10px]"
-          >
-            {max.toFixed(2)}
-          </text>
-          <text
-            x="0"
-            y={-minLine - 10}
-            className="text-sm stroke-none fill-white h-[10px]"
-          >
-            {min.toFixed(2)}
-          </text>
-          <path d={`M0 ${-start} ${parts}`}></path>
-        </svg>
+        <Graph history={history} index={index} fixed={fixed}></Graph>
       </NodeLine>
     </>
   );
@@ -122,6 +155,7 @@ export const displayNodeDef: NodeDef = {
   // component: DisplayNode,
   header: DisplayNode,
   outputs: [],
+  mobileView: DisplayMobileView,
   inputs: [
     {
       terminal: true,

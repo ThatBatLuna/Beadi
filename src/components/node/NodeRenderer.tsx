@@ -5,6 +5,7 @@ import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
 import { InputHandleDef, NodeDef } from "../../engine/node";
 import { useInputHandleData } from "../../engine/store";
+import { MobileVisibleSwitch } from "./NodeHeaderIcons";
 type HandleInputProps = {
   input: InputHandleDef;
   nodeId: string;
@@ -17,7 +18,7 @@ const NumberHandleInput: FunctionComponent<HandleInputProps> = ({
 
   return (
     <NumberInput
-      id={input.id}
+      id={`${nodeId}__${input.id}`}
       name={input.id}
       label={input.label}
       min={input.min}
@@ -51,6 +52,8 @@ export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
     return def.nodeComponent;
   }
 
+  const canBeMobile = def.mobileView !== undefined;
+
   return ({ id, data }) => {
     const edges = useEdges();
 
@@ -64,7 +67,18 @@ export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
     }, [edges, id]);
 
     return (
-      <NodeShell title={def.label} color={def.category.color}>
+      <NodeShell
+        title={def.label}
+        color={def.category.color}
+        headerIcons={
+          canBeMobile ? (
+            <MobileVisibleSwitch
+              visible={data.mobileVisible}
+              nodeId={id}
+            ></MobileVisibleSwitch>
+          ) : undefined
+        }
+      >
         {HeaderComponent && (
           <HeaderComponent id={id} data={data}></HeaderComponent>
         )}

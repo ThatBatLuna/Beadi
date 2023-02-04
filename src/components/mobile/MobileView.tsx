@@ -1,4 +1,5 @@
 import { ComponentType, FunctionComponent, useState } from "react";
+import { BsController, BsFile, BsGear } from "react-icons/bs";
 import { BottomBar } from "./BottomBar";
 import { FilesTab } from "./FilesTab";
 import { ProgramInterface } from "./ProgramInterface";
@@ -8,19 +9,21 @@ import { MobileWelcome } from "./Welcome";
 const TABS = [
   {
     label: "Interface",
+    icon: <BsController className="w-full h-full"></BsController>,
   },
   {
     label: "Files",
+    icon: <BsFile className="w-full h-full"></BsFile>,
   },
   {
     label: "Settings",
+    icon: <BsGear className="w-full h-full"></BsGear>,
   },
 ];
 
 const InterfaceTab: FunctionComponent<{}> = () => {
   return (
     <>
-      <MobileWelcome></MobileWelcome>
       <ProgramInterface></ProgramInterface>
     </>
   );
@@ -41,7 +44,10 @@ export const MobileView: FunctionComponent<{}> = () => {
       <div className="overflow-y-auto grow">
         <Content></Content>
       </div>
-      <BottomBar tabs={TABS} onTabChange={(tab) => setTab(tab)}></BottomBar>
+      <BottomBar
+        tabs={TABS}
+        onTabChange={(tab) => setTab(TABS[tab])}
+      ></BottomBar>
     </div>
   );
 };

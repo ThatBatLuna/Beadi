@@ -1,19 +1,34 @@
 import { FunctionComponent, useCallback } from "react";
 import { Button } from "../components/input/Button";
-import { NodeDef, NodeHeaderProps } from "../engine/node";
-import { usePushEphermalData } from "../engine/store";
+import { TextInput } from "../components/input/TextInput";
+import { MobileViewProps, NodeDef, NodeHeaderProps } from "../engine/node";
+import { usePushEphermalData, useSetNodeName } from "../engine/store";
 import { categories } from "./category";
 
-const ButtonNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
+const ButtonMobile: FunctionComponent<MobileViewProps> = ({ id, data }) => {
   const push = usePushEphermalData(id, "signal");
 
-  const fire = useCallback(() => {
-    push(true);
-  }, [push]);
+  return (
+    <Button onClick={() => push(true)} className="w-full text-lg">
+      {data.name || "Button"}
+    </Button>
+  );
+};
+
+const ButtonNode: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
+  const push = usePushEphermalData(id, "signal");
+
+  const setNodeName = useSetNodeName(id);
 
   return (
-    <div className="mx-auto w-fit">
-      <Button onClick={fire}>Send Signal</Button>
+    <div className="flex flex-col gap-2 px-2 ">
+      <TextInput
+        label="Label"
+        onChange={setNodeName}
+        value={data.name || ""}
+        id={`${id}__mobile_label`}
+      ></TextInput>
+      <Button onClick={() => push(true)}>Send Signal</Button>
     </div>
   );
 };
@@ -24,6 +39,7 @@ export const buttonNodeDef: NodeDef = {
   category: categories["control"],
   type: BUTTON_NODE_TYPE,
   header: ButtonNode,
+  mobileView: ButtonMobile,
   inputs: [],
   outputs: [
     {

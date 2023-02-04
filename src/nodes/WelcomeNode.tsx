@@ -4,6 +4,7 @@ import NodeShell from "../components/node/NodeShell";
 import { Typo } from "../components/Typo";
 import { useDisplayStore } from "../engine/store";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { Button } from "../components/input/Button";
 
 // import SimpleWaveExample from "EXAMPLES/SimpleNodes.json";
 
@@ -35,15 +36,15 @@ export const ExampleList: FunctionComponent<{}> = () => {
   );
 
   return (
-    <ul>
+    <ul className="flex flex-row flex-wrap gap-2">
       {Object.entries(examples).map(([key, value]) => (
         <li key={key}>
-          <button
+          <Button
             onClick={() => loadExample(value)}
             className="text-purple-400 underline"
           >
             {value.name || key}
-          </button>
+          </Button>
         </li>
       ))}
     </ul>

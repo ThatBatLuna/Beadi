@@ -24,6 +24,7 @@ export interface DisplayStore {
   edges: Edge[];
   handles: Record<string, any>;
   setHandle: (nodeId: string, handleId: string, data: any) => void;
+  mergeNodeData: (nodeId: string, data: any) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -55,6 +56,24 @@ export const useDisplayStore = create<DisplayStore>()(
     nodes: initialNodes,
     edges: initialEdges,
     handles: {},
+    mergeNodeData: (node, data) => {
+      //TODO This is hella slow... Maybe I should rethink the handling for node data?
+      set(({ nodes }) => ({
+        nodes: nodes.map((it) => {
+          if (it.id === node) {
+            return {
+              ...it,
+              data: {
+                ...it.data,
+                ...data,
+              },
+            };
+          } else {
+            return it;
+          }
+        }),
+      }));
+    },
     overwrite: (nodes, edges, handles) => {
       set(() => ({
         nodes,
@@ -212,5 +231,27 @@ export function usePushEphermalData<T>(nodeId: string, handleId: string) {
       push(nodeId, handleId, data);
     },
     [push, nodeId, handleId]
+  );
+}
+export function useSetNodeName(nodeId: string) {
+  const mergeNodeData = useDisplayStore((state) => state.mergeNodeData);
+  return useCallback(
+    (name: string) => {
+      if (name.trim() === "") {
+        mergeNodeData(nodeId, { name: undefined });
+      } else {
+        mergeNodeData(nodeId, { name });
+      }
+    },
+    [nodeId, mergeNodeData]
+  );
+}
+export function useMergeNodeData(nodeId: string) {
+  const mergeNodeData = useDisplayStore((state) => state.mergeNodeData);
+  return useCallback(
+    (data: Record<string, any>) => {
+      mergeNodeData(nodeId, data);
+    },
+    [nodeId, mergeNodeData]
   );
 }
