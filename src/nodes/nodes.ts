@@ -20,6 +20,7 @@ import { clampNodeDef } from "./ClampNode";
 import { commentNodeDef } from "./CommentNode";
 import { curveNodeDef } from "./CurveNode";
 import { delayNodeDef } from "./DelayNode";
+import { sliderNodeDef } from "./SliderNode";
 import { toggleNodeDef } from "./ToggleNode";
 
 const nodeDefList: NodeDef[] = [
@@ -37,6 +38,7 @@ const nodeDefList: NodeDef[] = [
   randomNodeDef,
   timerNodeDef,
   buttonNodeDef,
+  sliderNodeDef,
   toggleNodeDef,
   clampNodeDef,
   curveNodeDef,
