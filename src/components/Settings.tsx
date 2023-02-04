@@ -6,9 +6,15 @@ import {
   useMemo,
   useState,
 } from "react";
-import { BsChevronBarRight, BsFile, BsFillPlugFill } from "react-icons/bs";
+import {
+  BsChevronBarRight,
+  BsController,
+  BsFile,
+  BsFillPlugFill,
+} from "react-icons/bs";
 import { ButtplugSettings } from "./settings/ButtplugSettings";
 import { FileSettings } from "./settings/FileSettings";
+import { MobileInterfaceTab } from "./settings/MobileInterface";
 
 type Tab = {
   name: string;
@@ -29,6 +35,12 @@ const tabs: Record<string, Tab> = {
     label: "File",
     icon: <BsFile className="w-full h-full"></BsFile>,
     tab: FileSettings,
+  },
+  mobile: {
+    name: "mobile",
+    label: "Mobile Interface",
+    icon: <BsController className="w-full h-full"></BsController>,
+    tab: MobileInterfaceTab,
   },
 };
 
