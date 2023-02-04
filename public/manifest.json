@@ -1,6 +1,6 @@
 {
   "short_name": "Beadi",
-  "name": "Visual node-based editor for adult entertainment",
+  "name": "Visual node-based editor for buttplug.io",
   "icons": [
     {
       "src": "favicon.svg",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#252030",
+  "background_color": "#252030"
 }
