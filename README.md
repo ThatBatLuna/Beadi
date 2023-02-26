@@ -37,6 +37,6 @@ This webapp enables you to create node-based programs and patterns for a variety
 I don't really expect a lot of traffic here, so feel free to create Discussion threads or Issues for whatever you want. But please adhere to our [Code of Conduct](CODE_OF_CONDUCT.md) and be
 
 - Nice and respectful to everyone (where 'everyone' should be understood in the most inclusive sense possible)
-- aware that github has no age-restriction - so **be responsible** with what you write. Things that I deem too explicit will be removed. If you plan to interact with this project, I strongly recommend to read the [Github After Dark](https://buttplug-developer-guide.docs.buttplug.io/intro/buttplug-ethics.html#github-after-dark) section of buttplug.io.
+- aware that github has no age-restriction - so **be responsible** with what you write. Things that I deem too explicit will be removed. If you plan to interact with this project, I strongly recommend to read the [Github After Dark](https://buttplug-developer-guide.docs.buttplug.io/docs/dev-guide/intro/buttplug-ethics/#github-after-dark) section of buttplug.io.
 
 Fun is sure a nice thing, but we may in no case forget to be responsible with what we do.
