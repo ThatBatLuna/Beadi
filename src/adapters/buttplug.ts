@@ -1,11 +1,9 @@
 import {
+  ButtplugBrowserWebsocketClientConnector,
   ButtplugClient,
   ButtplugClientDevice,
-  ButtplugEmbeddedConnectorOptions,
-  ButtplugWebsocketConnectorOptions,
 } from "buttplug";
 import _ from "lodash";
-import { ButtplugInstance } from "./store";
 import {
   ButtplugClientActions,
   ButtplugClientConfig,
@@ -36,22 +34,20 @@ export type AnyClientStateListener = (
 export function makeClient(
   config: ButtplugClientConfig,
   listener: ClientStateListener,
-  deviceListener: ClientDeviceListener,
-  instance: ButtplugInstance
+  deviceListener: ClientDeviceListener
 ): ButtplugClientHandle {
-  let connector:
-    | null
-    | ButtplugWebsocketConnectorOptions
-    | ButtplugEmbeddedConnectorOptions = null;
+  let connector: null | ButtplugBrowserWebsocketClientConnector = null;
   if (config.connection === "embedded") {
-    connector = new instance.ButtplugEmbeddedConnectorOptions();
+    alert("Embedded is temporarily disabled??!");
+    // connector = new ButtplugB();
   } else {
-    const c = new instance.ButtplugWebsocketConnectorOptions();
-    c.Address = `ws://${config.connection}`;
+    const c = new ButtplugBrowserWebsocketClientConnector(
+      `ws://${config.connection}`
+    );
     connector = c;
   }
   console.log("Created new Client ", config);
-  let client: ButtplugClient = new instance.ButtplugClient(
+  let client: ButtplugClient = new ButtplugClient(
     `Beadi Client '${config.name}'`
   );
 
@@ -61,12 +57,12 @@ export function makeClient(
       client
         .connect(connector!!)
         .then(() => {
-          console.log("ServerConnect", client.Devices);
+          console.log("ServerConnect", client.devices);
           listener({
             connected: true,
             error: null,
           });
-          deviceListener(client.Devices);
+          deviceListener(client.devices);
         })
         .catch((e) => {
           console.log("Error", e);
@@ -117,12 +113,12 @@ export function makeClient(
     });
   });
   client.addListener("deviceadded", () => {
-    console.log("DeviceAdded", client.Devices);
-    deviceListener(client.Devices);
+    console.log("DeviceAdded", client.devices);
+    deviceListener(client.devices);
   });
   client.addListener("deviceremoved", () => {
-    console.log("DeviceRemoved", client.Devices);
-    deviceListener(client.Devices);
+    console.log("DeviceRemoved", client.devices);
+    deviceListener(client.devices);
   });
 
   return {
@@ -139,12 +135,9 @@ export function makeClient(
   };
 }
 
-export function destroyClient(
-  client: ButtplugClientHandle,
-  instance: ButtplugInstance
-) {
+export function destroyClient(client: ButtplugClientHandle) {
   console.log("Destroyed Client: ", client);
-  if (client.client.Connected) {
+  if (client.client.connected) {
     client.actions.disconnect();
   }
 }
@@ -153,8 +146,7 @@ export function syncClientState(
   oldClients: Record<string, ButtplugClientHandle>,
   config: Record<string, ButtplugClientConfig>,
   listener: AnyClientStateListener,
-  deviceListener: AnyClientDeviceListener,
-  instance: ButtplugInstance
+  deviceListener: AnyClientDeviceListener
 ): Record<string, ButtplugClientHandle> {
   let newClients = _.clone(oldClients);
   let queue = _.clone(config);
@@ -170,7 +162,7 @@ export function syncClientState(
       delete queue[serverId];
     } else {
       //Remove this Client from the servers, either for good, or to readd it later with the updated configs
-      destroyClient(newClients[serverId], instance);
+      destroyClient(newClients[serverId]);
       delete newClients[serverId];
     }
   }
@@ -179,8 +171,7 @@ export function syncClientState(
     newClients[clientId] = makeClient(
       queue[clientId],
       (update) => listener(clientId, update),
-      (update) => deviceListener(clientId, update),
-      instance
+      (update) => deviceListener(clientId, update)
     );
   }
 

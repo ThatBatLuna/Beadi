@@ -28,12 +28,9 @@ export type ButtplugClientConfig = {
 };
 
 interface ButtplugState {
-  instance: ButtplugInstance | null;
   clients: Record<string, ButtplugClientHandle>;
 
   clientConfigs: Record<string, ButtplugClientConfig>;
-
-  setInstance: (instance: ButtplugInstance) => void;
 
   addClient: (client: ButtplugClientConfig) => void;
   deleteClient: (clientId: string) => void;
@@ -59,12 +56,6 @@ export const useButtplugStore = create<ButtplugState>()(
       instance: null,
       clientConfigs: loadClientConfigs(), //SetInstance should call syncClients()
       clients: {},
-
-      setInstance: (instance) => {
-        console.log("Setting new buttplug instance: ", instance);
-        set(() => ({ instance: instance }));
-        get().syncClients();
-      },
 
       addClient: (client) => {
         set((store) => ({
@@ -117,14 +108,13 @@ export const useButtplugStore = create<ButtplugState>()(
                       devices: devices,
                       state: {
                         ...store.clients[clientId].state,
-                        devices: devices.map((it) => it.Name),
+                        devices: devices.map((it) => it.name),
                       },
                     },
                   },
                 }));
               });
-            },
-            store.instance
+            }
           ),
         }));
       },
@@ -135,10 +125,10 @@ export const useButtplugStore = create<ButtplugState>()(
   )
 );
 
-export type ButtplugInstance = any;
+// export type ButtplugInstance = any;
 
-export function setButtplugInstance(instance: ButtplugInstance) {
-  unstable_batchedUpdates(() => {
-    useButtplugStore.getState().setInstance(instance);
-  });
-}
+// export function setButtplugInstance(instance: ButtplugInstance) {
+//   unstable_batchedUpdates(() => {
+//     useButtplugStore.getState().setInstance(instance);
+//   });
+// }

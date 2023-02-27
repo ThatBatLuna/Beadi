@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { ButtplugInstance } from "../../adapters/store";
+// import { ButtplugInstance } from "../../adapters/store";
 import { ButtplugClientConfig, useButtplugStore } from "../../adapters/store";
 import { Button } from "../input/Button";
 import { TextInput } from "../input/TextInput";
@@ -56,9 +56,7 @@ const AddButtplugClientForm: FunctionComponent<AddButtplugClientFormProps> = ({
   );
 };
 
-const ButtplugSettingsInner: FunctionComponent<{
-  instance: ButtplugInstance;
-}> = ({ instance }) => {
+const ButtplugSettingsInner: FunctionComponent<{}> = () => {
   const clients = useButtplugStore((it) => it.clients);
   const addClient = useButtplugStore((it) => it.addClient);
   const deleteClient = useButtplugStore((it) => it.deleteClient);
@@ -150,10 +148,11 @@ const ButtplugSettingsInner: FunctionComponent<{
 };
 
 export const ButtplugSettings: FunctionComponent<{}> = () => {
-  const instance = useButtplugStore((it) => it.instance);
-  if (instance == null) {
-    return <p>Buttplug is loading...</p>;
-  } else {
-    return <ButtplugSettingsInner instance={instance}></ButtplugSettingsInner>;
-  }
+  // const instance = useButtplugStore((it) => it.instance);
+  // if (instance == null) {
+  //   return <p>Buttplug is loading...</p>;
+  // } else {
+  //   return <ButtplugSettingsInner instance={instance}></ButtplugSettingsInner>;
+  // }
+  return <ButtplugSettingsInner></ButtplugSettingsInner>;
 };

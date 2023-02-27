@@ -1,3 +1,4 @@
+import { ActuatorType, ScalarSubcommand } from "buttplug";
 import _ from "lodash";
 import { FunctionComponent, useEffect, useMemo } from "react";
 import { useButtplugStore } from "../adapters/store";
@@ -28,7 +29,7 @@ export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
   );
   const device = deviceH || null;
 
-  const instance = useButtplugStore((store) => store.instance);
+  // const instance = useButtplugStore((store) => store.instance);
   const clients = useButtplugStore((store) => store.clients);
   const deviceHandle = useButtplugStore((store) => {
     if (device === null) {
@@ -59,22 +60,22 @@ export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
     const single = Object.values(clients).length === 1;
     return _.flatMap(clients, (client) =>
       client.state.devices.flatMap((device, i) => {
-        const vibrators = client.devices[i].messageAttributes(0);
-        const linears = client.devices[i].messageAttributes(1);
-        const rotators = client.devices[i].messageAttributes(2);
+        const vibrators = client.devices[i].vibrateAttributes;
+        const linears = client.devices[i].linearAttributes;
+        const rotators = client.devices[i].rotateAttributes;
         const common = {
           client: client.config.id,
           device: i,
           label: single
-            ? client.devices[i].Name
-            : `${client.config.name}:${client.devices[i].Name}`,
+            ? client.devices[i].name
+            : `${client.config.name}:${client.devices[i].name}`,
         };
 
         console.log(vibrators, linears, rotators);
         return [
           ...(vibrators === undefined
             ? []
-            : new Array(vibrators.featureCount).fill(undefined).map((_, i) => ({
+            : new Array(vibrators.length).fill(undefined).map((_, i) => ({
                 deviceType: "vibrate" as const,
                 index: i,
                 ...common,
@@ -82,7 +83,7 @@ export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
               }))),
           ...(linears === undefined
             ? []
-            : new Array(linears.featureCount).fill(undefined).map((_, i) => ({
+            : new Array(linears.length).fill(undefined).map((_, i) => ({
                 deviceType: "linear" as const,
                 index: i,
                 ...common,
@@ -90,7 +91,7 @@ export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
               }))),
           ...(rotators === undefined
             ? []
-            : new Array(rotators.featureCount).fill(undefined).map((_, i) => ({
+            : new Array(rotators.length).fill(undefined).map((_, i) => ({
                 deviceType: "rotate" as const,
                 index: i,
                 ...common,
@@ -108,26 +109,34 @@ export const ButtplugNodeInterface: FunctionComponent<NodeHeaderProps> = ({
         actualValue = 0.0;
       }
       if (device.deviceType === "vibrate") {
-        deviceHandle.vibrate([
-          new instance.VibrationCmd(device.index, actualValue),
-        ]);
-      }
-      if (device.deviceType === "rotate") {
-        const TODO_CLOCKWISE = true;
-        deviceHandle.rotate(
-          [new instance.RotationCmd(device.index, actualValue, TODO_CLOCKWISE)],
-          undefined
-        ); //TODO Counterclockwise rotation with negative numbers
-      }
-      if (device.deviceType === "linear") {
-        const TODO_DURATION = 500.0;
-        deviceHandle.linear(
-          [new instance.VectorCmd(device.index, TODO_DURATION, actualValue)],
-          undefined
+        deviceHandle.scalar(
+          new ScalarSubcommand(device.index, actualValue, ActuatorType.Vibrate)
         );
       }
+      if (device.deviceType === "rotate") {
+        deviceHandle.scalar(
+          new ScalarSubcommand(device.index, actualValue, ActuatorType.Rotate)
+        );
+        // deviceHandle.rotate(
+        //   [new instance.RotationCmd(device.index, actualValue, TODO_CLOCKWISE)],
+        //   undefined
+        // ); //TODO Counterclockwise rotation with negative numbers
+      }
+      if (device.deviceType === "linear") {
+        deviceHandle.scalar(
+          new ScalarSubcommand(
+            device.index,
+            actualValue,
+            ActuatorType.Oscillate
+          )
+        );
+        // deviceHandle.linear(
+        //   [new instance.VectorCmd(device.index, TODO_DURATION, actualValue)],
+        //   undefined
+        // );
+      }
     }
-  }, [value, device, deviceHandle, connected, instance, enabled]);
+  }, [value, device, deviceHandle, connected, enabled]);
 
   if (allDevices.length === 0) {
     return (

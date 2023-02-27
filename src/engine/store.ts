@@ -223,6 +223,25 @@ export function useCommittedData<T>(nodeId: string, handleId: string): T {
   });
   return value as T;
 }
+export function useCommitData<T>(
+  nodeId: string,
+  handleId: string
+): (v: number) => void {
+  const commitData = useDataStore((state) => {
+    return state.commitData;
+  });
+  const doIt = useCallback(
+    (value: number) => {
+      commitData({
+        [nodeId]: {
+          [handleId]: value,
+        },
+      });
+    },
+    [nodeId, handleId, commitData]
+  );
+  return doIt;
+}
 export function usePushEphermalData<T>(nodeId: string, handleId: string) {
   const push = useDataStore((state) => state.pushEphermalData);
 
