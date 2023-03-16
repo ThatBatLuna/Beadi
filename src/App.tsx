@@ -2,10 +2,10 @@ import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Drawer from "./components/Drawer";
-import { Engine } from "./components/Engine";
 import { MobileView } from "./components/mobile/MobileView";
 import { Settings } from "./components/Settings";
 import Viewport from "./components/Viewport";
+import { runEngineLoop } from "./engine/runner";
 
 function App() {
   const [mobile, setMobile] = useState(window.innerWidth < 1000);
@@ -21,9 +21,10 @@ function App() {
           <Settings />
         </DndProvider>
       )}
-      <Engine></Engine>
     </div>
   );
 }
 
 export default App;
+
+runEngineLoop();

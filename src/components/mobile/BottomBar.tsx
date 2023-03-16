@@ -9,7 +9,7 @@ const BottomBarContainer: FunctionComponent<BottomBarContainerProps> = ({
   onClick,
 }) => {
   return (
-    <button onClick={onClick} className="flex flex-col p-4 grow">
+    <button onClick={onClick} className="flex flex-col items-center p-4 grow">
       {children}
     </button>
   );
@@ -32,7 +32,7 @@ export const BottomBar: FunctionComponent<BottomBarProps> = ({
       {tabs.map((it, index) => (
         <BottomBarContainer onClick={() => onTabChange(index)} key={it.label}>
           {it.icon}
-          {it.label}
+          <div className="text-center w-fit">{it.label}</div>
         </BottomBarContainer>
       ))}
     </div>

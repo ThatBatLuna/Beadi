@@ -16,6 +16,7 @@ import { IDBPDatabase, openDB } from "idb";
 import create from "zustand";
 import { Edge, Node } from "reactflow";
 import clsx from "clsx";
+import { ImportFromLitterbox, UploadToLitterbox } from "./Litterbox";
 
 export function getNewFileName(): string {
   const time = DateTime.now().toFormat("yyyy-LL-dd-HH-mm");
@@ -212,6 +213,21 @@ export const FileSettings: FunctionComponent<{}> = () => {
         Yes, I know this saving thingy is a bit wonky at the moment, but it
         works for now...
       </p>
+      <Typo>Litterbox</Typo>
+      <p className="text-slate-500">
+        Upload this beadi to{" "}
+        <a
+          href="https://litterbox.catbox.moe/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          litterbox.catbox.moe
+        </a>
+        . The uploaded Link will become invalid after an hour. This can be used
+        to quickly share generated Beadis, or transfer them to your smartphone.
+      </p>
+      <UploadToLitterbox></UploadToLitterbox>
+      <ImportFromLitterbox></ImportFromLitterbox>
     </div>
   );
 };

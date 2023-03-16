@@ -1,4 +1,5 @@
 import { FunctionComponent, useCallback } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { TextInput } from "../components/input/TextInput";
 import { MobileViewProps, NodeDef, NodeHeaderProps } from "../engine/node";
 import {
@@ -9,7 +10,15 @@ import {
 import { categories } from "./category";
 
 const SliderMobile: FunctionComponent<MobileViewProps> = ({ id, data }) => {
-  const [value, setValue] = useInputHandleData<number>(id, "value");
+  const [handleValue, setHandleValue] = useInputHandleData<number>(id, "value");
+  const [value, setVisualValue] = useInputHandleData<number>(id, "value");
+
+  const setValueDebounced = useDebouncedCallback(setHandleValue, 200);
+
+  const setValue = (v: number) => {
+    setVisualValue(v);
+    setValueDebounced(v);
+  };
 
   return (
     <input

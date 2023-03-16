@@ -4,6 +4,10 @@ import { getConversionFunction } from "./handles";
 import { NodeExecutor } from "./node";
 
 export type NodeTypeData = Pick<Node<any>, "data" | "id" | "type">;
+export type EdgeData = Pick<
+  Edge<any>,
+  "source" | "target" | "sourceHandle" | "targetHandle"
+>;
 
 export type RecipeDependency = {
   id: string;
@@ -29,7 +33,7 @@ type OutputDataEntry = {
   type: string;
 };
 
-export function buildModel(nodes: NodeTypeData[], edges: Edge<any>[]): Model {
+export function buildModel(nodes: NodeTypeData[], edges: EdgeData[]): Model {
   //Find all terminating handles
   console.log("Rebuilding Model");
 

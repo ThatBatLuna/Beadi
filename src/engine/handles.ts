@@ -20,12 +20,12 @@ export function handlesCompatible(
     return true;
   }
   const func = getConversionFunction(sourceType, targetType);
-  console.log(func);
+  // console.log(func);
   return func !== undefined;
 }
 
 export function getConversionFunction(sourceType: string, targetType: string) {
-  console.log(sourceType, targetType);
+  // console.log(sourceType, targetType);
   if (sourceType === targetType) {
     return undefined;
   }
