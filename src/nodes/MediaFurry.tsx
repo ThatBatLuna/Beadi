@@ -140,8 +140,6 @@ const DisplayHeader: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
     s.bufferedPosts[1],
   ]);
 
-  console.log(useMediaFetcher());
-
   useEffect(() => {
     setIndex(committed);
   }, [committed, setIndex]);
@@ -172,8 +170,11 @@ const DisplayHeader: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
 const DisplayMobileView: FunctionComponent<MobileViewProps> = ({ id }) => {
   const committed = useCommittedData<number>(id, "index");
 
-  const [setIndex, post, nextPost] = useMediaFetcher((s) => [
+  const [rawTags] = useInputHandleData<string>(id, "tags");
+  const [tags] = useDebounce(rawTags, 1000);
+  const [setIndex, setTags, post, nextPost] = useMediaFetcher((s) => [
     s.setCurrentIndex,
+    s.setTags,
     s.bufferedPosts[0],
     s.bufferedPosts[1],
   ]);
@@ -181,6 +182,10 @@ const DisplayMobileView: FunctionComponent<MobileViewProps> = ({ id }) => {
   useEffect(() => {
     setIndex(committed);
   }, [committed, setIndex]);
+
+  useEffect(() => {
+    setTags(tags);
+  }, [tags, setTags]);
 
   if (post == null || nextPost == null) {
     return <h1>???</h1>;
@@ -225,7 +230,6 @@ export const mediaFurryNodeDef: NodeDef = {
   executor: ([v], { commit, committed }) => {
     let current = committed["index"] ?? 0;
     if (v) {
-      console.log(current);
       commit("index", current + 1);
     }
 

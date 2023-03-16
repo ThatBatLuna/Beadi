@@ -40,7 +40,14 @@ export const buttonNodeDef: NodeDef = {
   type: BUTTON_NODE_TYPE,
   header: ButtonNode,
   mobileView: ButtonMobile,
-  inputs: [],
+  inputs: [
+    {
+      id: "press",
+      label: "Press",
+      type: "impulse",
+      default: false,
+    },
+  ],
   outputs: [
     {
       id: "signal",
@@ -49,6 +56,6 @@ export const buttonNodeDef: NodeDef = {
     },
   ],
   executor: ([v], { ephermal }) => {
-    return [ephermal["signal"] || false];
+    return [ephermal["signal"] || v];
   },
 };
