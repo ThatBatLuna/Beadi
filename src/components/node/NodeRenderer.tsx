@@ -6,30 +6,10 @@ import NodeShell from "./NodeShell";
 import { InputHandleDef, NodeDef } from "../../engine/node";
 import { useInputHandleData } from "../../engine/store";
 import { MobileVisibleSwitch } from "./NodeHeaderIcons";
-type HandleInputProps = {
+import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
+export type HandleInputProps = {
   input: InputHandleDef;
   nodeId: string;
-};
-const NumberHandleInput: FunctionComponent<HandleInputProps> = ({
-  nodeId,
-  input,
-}) => {
-  const [value, setValue] = useInputHandleData<any>(nodeId, input.id);
-
-  return (
-    <NumberInput
-      id={`${nodeId}__${input.id}`}
-      name={input.id}
-      label={input.label}
-      min={input.min}
-      max={input.max}
-      value={value}
-      onChange={(e) => setValue(e.value)}
-    ></NumberInput>
-  );
-};
-const inputs: Record<string, FunctionComponent<HandleInputProps>> = {
-  number: NumberHandleInput,
 };
 type HandleInputCProps = {
   type: string;
@@ -37,7 +17,7 @@ type HandleInputCProps = {
   nodeId: string;
 };
 function getHandleInput({ type, input, nodeId }: HandleInputCProps) {
-  const Component = inputs[type];
+  const Component = NODE_HANDLE_INPUT_TYPES[type];
   if (Component !== undefined) {
     return <Component input={input} nodeId={nodeId}></Component>;
   }

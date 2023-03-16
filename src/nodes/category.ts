@@ -17,6 +17,10 @@ export const categories: Record<string, Category> = {
     label: "Display",
     color: "#E84855",
   },
+  media: {
+    label: "Media",
+    color: "#E84855",
+  },
   extra: {
     label: "Extra",
     color: "#A2A2A2",

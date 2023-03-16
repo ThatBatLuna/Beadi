@@ -20,6 +20,7 @@ import { clampNodeDef } from "./ClampNode";
 import { commentNodeDef } from "./CommentNode";
 import { curveNodeDef } from "./CurveNode";
 import { delayNodeDef } from "./DelayNode";
+import { mediaFurryNodeDef } from "./MediaFurry";
 import { sensorNodeDef } from "./SensorNode";
 import { sliderNodeDef } from "./SliderNode";
 import { toggleNodeDef } from "./ToggleNode";
@@ -46,6 +47,7 @@ const nodeDefList: NodeDef[] = [
   delayNodeDef,
   commentNodeDef,
   sensorNodeDef,
+  mediaFurryNodeDef,
 ];
 
 export const nodeDefs: Record<string, NodeDef> = Object.assign(

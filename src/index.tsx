@@ -4,7 +4,10 @@ import "./index.css";
 import "reactflow/dist/style.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { enableAllPlugins } from "immer";
 // import { setButtplugInstance } from "./adapters/store";
+//
+enableAllPlugins();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

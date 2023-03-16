@@ -4,12 +4,14 @@ import { FunctionComponent, useState } from "react";
 type TextInputProps = {
   label: string;
   value: string;
+  name?: string;
   id: string;
   onChange?: (value: string) => void;
 };
 export const TextInput: FunctionComponent<TextInputProps> = ({
   label,
   value,
+  name,
   id,
   onChange,
 }) => {
@@ -33,10 +35,11 @@ export const TextInput: FunctionComponent<TextInputProps> = ({
             "text-start w-full": editing,
             "text-end": !editing,
           })}
+          name={name ?? label}
           onChange={(e) => onChange?.(e.target.value)}
           onFocus={() => setEditing(true)}
           onBlur={() => setEditing(false)}
-          placeholder="name"
+          placeholder={editing ? label : "..."}
           value={value}
         />
       </div>

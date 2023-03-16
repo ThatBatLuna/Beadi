@@ -72,8 +72,8 @@ export const ProgramInterface: FunctionComponent<{}> = () => {
 
   return (
     <ul>
-      {mobileNodes.map((it) => (
-        <MobileNodeRenderer node={it}></MobileNodeRenderer>
+      {mobileNodes.map((it, index) => (
+        <MobileNodeRenderer key={index} node={it}></MobileNodeRenderer>
       ))}
     </ul>
   );

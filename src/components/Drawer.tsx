@@ -16,7 +16,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
   }, []);
 
   return (
-    <div className="bg-primary-900 w-60">
+    <div className="bg-primary-900 w-60 overflow-y-scroll">
       <ul>
         {nodes.map((category, index) => (
           <li key={category.name} className="mb-2">

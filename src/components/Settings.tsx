@@ -88,7 +88,7 @@ export const Settings: FunctionComponent<{}> = () => {
           "w-0": Component === null,
         })}
       >
-        <div className="flex flex-col w-96">
+        <div className="flex flex-col w-96 overflow-y-scroll">
           {Component && <Component></Component>}
         </div>
       </div>
