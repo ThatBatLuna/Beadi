@@ -1,14 +1,32 @@
 import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import create from "zustand";
+import { immer } from "zustand/middleware/immer";
 import Drawer from "./components/Drawer";
 import { MobileView } from "./components/mobile/MobileView";
 import { Settings } from "./components/Settings";
 import Viewport from "./components/Viewport";
 import { runEngineLoop } from "./engine/runner";
 
+type GlobalSettings = {
+  mobileView: boolean;
+
+  setMobileView: (mobile: boolean) => void;
+};
+export const useGlobalSettings = create(
+  immer<GlobalSettings>((set, get) => ({
+    mobileView: window.innerWidth < 1000,
+    setMobileView: (mobile) => {
+      set((state) => {
+        state.mobileView = mobile;
+      });
+    },
+  }))
+);
+
 function App() {
-  const [mobile, setMobile] = useState(window.innerWidth < 1000);
+  const mobile = useGlobalSettings((s) => s.mobileView);
 
   return (
     <div className="flex flex-row w-full h-full text-white bg-black">
