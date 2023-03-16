@@ -10,15 +10,7 @@ import {
 import { categories } from "./category";
 
 const SliderMobile: FunctionComponent<MobileViewProps> = ({ id, data }) => {
-  const [handleValue, setHandleValue] = useInputHandleData<number>(id, "value");
-  const [value, setVisualValue] = useInputHandleData<number>(id, "value");
-
-  const setValueDebounced = useDebouncedCallback(setHandleValue, 200);
-
-  const setValue = (v: number) => {
-    setVisualValue(v);
-    setValueDebounced(v);
-  };
+  const [value, setValue] = useInputHandleData<number>(id, "value");
 
   return (
     <input
