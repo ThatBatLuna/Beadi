@@ -47,7 +47,11 @@ export function makeClient(
     connector = new instance.ButtplugEmbeddedConnectorOptions();
   } else {
     const c = new instance.ButtplugWebsocketConnectorOptions();
-    c.Address = `ws://${config.connection}`;
+    if (config.connection.startsWith("ws://") || config.connection.startsWith("wss://")) {
+      c.Address = config.connection;
+    } else {
+      c.Address = `ws://${config.connection}`;
+    }
     connector = c;
   }
   console.log("Created new Client ", config);
