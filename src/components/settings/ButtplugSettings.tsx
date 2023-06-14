@@ -133,16 +133,30 @@ const ButtplugSettingsInner: FunctionComponent<{}> = () => {
       </Button>
       {!bluetooth && (
         <span className="text-slate-500">
-          Embedded Servers / Direction Connection requires the Bluetooth browser
-          api (available e.g in Chrome). You can still connect to remote servers
-          (e.g{" "}
-          <a className="underline" href="https://intiface.com/central/">
-            Intiface
+          Embedded Servers / Direction Connection is currently unavailable, due
+          to upstream API changes in{" "}
+          <a
+            className="underline"
+            href="https://github.com/buttplugio/buttplug-js"
+            target="_blank"
+          >
+            buttplug-js
           </a>
-          ) on other Browsers. If you are already on Chrome - check if you
-          computer/phone's bluetooth is enabled.
+          , it may or may not return.
         </span>
       )}
+      <Typo>How to connect</Typo>
+      <span>
+        To connect you need a running{" "}
+        <a className="underline" href="https://intiface.com/central/">
+          Intiface Central
+        </a>{" "}
+        server. It can run on your PC or Smartphone and will take care of the
+        bluetooth connection to your toy. Depending on your exact circumstances
+        you might need to enable "Device websocket Server" in it's settings.
+        Note that Intiface is a third-party application, so please file support
+        tickets with them.
+      </span>
     </div>
   );
 };
