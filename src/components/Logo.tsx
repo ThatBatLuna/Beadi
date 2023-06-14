@@ -56,7 +56,7 @@ function Icon() {
         </svg>
         <span className="font-bold">Beadi</span>
       </div>
-      {process.env.REACT_APP_BRANCH == "main" ? (
+      {process.env.REACT_APP_BRANCH === "main" ? (
         <a
           className="hover:underline bg-purple-400 text-black text-sm rounded-md m-2 p-1 mt-0 text-center"
           href={process.env.REACT_APP_BETA_PUBLIC_URL}
