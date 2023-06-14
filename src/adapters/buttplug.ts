@@ -41,10 +41,15 @@ export function makeClient(
     alert("Embedded is temporarily disabled??!");
     // connector = new ButtplugB();
   } else {
-    const c = new ButtplugBrowserWebsocketClientConnector(
-      `ws://${config.connection}`
-    );
-    connector = c;
+    if (config.connection.startsWith("ws://") || config.connection.startsWith("wss://")) {
+      connector = new ButtplugBrowserWebsocketClientConnector(
+          config.connection
+      );
+    } else {
+      connector = new ButtplugBrowserWebsocketClientConnector(
+          `ws://${config.connection}`
+      );
+    }
   }
   console.log("Created new Client ", config);
   let client: ButtplugClient = new ButtplugClient(
