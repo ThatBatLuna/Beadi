@@ -142,7 +142,7 @@ const ButtplugSettingsInner: FunctionComponent<{}> = () => {
           >
             buttplug-js
           </a>
-          , it may or may not return.
+           - it may or may not return.
         </span>
       )}
       <Typo>How to connect</Typo>
@@ -152,9 +152,9 @@ const ButtplugSettingsInner: FunctionComponent<{}> = () => {
           Intiface Central
         </a>{" "}
         server. It can run on your PC or Smartphone and will take care of the
-        bluetooth connection to your toy. Depending on your exact circumstances
-        you might need to enable "Device websocket Server" in it's settings.
-        Note that Intiface is a third-party application, so please file support
+        Bluetooth connection to your toy. Depending on your exact circumstances,
+        you might need to enable "Device WebSocket Server" in its settings. Note
+        that Intiface is a third-party application, so please file support
         tickets with them.
       </span>
     </div>
