@@ -2,6 +2,7 @@ import _ from "lodash";
 import { FunctionComponent, useMemo } from "react";
 import { nodeDefs } from "../nodes/nodes";
 import { Entry } from "./drawer/Entry";
+import Logo from "./Logo";
 
 const Drawer: FunctionComponent<{}> = (a) => {
   const nodes = useMemo(() => {
@@ -16,7 +17,10 @@ const Drawer: FunctionComponent<{}> = (a) => {
   }, []);
 
   return (
-    <div className="bg-primary-900 w-60">
+    <div className="bg-primary-900 w-60 overflow-y-scroll min-h-full flex flex-col">
+      <div>
+        <Logo></Logo>
+      </div>
       <ul>
         {nodes.map((category, index) => (
           <li key={category.name} className="mb-2">
@@ -34,6 +38,9 @@ const Drawer: FunctionComponent<{}> = (a) => {
           </li>
         ))}
       </ul>
+        <div className="mt-auto text-xs text-center text-slate-500">
+          ©Mona Mayrhofer, 2023 Linz, Austria
+        </div>
     </div>
   );
 };
