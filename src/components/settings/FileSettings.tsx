@@ -17,6 +17,7 @@ import create from "zustand";
 import { Edge, Node } from "reactflow";
 import clsx from "clsx";
 import { ImportFromLitterbox, UploadToLitterbox } from "./Litterbox";
+import { ImportFromJson } from "./JsonExport";
 
 export function getNewFileName(): string {
   const time = DateTime.now().toFormat("yyyy-LL-dd-HH-mm");
@@ -175,16 +176,18 @@ export const FileSettings: FunctionComponent<{}> = () => {
   return (
     <div className="flex flex-col w-full gap-2 p-2">
       <Typo>File</Typo>
-      <Button onClick={resetStoreData}>Discard current File</Button>
-      <Typo>Save</Typo>
       <TextInput
         label="Name"
         id="name"
         value={name}
         onChange={setName}
       ></TextInput>
+      <Button onClick={resetStoreData}>Discard current File</Button>
+      <Typo>Save</Typo>
 
       <Button onClick={exp}>Export</Button>
+      <ImportFromJson></ImportFromJson>
+      <Typo>Local Saves</Typo>
       <Button
         onClick={() => saveToDb(name)}
         disabled={name.trim().length === 0}
@@ -194,7 +197,6 @@ export const FileSettings: FunctionComponent<{}> = () => {
           : "Create new Save (In Browser)"}
       </Button>
 
-      <Typo>Local Saves</Typo>
       <ul className="flex flex-col gap-1 p-2 rounded-md bg-primary-1000">
         {saves.map((it) => (
           <li
@@ -227,6 +229,7 @@ export const FileSettings: FunctionComponent<{}> = () => {
         to quickly share generated Beadis, or transfer them to your smartphone.
       </p>
       <UploadToLitterbox></UploadToLitterbox>
+      <Typo element="h2">Import from Litterbox</Typo>
       <ImportFromLitterbox></ImportFromLitterbox>
     </div>
   );

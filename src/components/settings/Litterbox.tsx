@@ -42,14 +42,16 @@ export const UploadToLitterbox: FunctionComponent<{}> = () => {
   return (
     <>
       <Button onClick={() => exp()}>
-        Generate Link using litterbox.catbox.me
+        Generate Link using litterbox.catbox.moe
       </Button>
+      {code &&
       <p>
         Litterbox Code:{" "}
         <a href={link} rel="noreferrer" target="_blank">
           {code}
         </a>
       </p>
+      }
     </>
   );
 };
@@ -64,9 +66,10 @@ export const ImportFromLitterbox: FunctionComponent<{}> = () => {
       .then((result) => {
         console.log(result);
         overwriteStoreData(result.nodes, result.edges, result.handles);
+        setText("")
         //TODO VALIDATE THE RESULT
       });
-  }, [text, overwriteStoreData]);
+  }, [text, overwriteStoreData, setText]);
 
   return (
     <>
