@@ -51,6 +51,7 @@ type Post = {
 const PostSourcesDisplay: FunctionComponent<{ post: Post }> = ({ post }) => {
   return (
     <div className="text-xs">
+      <a className="underline" href={`https://e621.net/posts/${post.id}`} target="_blank">E621 Post #{post.id}</a>
       <h3>Sources</h3>
       <ul>
         {post.sources.map((source: any, index: any) => (
@@ -173,6 +174,8 @@ const DisplayHeader: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
   useEffect(() => {
     setTags(tags);
   }, [tags, setTags]);
+  
+  console.log(post);
 
   if (post == null || nextPost == null) {
     return <h1>???</h1>;
@@ -185,7 +188,6 @@ const DisplayHeader: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
           alt="from e621"
           className="hidden"
         ></img>
-        <p>{post.id}</p>
         <p>{tags}</p>
         <PostSourcesDisplay post={post}></PostSourcesDisplay>
       </Over18Note>
@@ -220,7 +222,6 @@ const DisplayMobileView: FunctionComponent<MobileViewProps> = ({ id }) => {
       <Over18Note>
         <img src={post.file?.url} alt="from e621"></img>
         <img src={nextPost.file?.url} alt="from e621" className="hidden"></img>
-        <p>{post.id}</p>
         <PostSourcesDisplay post={post}></PostSourcesDisplay>
       </Over18Note>
     );
