@@ -27,6 +27,7 @@ import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
 import { nodeDefs } from "../nodes/nodes";
+import { InputHandleDef, OutputHandleDef } from "../engine/node";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -116,16 +117,24 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
   const handles = useMemo(() => {
     const sourceNodeType = nodes.find((it) => it.id === data.source)?.type;
     if (sourceNodeType !== undefined) {
-      const handleType = nodeDefs[sourceNodeType].outputs.find(
-        (output) => output.id === data.sourceHandle
-      )!!;
-
+      let fromOutput = true;
+      let handleType: OutputHandleDef | InputHandleDef = nodeDefs[
+        sourceNodeType
+      ].outputs.find((output) => output.id === data.sourceHandle)!!;
+      if (handleType === undefined) {
+        fromOutput = false;
+        handleType = nodeDefs[sourceNodeType].inputs.find(
+          (input) => input.id === data.sourceHandle
+        )!!;
+      }
+      
       return Object.values(nodeDefs)
-        .flatMap((def) => def.inputs.map((it) => ({ node: def, input: it })))
+        .flatMap((def) => (fromOutput ? def.inputs : def.outputs).map((it) => ({ node: def, handle: it, output: !fromOutput })))
         .filter(
           (it) =>
-            handlesCompatible(it.input.type, handleType!!.type) &&
-            it.input.hidden !== true
+            (it.output ? 
+            handlesCompatible(it.handle.type, handleType.type) : handlesCompatible(handleType.type, it.handle.type)) &&
+            ((it.handle as any)["hidden"] !== true)
         );
     } else {
       return [];
@@ -133,15 +142,34 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
   }, [data.source, data.sourceHandle, nodes]);
 
   const complete = useCallback(
-    (type: string, handle: string) => {
+    (type: string, handle: string, toOutput: boolean) => {
       const newId = addNode(type, data.pos);
-
+      
+      const fromTo = toOutput ? {
+        source: {
+          id: newId,
+          handle: handle
+        },
+        target: {
+          id: data.source,
+          handle: data.sourceHandle
+        }
+      }:{
+        target: {
+          id: newId,
+          handle: handle
+        },
+        source: {
+          id: data.source,
+          handle: data.sourceHandle
+        }
+      }
       addEdge({
-        id: `reactflow__edge-${data.source}${data.sourceHandle}-${newId}${handle}`,
-        source: data.source,
-        target: newId,
-        sourceHandle: data.sourceHandle,
-        targetHandle: handle,
+        id: `reactflow__edge-${fromTo.source.id}${fromTo.source.handle}-${fromTo.target.id}${fromTo.target.handle}`,
+        source: fromTo.source.id,
+        target: fromTo.target.id,
+        sourceHandle: fromTo.source.handle,
+        targetHandle: fromTo.target.handle,
       });
     },
     [addNode, addEdge, data]
@@ -156,11 +184,11 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
         <ul className="overflow-y-scroll max-h-60">
           {handles.map((it) => (
             <li
-              onClick={() => complete(it.node.type, it.input.id)}
+              onClick={() => complete(it.node.type, it.handle.id, it.output)}
               className="flex flex-row items-center gap-2 px-2 hover:bg-primary-800"
             >
-              <NodeHandleDisplay type={it.input.type}></NodeHandleDisplay>
-              {it.node.label} - {it.input.label}
+              <NodeHandleDisplay type={it.handle.type}></NodeHandleDisplay>
+              {it.node.label} - {it.handle.label}
             </li>
           ))}
         </ul>
