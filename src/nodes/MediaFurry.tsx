@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, PropsWithChildren, useEffect, useState } from "react";
 import { MobileViewProps, NodeDef, NodeHeaderProps } from "../engine/node";
 import {
   useCommittedData,
@@ -6,10 +6,36 @@ import {
   useInputHandleData,
 } from "../engine/store";
 import { categories } from "./category";
-import create from "zustand";
+import create, { createStore, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { useDeepDebounced } from "../hooks/useDeepDebounced";
 import { useDebounce } from "use-debounce";
+import { Button } from "../components/input/Button";
+
+interface ConsentState {
+  consent: boolean,
+  setConsent: (v: boolean) => void
+}
+const consentStore = create<ConsentState>()((set) => ({
+  consent: false,
+  setConsent: (v) => {
+    set(() => ({consent: v}))
+  }
+}));
+
+const Over18Note: FunctionComponent<PropsWithChildren<{}>> = ({children}) => {
+  const consent = useStore(consentStore);
+
+  return <div className="relative">
+    {consent.consent ? children : (
+    <div className=" bg-black text-center">
+      <p>This area potentially contains sexually explicit material, you must be over 18 or your countries legal age of consent to view it.</p>
+      <Button onClick={() => consent.setConsent(true)}>I am over 18</Button> 
+    </div>
+    )
+}
+  </div>
+}
 
 type Post = {
   id: number;
@@ -152,7 +178,7 @@ const DisplayHeader: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
     return <h1>???</h1>;
   } else {
     return (
-      <div>
+      <Over18Note>
         <img src={post.preview?.url} alt="from e621" height={100}></img>
         <img
           src={nextPost.preview?.url}
@@ -162,7 +188,7 @@ const DisplayHeader: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
         <p>{post.id}</p>
         <p>{tags}</p>
         <PostSourcesDisplay post={post}></PostSourcesDisplay>
-      </div>
+      </Over18Note>
     );
   }
 };
@@ -191,12 +217,12 @@ const DisplayMobileView: FunctionComponent<MobileViewProps> = ({ id }) => {
     return <h1>???</h1>;
   } else {
     return (
-      <div>
+      <Over18Note>
         <img src={post.file?.url} alt="from e621"></img>
         <img src={nextPost.file?.url} alt="from e621" className="hidden"></img>
         <p>{post.id}</p>
         <PostSourcesDisplay post={post}></PostSourcesDisplay>
-      </div>
+      </Over18Note>
     );
   }
 };
