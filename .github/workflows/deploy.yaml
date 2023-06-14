@@ -3,6 +3,9 @@ on:
     branches:
       - "main"
 
+env:
+  REACT_APP_BRANCH: main
+
 permissions:
   contents: read
   pages: write
