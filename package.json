@@ -28,7 +28,7 @@
     "web-vitals": "^2.1.4",
     "zustand": "^4.1.4"
   },
-  "homepage": "https://thatbatluna.github.io/Beadi/",
+  "homepage": "https://beadi.onrender.com/",
   "scripts": {
     "start": "craco start",
     "build": "craco build",
