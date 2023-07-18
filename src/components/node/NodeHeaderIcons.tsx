@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import { useDisplayStore, useMergeNodeData } from "../../engine/store";
 import { MdMobileFriendly, MdMobileOff } from "react-icons/md";
+import { BsWifi, BsWifiOff } from "react-icons/bs";
 
 type MobileVisibleSwitchProps = {
   nodeId: string;
@@ -26,6 +27,35 @@ export const MobileVisibleSwitch: FunctionComponent<
         title="Visible in Mobile Interface"
         onClick={() => mergeSettings({ mobileVisible: false })}
       ></MdMobileFriendly>
+    );
+  }
+};
+
+type PublishedSwitchProps = {
+  nodeId: string;
+  published: boolean | undefined;
+};
+export const PublishedSwitch: FunctionComponent<PublishedSwitchProps> = ({
+  nodeId,
+  published,
+}) => {
+  const mergeSettings = useMergeNodeData(nodeId);
+
+  if (published !== true) {
+    return (
+      <BsWifiOff
+        className="m-1 cursor-pointer"
+        title="Published for Remote Controlling"
+        onClick={() => mergeSettings({ published: true })}
+      ></BsWifiOff>
+    );
+  } else {
+    return (
+      <BsWifi
+        className="m-1 cursor-pointer"
+        title="Published for Remote Controlling"
+        onClick={() => mergeSettings({ published: false })}
+      ></BsWifi>
     );
   }
 };

@@ -35,6 +35,7 @@ export type MobileViewProps = { id: string; data: any };
 export type NodeDef = {
   nodeComponent?: ComponentType<NodeProps>;
   label: string;
+  publishable?: boolean;
   category: Category;
   type: string;
   header?: ComponentType<NodeHeaderProps>;

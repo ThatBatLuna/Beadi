@@ -36,7 +36,8 @@ const ButtonNode: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
 export const BUTTON_NODE_TYPE = "button";
 export const buttonNodeDef: NodeDef = {
   label: "Button",
-  category: categories["control"],
+  category: categories["ui"],
+  publishable: true,
   type: BUTTON_NODE_TYPE,
   header: ButtonNode,
   mobileView: ButtonMobile,

@@ -4,8 +4,8 @@ import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
 import { InputHandleDef, NodeDef } from "../../engine/node";
-import { useInputHandleData } from "../../engine/store";
-import { MobileVisibleSwitch } from "./NodeHeaderIcons";
+import { NodeData, useInputHandleData } from "../../engine/store";
+import { MobileVisibleSwitch, PublishedSwitch } from "./NodeHeaderIcons";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 export type HandleInputProps = {
   input: InputHandleDef;
@@ -24,7 +24,9 @@ function getHandleInput({ type, input, nodeId }: HandleInputCProps) {
   return undefined;
 }
 
-export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
+export function makeNodeRenderer(
+  def: NodeDef
+): ComponentType<NodeProps<NodeData>> {
   const HeaderComponent = def.header;
   const inputs = def.inputs.filter((it) => it.hidden !== true);
 
@@ -33,6 +35,7 @@ export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
   }
 
   const canBeMobile = def.mobileView !== undefined;
+  const publishable = def.publishable && canBeMobile;
 
   return ({ id, data }) => {
     const edges = useEdges();
@@ -51,12 +54,20 @@ export function makeNodeRenderer(def: NodeDef): ComponentType<NodeProps<any>> {
         title={def.label}
         color={def.category.color}
         headerIcons={
-          canBeMobile ? (
-            <MobileVisibleSwitch
-              visible={data.mobileVisible}
-              nodeId={id}
-            ></MobileVisibleSwitch>
-          ) : undefined
+          <div className="flex flex-row">
+            {canBeMobile && (
+              <MobileVisibleSwitch
+                visible={data.mobileVisible}
+                nodeId={id}
+              ></MobileVisibleSwitch>
+            )}
+            {publishable && (
+              <PublishedSwitch
+                published={data.published}
+                nodeId={id}
+              ></PublishedSwitch>
+            )}
+          </div>
         }
       >
         {HeaderComponent && (

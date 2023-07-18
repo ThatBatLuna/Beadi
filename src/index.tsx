@@ -5,16 +5,29 @@ import "reactflow/dist/style.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { enableAllPlugins } from "immer";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RemoteControlPage } from "./components/remote/control";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
+  {
+    path: "/remote/:id",
+    element: <RemoteControlPage />,
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router}></RouterProvider>
   </React.StrictMode>
 );
 

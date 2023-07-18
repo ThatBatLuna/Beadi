@@ -15,6 +15,8 @@ import {
 import { ButtplugSettings } from "./settings/ButtplugSettings";
 import { FileSettings } from "./settings/FileSettings";
 import { MobileInterfaceTab } from "./settings/MobileInterface";
+import { MdOutlineSettingsRemote, MdSettingsRemote } from "react-icons/md";
+import { RemoteSettings } from "./settings/RemoteSettings";
 
 type Tab = {
   name: string;
@@ -41,6 +43,14 @@ const tabs: Record<string, Tab> = {
     label: "Mobile Interface",
     icon: <BsController className="w-full h-full"></BsController>,
     tab: MobileInterfaceTab,
+  },
+  remote: {
+    name: "remote",
+    label: "Remote Control",
+    icon: (
+      <MdOutlineSettingsRemote className="w-full h-full"></MdOutlineSettingsRemote>
+    ),
+    tab: RemoteSettings,
   },
 };
 

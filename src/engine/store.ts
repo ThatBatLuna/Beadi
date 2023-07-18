@@ -19,12 +19,21 @@ type NodeId = string;
 type AddNode = (type: string, pos: XYPosition) => NodeId;
 type AddEdge = (edge: Edge) => void;
 
+export interface NodeData {
+  mobileVisible?: boolean;
+  published?: boolean;
+  name?: string;
+}
+
 export interface DisplayStore {
-  nodes: Node[];
+  nodes: Node<NodeData>[];
   edges: Edge[];
   handles: Record<string, any>;
   setHandle: (nodeId: string, handleId: string, data: any) => void;
-  mergeNodeData: (nodeId: string, data: any) => void;
+  getHandle: (nodeId: string, handleId: string) => any;
+
+  //TODO Change this to a immer recipe instead of merging
+  mergeNodeData: (nodeId: string, data: Partial<NodeData>) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -88,6 +97,10 @@ export const useDisplayStore = create<DisplayStore>()(
           [`${nodeId}__${handleId}`]: data,
         },
       })),
+    getHandle: (nodeId, handleId) => {
+      console.log(get().handles);
+      return get().handles[`${nodeId}__${handleId}`];
+    },
     onConnect: (connection) => {
       set({
         edges: addEdge(
@@ -268,7 +281,7 @@ export function useSetNodeName(nodeId: string) {
 export function useMergeNodeData(nodeId: string) {
   const mergeNodeData = useDisplayStore((state) => state.mergeNodeData);
   return useCallback(
-    (data: Record<string, any>) => {
+    (data: Partial<NodeData>) => {
       mergeNodeData(nodeId, data);
     },
     [nodeId, mergeNodeData]

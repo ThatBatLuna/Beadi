@@ -49,7 +49,8 @@ const SliderNode: FunctionComponent<NodeHeaderProps> = ({ id, data }) => {
 export const SLIDER_NODE_TYPE = "slider";
 export const sliderNodeDef: NodeDef = {
   label: "Slider",
-  category: categories["control"],
+  category: categories["ui"],
+  publishable: true,
   type: SLIDER_NODE_TYPE,
   header: SliderNode,
   mobileView: SliderMobile,

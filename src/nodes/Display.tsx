@@ -154,6 +154,7 @@ export const displayNodeDef: NodeDef = {
   type: "display",
   // component: DisplayNode,
   header: DisplayNode,
+  publishable: true,
   outputs: [],
   mobileView: DisplayMobileView,
   inputs: [
