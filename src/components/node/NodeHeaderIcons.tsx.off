@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { useDisplayStore, useMergeNodeData } from "../../engine/store";
+import { useFileStore, useMergeNodeData } from "../../engine/store";
 import { MdMobileFriendly, MdMobileOff } from "react-icons/md";
 import { BsWifi, BsWifiOff } from "react-icons/bs";
 

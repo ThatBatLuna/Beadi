@@ -1,15 +1,9 @@
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../input/Button";
 import { TextInput } from "../input/TextInput";
 import { Typo } from "../Typo";
 import { DateTime } from "luxon";
-import { useDisplayStore } from "../../engine/store";
+import { ResetDocument, useFileStore } from "../../engine/store";
 import _ from "lodash";
 import FileSaver from "file-saver";
 import { IDBPDatabase, openDB } from "idb";
@@ -117,25 +111,17 @@ export const FileSettings: FunctionComponent<{}> = () => {
   const [name, setName] = useState(getNewFileName());
 
   const openDb = useDatabaseStore((store) => store.open);
-  const [save, loadFromDb, removeInDb] = useDatabaseStore((store) => [
-    store.save,
-    store.load,
-    store.remove,
-  ]);
+  const [save, loadFromDb, removeInDb] = useDatabaseStore((store) => [store.save, store.load, store.remove]);
   useEffect(() => {
     openDb();
   }, [openDb]);
 
   const saves = useDatabaseStore((store) => store.files);
 
-  const overwriteStoreData = useDisplayStore((store) => store.overwrite);
-  const resetStoreData = useDisplayStore((store) => store.reset);
-  const data = useDisplayStore((store) => ({
-    nodes: store.nodes.map((node) =>
-      _.pick(node, ["data", "id", "position", "type", "width", "height"])
-    ),
-    edges: store.edges,
-    handles: store.handles,
+  const importJson = useFileStore((store) => store.importJson);
+  const data = useFileStore((store) => ({
+    nodes: store.data.nodes,
+    edges: store.data.edges,
   }));
 
   const exp = useCallback(() => {
@@ -156,10 +142,10 @@ export const FileSettings: FunctionComponent<{}> = () => {
     async (name: string) => {
       const it = await loadFromDb(name);
       console.log(it);
-      overwriteStoreData(it.nodes, it.edges, it.handles);
+      importJson(it);
       setName(it.fileName);
     },
-    [loadFromDb, overwriteStoreData, setName]
+    [loadFromDb, importJson, setName]
   );
 
   const remove = useCallback(
@@ -176,33 +162,20 @@ export const FileSettings: FunctionComponent<{}> = () => {
   return (
     <div className="flex flex-col w-full gap-2 p-2">
       <Typo>File</Typo>
-      <TextInput
-        label="Name"
-        id="name"
-        value={name}
-        onChange={setName}
-      ></TextInput>
-      <Button onClick={resetStoreData}>Discard current File</Button>
+      <TextInput label="Name" id="name" value={name} onChange={setName}></TextInput>
+      <Button onClick={() => importJson(ResetDocument)}>Discard current File</Button>
       <Typo>Save</Typo>
 
       <Button onClick={exp}>Export</Button>
       <ImportFromJson></ImportFromJson>
       <Typo>Local Saves</Typo>
-      <Button
-        onClick={() => saveToDb(name)}
-        disabled={name.trim().length === 0}
-      >
-        {overwrite
-          ? "Overwrite existing Save with given Name"
-          : "Create new Save (In Browser)"}
+      <Button onClick={() => saveToDb(name)} disabled={name.trim().length === 0}>
+        {overwrite ? "Overwrite existing Save with given Name" : "Create new Save (In Browser)"}
       </Button>
 
       <ul className="flex flex-col gap-1 p-2 rounded-md bg-primary-1000">
         {saves.map((it) => (
-          <li
-            key={it.fileName}
-            className={clsx("rounded-md border-primary-800 border p-1", {})}
-          >
+          <li key={it.fileName} className={clsx("rounded-md border-primary-800 border p-1", {})}>
             <div className="font-bold">{it.fileName}</div>
             <div className="flex flex-row justify-end gap-2">
               <Button onClick={() => load(it.fileName)}>Load</Button>
@@ -211,22 +184,15 @@ export const FileSettings: FunctionComponent<{}> = () => {
           </li>
         ))}
       </ul>
-      <p className="text-slate-500">
-        Yes, I know this saving thingy is a bit wonky at the moment, but it
-        works for now...
-      </p>
+      <p className="text-slate-500">Yes, I know this saving thingy is a bit wonky at the moment, but it works for now...</p>
       <Typo>Litterbox</Typo>
       <p className="text-slate-500">
         Upload this beadi to{" "}
-        <a
-          href="https://litterbox.catbox.moe/"
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href="https://litterbox.catbox.moe/" target="_blank" rel="noreferrer">
           litterbox.catbox.moe
         </a>
-        . The uploaded Link will become invalid after an hour. This can be used
-        to quickly share generated Beadis, or transfer them to your smartphone.
+        . The uploaded Link will become invalid after an hour. This can be used to quickly share generated Beadis, or transfer them to your
+        smartphone.
       </p>
       <UploadToLitterbox></UploadToLitterbox>
       <Typo element="h2">Import from Litterbox</Typo>

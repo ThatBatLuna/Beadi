@@ -1,23 +1,11 @@
-import { useCallback } from "react";
-import {
-  addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
-  Edge,
-  Node,
-  OnConnect,
-  OnEdgesChange,
-  OnNodesChange,
-  XYPosition,
-} from "reactflow";
+import { Draft } from "immer";
+import { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition, applyNodeChanges } from "reactflow";
 import create from "zustand";
 import { persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 import { nodeDefs } from "../nodes/nodes";
-
-type NodeId = string;
-
-type AddNode = (type: string, pos: XYPosition) => NodeId;
-type AddEdge = (edge: Edge) => void;
+import _ from "lodash";
+import { useCallback } from "react";
 
 export interface NodeData {
   mobileVisible?: boolean;
@@ -25,265 +13,208 @@ export interface NodeData {
   name?: string;
 }
 
-export interface DisplayStore {
-  nodes: Node<NodeData>[];
-  edges: Edge[];
-  handles: Record<string, any>;
+export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
+  id: Node<NodeData>["id"];
+  position: Node<NodeData>["position"];
+  type: NonNullable<Node<NodeData>["type"]>;
+  data: {
+    displaySettings: TDisplaySettings;
+    settings: TSettings;
+    handles: THandles;
+  };
+};
+
+export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, unknown>>;
+
+export type BeadiEdge = {
+  id: Edge["id"];
+  sourceHandle: NonNullable<Edge["sourceHandle"]>;
+  targetHandle: NonNullable<Edge["targetHandle"]>;
+  source: Edge["source"];
+  target: Edge["target"];
+};
+
+export type BeadiFileData = {
+  nodes: Record<UnknownBeadiNode["id"], UnknownBeadiNode>;
+  edges: Record<BeadiEdge["id"], BeadiEdge>;
+};
+
+export type FileStore = {
+  data: BeadiFileData;
+
   setHandle: (nodeId: string, handleId: string, data: any) => void;
   getHandle: (nodeId: string, handleId: string) => any;
+  updateNode: (nodeId: string, recipe: (node: Draft<UnknownBeadiNode>) => void) => void;
+  overwrite: (file: BeadiFileData) => void;
 
   //TODO Change this to a immer recipe instead of merging
-  mergeNodeData: (nodeId: string, data: Partial<NodeData>) => void;
+  //   mergeNodeData: (nodeId: string, data: Partial<NodeData>) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-  addNode: AddNode;
-  addEdge: AddEdge;
-  reset: () => void;
-  overwrite: (
-    nodes: Node[],
-    edges: Edge[],
-    handles: Record<string, any>
-  ) => void;
-}
+  addEdge: (edge: Omit<BeadiEdge, "id">) => string;
+  addNode: (type: string, pos: XYPosition) => string;
 
-const initialNodes: Node<any>[] = [
-  {
-    id: "welcome",
-    type: "welcome",
-    position: {
-      x: 0,
-      y: 0,
-    },
-    data: {},
-  },
-];
-const initialEdges: Edge<any>[] = [];
+  exportJson: () => any;
+  importJson: (data: any) => void;
+  //   reset: () => void;
+};
+export const useFileStore = create<FileStore>()(
+  immer(
+    persist((set, get) => ({
+      data: {
+        nodes: {} as BeadiFileData["nodes"],
+        edges: {} as BeadiFileData["edges"],
+      },
 
-export const useDisplayStore = create<DisplayStore>()(
-  persist((set, get) => ({
-    nodes: initialNodes,
-    edges: initialEdges,
-    handles: {},
-    mergeNodeData: (node, data) => {
-      //TODO This is hella slow... Maybe I should rethink the handling for node data?
-      set(({ nodes }) => ({
-        nodes: nodes.map((it) => {
-          if (it.id === node) {
-            return {
-              ...it,
-              data: {
-                ...it.data,
-                ...data,
-              },
-            };
-          } else {
-            return it;
-          }
-        }),
-      }));
-    },
-    overwrite: (nodes, edges, handles) => {
-      set(() => ({
-        nodes,
-        edges,
-        handles,
-      }));
-    },
-    setHandle: (nodeId, handleId, data) =>
-      set((state) => ({
-        handles: {
-          ...state.handles,
-          [`${nodeId}__${handleId}`]: data,
-        },
-      })),
-    getHandle: (nodeId, handleId) => {
-      console.log(get().handles);
-      return get().handles[`${nodeId}__${handleId}`];
-    },
-    onConnect: (connection) => {
-      set({
-        edges: addEdge(
-          connection,
-          get().edges.filter(
-            (edge) =>
-              !(
-                edge.target === connection.target &&
-                edge.targetHandle === connection.targetHandle
-              )
-          )
-        ),
-      });
-    },
-    onNodesChange: (changes) =>
-      set({ nodes: applyNodeChanges(changes, get().nodes) }),
-    onEdgesChange: (changes) =>
-      set({ edges: applyEdgeChanges(changes, get().edges) }),
-    addEdge: (edge) => {
-      set({
-        edges: addEdge(edge, get().edges),
-      });
-    },
-    reset: () => {
-      set(() => ({
-        nodes: initialNodes,
-        edges: initialEdges,
-        handles: [],
-      }));
-    },
-    addNode: (type, pos) => {
-      const id = "" + Date.now();
-      nodeDefs[type].inputs.forEach((input) => {
-        get().setHandle(id, `input__${input.id}`, input.default);
-      });
-      set({
-        nodes: get().nodes.concat([
-          {
-            data: {},
+      addNode: (type, pos) => {
+        const id = "" + Date.now();
+        const nodeType = nodeDefs[type];
+        set((draft) => {
+          draft.data.nodes[id] = {
             id: id,
-            position: {
-              x: pos.x,
-              y: pos.y,
-            },
+            position: pos,
             type: type,
-          },
-        ]),
-      });
-      return id;
-    },
-  }))
+            data: {
+              displaySettings: {},
+              handles: _.mapValues(nodeType.inputs, (handle) => handle.default),
+              settings: {},
+            },
+          };
+        });
+        return id;
+      },
+      addEdge: (edge) => {
+        const id = `${edge.source}${edge.sourceHandle}=${edge.target}${edge.targetHandle}`;
+        set((draft) => {
+          draft.data.edges[id] = {
+            ...edge,
+            id: id,
+          };
+        });
+        return id;
+      },
+      onConnect: (connection) => {
+        if (
+          connection.source !== null &&
+          connection.sourceHandle !== null &&
+          connection.target !== null &&
+          connection.targetHandle !== null
+        ) {
+          get().addEdge(connection as any);
+        } else {
+          console.warn("onConnect with null values is not supported.");
+        }
+      },
+      onNodesChange: (changes) => {
+        set((draft) => {
+          for (const c of changes) {
+            if (c.type === "add") {
+              console.warn("Add is not yet handled.");
+            } else if (c.type === "dimensions") {
+              console.warn("Dimensions is not yet handled.");
+            } else if (c.type === "position") {
+              if (c.position !== undefined) {
+                draft.data.nodes[c.id].position = c.position;
+              } else {
+                console.warn("Position without position is not yet handled.");
+              }
+            } else if (c.type === "remove") {
+              delete draft.data.nodes[c.id];
+            } else if (c.type === "reset") {
+              console.warn("Reset is not yet handled.");
+            } else if (c.type === "select") {
+              console.warn("Select is not yet handled.");
+            }
+          }
+        });
+      },
+      onEdgesChange: (changes) => {},
+
+      setHandle: (nodeId, handleId, data) => {
+        set((store) => {
+          const node = store.data.nodes[nodeId];
+          if (node !== undefined) {
+            node.data.handles[handleId] = data;
+          } else {
+            console.trace("Tried to set handle of node, but node '", nodeId, "' does not exist.");
+          }
+        });
+      },
+
+      getHandle: (nodeId, handleId) => {
+        const node = get().data.nodes[nodeId];
+        if (node !== undefined) {
+          return node.data.handles[handleId];
+        } else {
+          return null;
+        }
+      },
+
+      overwrite: (file) => {
+        set((store) => (store.data = file));
+      },
+      updateNode: (nodeId, recipe) => {
+        set((store) => {
+          const node = store.data.nodes[nodeId];
+          if (node !== undefined) {
+            recipe(node);
+          } else {
+            console.trace("Tried to update nonexisting node '", nodeId, "'");
+          }
+        });
+      },
+      exportJson: () => {
+        return {
+          version: 2,
+          data: get().data,
+        };
+      },
+      importJson: (data: any) => {
+        //TODO Sanitize input
+
+        //Crude cleaning of possibly weird javascript objects.
+        const cleanData = JSON.parse(JSON.stringify(data));
+        console.warn("TODO importing unsanitized input data:", data, " => ", cleanData);
+        set({
+          data: cleanData,
+        });
+      },
+    }))
+  )
 );
 
-export interface DataStore {
-  committed: Record<string, Record<string, any>>;
-  ephermal: Record<string, Record<string, any>>;
-  commitData: (data: Record<string, Record<string, any>>) => void;
-  pushEphermalData: (nodeId: string, handleId: string, data: any) => void;
-  popEphermalData: () => Record<string, Record<string, any>>;
-}
-export const useDataStore = create<DataStore>()((set, get) => ({
-  committed: {},
-  ephermal: {},
-  popEphermalData: () => {
-    const values = get().ephermal;
-    set(() => ({ ephermal: {} }));
-    return values;
-  },
-  pushEphermalData: (nodeId, handleId, data) => {
-    set((state) => {
-      const newState = {
-        ephermal: {
-          ...state.ephermal,
-          [nodeId]: {
-            ...state.ephermal[nodeId],
-            [handleId]: data,
-          },
-        },
-      };
-      return newState;
-    });
-  },
-  commitData: (data) => {
-    set((state) => {
-      const newState = {
-        committed: {
-          ...state.committed,
-          ...Object.assign(
-            {},
-            ...Object.entries(data).map(([key, value]) => ({
-              [key]: {
-                ...state.committed[key],
-                ...value,
-              },
-            }))
-          ),
-        },
-      };
-      return newState;
-    });
-  },
-}));
-
-export type HandleData<T> = [T, (value: T) => void];
-export function useHandleData<T>(
-  handleType: string,
-  nodeId: string,
-  handleId: string
-): HandleData<T> {
-  const value = useDisplayStore((state) => {
-    return state.handles[`${nodeId}__input__${handleId}`];
+export type UseInputHandleData<T> = [T, (value: T) => void];
+export function useInputHandleData<T>(nodeId: string, handleId: string): UseInputHandleData<T> {
+  const value = useFileStore((state) => {
+    return state.data.nodes[nodeId].data.handles[handleId];
   });
-  const setHandle = useDisplayStore((state) => state.setHandle);
+  const setHandle = useFileStore((state) => state.setHandle);
   const setValue = useCallback(
     (value: T) => {
-      setHandle(nodeId, `${handleType}__${handleId}`, value);
+      setHandle(nodeId, handleId, value);
     },
-    [setHandle, nodeId, handleId, handleType]
+    [setHandle, nodeId, handleId]
   );
 
   return [value as T, setValue];
 }
 
-export function useInputHandleData<T>(
-  nodeId: string,
-  handleId: string
-): HandleData<T> {
-  return useHandleData("input", nodeId, handleId);
-}
-export function useCommittedData<T>(nodeId: string, handleId: string): T {
-  const value = useDataStore((state) => {
-    return state.committed[nodeId]?.[handleId];
-  });
-  return value as T;
-}
-export function useCommitData<T>(
-  nodeId: string,
-  handleId: string
-): (v: number) => void {
-  const commitData = useDataStore((state) => {
-    return state.commitData;
-  });
-  const doIt = useCallback(
-    (value: number) => {
-      commitData({
-        [nodeId]: {
-          [handleId]: value,
-        },
-      });
+export const ResetDocument: BeadiFileData = {
+  edges: {},
+  nodes: {
+    welcome: {
+      id: "welcome",
+      type: "welcome",
+      position: {
+        x: 0,
+        y: 0,
+      },
+      data: {
+        displaySettings: {},
+        handles: {},
+        settings: {},
+      },
     },
-    [nodeId, handleId, commitData]
-  );
-  return doIt;
-}
-export function usePushEphermalData<T>(nodeId: string, handleId: string) {
-  const push = useDataStore((state) => state.pushEphermalData);
-
-  return useCallback(
-    (data: T) => {
-      push(nodeId, handleId, data);
-    },
-    [push, nodeId, handleId]
-  );
-}
-export function useSetNodeName(nodeId: string) {
-  const mergeNodeData = useDisplayStore((state) => state.mergeNodeData);
-  return useCallback(
-    (name: string) => {
-      if (name.trim() === "") {
-        mergeNodeData(nodeId, { name: undefined });
-      } else {
-        mergeNodeData(nodeId, { name });
-      }
-    },
-    [nodeId, mergeNodeData]
-  );
-}
-export function useMergeNodeData(nodeId: string) {
-  const mergeNodeData = useDisplayStore((state) => state.mergeNodeData);
-  return useCallback(
-    (data: Partial<NodeData>) => {
-      mergeNodeData(nodeId, data);
-    },
-    [nodeId, mergeNodeData]
-  );
-}
+  },
+};

@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactNode, useCallback } from "react";
 import { Connection, Handle, Position } from "reactflow";
 import clsx from "clsx";
-import { useDisplayStore } from "../../engine/store";
+import { useFileStore } from "../../engine/store";
 import { handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeDefs } from "../../nodes/nodes";
@@ -23,7 +23,7 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
   id,
   connected,
 }) => {
-  const nodes = useDisplayStore((store) => store.nodes);
+  const nodes = useFileStore((store) => store.nodes);
 
   const isValidConnection = useCallback(
     (connection: Connection) => {

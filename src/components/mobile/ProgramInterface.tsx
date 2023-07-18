@@ -1,6 +1,6 @@
 import { FunctionComponent, ReactNode, useMemo } from "react";
 import shallow from "zustand/shallow";
-import { useDisplayStore, usePushEphermalData } from "../../engine/store";
+import { useFileStore, usePushEphermalData } from "../../engine/store";
 import { BUTTON_NODE_TYPE } from "../../nodes/ButtonNode";
 import { Node } from "reactflow";
 import { MobileWelcome } from "./Welcome";
@@ -42,7 +42,7 @@ const MOBILE_NODE_TYPES = new Set(
 );
 
 export const ProgramInterface: FunctionComponent<{}> = () => {
-  const nodes = useDisplayStore((store) => store.nodes, shallow);
+  const nodes = useFileStore((store) => store.nodes, shallow);
 
   const mobileNodes = useMemo(() => {
     return nodes.filter(

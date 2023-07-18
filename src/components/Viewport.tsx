@@ -1,12 +1,4 @@
-import {
-  FunctionComponent,
-  ReactNode,
-  RefObject,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { FunctionComponent, ReactNode, RefObject, useCallback, useMemo, useRef, useState } from "react";
 import ReactFlow, {
   Controls,
   Background,
@@ -19,7 +11,7 @@ import ReactFlow, {
   OnConnectStartParams,
 } from "reactflow";
 import _ from "lodash";
-import { DisplayStore, useDisplayStore } from "../engine/store";
+import { FileStore, useFileStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
 import shallow from "zustand/shallow";
 import { useDrop } from "react-dnd";
@@ -48,11 +40,7 @@ type ViewportDropTargetDrop = {
   wrapper: RefObject<HTMLDivElement>;
   onNodeDrop?: (pos: XYPosition, type: string) => void;
 };
-const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({
-  children,
-  onNodeDrop,
-  wrapper,
-}) => {
+const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({ children, onNodeDrop, wrapper }) => {
   const { project } = useReactFlow();
 
   //eslint-disable-next-line
@@ -85,9 +73,9 @@ const nodeTypes: NodeTypes = {
   welcome: WelcomeNode,
 };
 
-const selector = (state: DisplayStore) => ({
-  nodes: state.nodes,
-  edges: state.edges,
+const selector = (state: FileStore) => ({
+  nodes: Object.values(state.data.nodes),
+  edges: Object.values(state.data.edges),
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
@@ -105,36 +93,32 @@ type NewNodeDropDownProps = {
   data: NodeDropdownData;
   onClose: () => void;
 };
-const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
-  data,
-  onClose,
-}) => {
-  const { addNode, addEdge, nodes } = useDisplayStore(
-    (s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.nodes }),
-    shallow
-  );
+const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClose }) => {
+  const { addNode, addEdge, nodes } = useFileStore((s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.data.nodes }), shallow);
 
   const handles = useMemo(() => {
-    const sourceNodeType = nodes.find((it) => it.id === data.source)?.type;
+    const sourceNodeType = nodes[data.source].type;
     if (sourceNodeType !== undefined) {
       let fromOutput = true;
-      let handleType: OutputHandleDef | InputHandleDef = nodeDefs[
-        sourceNodeType
-      ].outputs.find((output) => output.id === data.sourceHandle)!!;
+      let handleType: OutputHandleDef | InputHandleDef = nodeDefs[sourceNodeType].outputs[data.sourceHandle];
       if (handleType === undefined) {
         fromOutput = false;
-        handleType = nodeDefs[sourceNodeType].inputs.find(
-          (input) => input.id === data.sourceHandle
-        )!!;
+        handleType = nodeDefs[sourceNodeType].inputs[data.sourceHandle];
       }
-      
+
       return Object.values(nodeDefs)
-        .flatMap((def) => (fromOutput ? def.inputs : def.outputs).map((it) => ({ node: def, handle: it, output: !fromOutput })))
+        .flatMap((def) =>
+          Object.entries(fromOutput ? def.inputs : def.outputs).map(([handleId, handle]) => ({
+            node: def,
+            handle: handle,
+            handleId,
+            output: !fromOutput,
+          }))
+        )
         .filter(
           (it) =>
-            (it.output ? 
-            handlesCompatible(it.handle.type, handleType.type) : handlesCompatible(handleType.type, it.handle.type)) &&
-            ((it.handle as any)["hidden"] !== true)
+            (it.output ? handlesCompatible(it.handle.type, handleType.type) : handlesCompatible(handleType.type, it.handle.type)) &&
+            (it.handle as any)["hidden"] !== true
         );
     } else {
       return [];
@@ -144,28 +128,29 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
   const complete = useCallback(
     (type: string, handle: string, toOutput: boolean) => {
       const newId = addNode(type, data.pos);
-      
-      const fromTo = toOutput ? {
-        source: {
-          id: newId,
-          handle: handle
-        },
-        target: {
-          id: data.source,
-          handle: data.sourceHandle
-        }
-      }:{
-        target: {
-          id: newId,
-          handle: handle
-        },
-        source: {
-          id: data.source,
-          handle: data.sourceHandle
-        }
-      }
+
+      const fromTo = toOutput
+        ? {
+            source: {
+              id: newId,
+              handle: handle,
+            },
+            target: {
+              id: data.source,
+              handle: data.sourceHandle,
+            },
+          }
+        : {
+            target: {
+              id: newId,
+              handle: handle,
+            },
+            source: {
+              id: data.source,
+              handle: data.sourceHandle,
+            },
+          };
       addEdge({
-        id: `reactflow__edge-${fromTo.source.id}${fromTo.source.handle}-${fromTo.target.id}${fromTo.target.handle}`,
         source: fromTo.source.id,
         target: fromTo.target.id,
         sourceHandle: fromTo.source.handle,
@@ -184,7 +169,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
         <ul className="overflow-y-scroll max-h-60">
           {handles.map((it) => (
             <li
-              onClick={() => complete(it.node.type, it.handle.id, it.output)}
+              onClick={() => complete(it.node.type, it.handleId, it.output)}
               className="flex flex-row items-center gap-2 px-2 hover:bg-primary-800"
             >
               <NodeHandleDisplay type={it.handle.type}></NodeHandleDisplay>
@@ -200,8 +185,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({
 const Viewport: FunctionComponent<{
   wrapper: RefObject<HTMLDivElement | null>;
 }> = ({ wrapper }) => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
-    useDisplayStore(selector, shallow);
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, shallow);
   const { project } = useReactFlow();
 
   const connectingNode = useRef<OnConnectStartParams | null>(null);
@@ -210,8 +194,7 @@ const Viewport: FunctionComponent<{
     connectingNode.current = start;
   }, []);
 
-  const [nodeDropdownData, setNodeDropdownData] =
-    useState<null | NodeDropdownData>(null);
+  const [nodeDropdownData, setNodeDropdownData] = useState<null | NodeDropdownData>(null);
 
   const closeDropdown = useCallback(() => {
     setNodeDropdownData(null);
@@ -219,9 +202,7 @@ const Viewport: FunctionComponent<{
 
   const onConnectEnd: OnConnectEnd = useCallback(
     (event) => {
-      const targetIsPane = (event.target as any).classList.contains(
-        "react-flow__pane"
-      );
+      const targetIsPane = (event.target as any).classList.contains("react-flow__pane");
       if (targetIsPane) {
         const rect = wrapper.current?.getBoundingClientRect();
 
@@ -263,27 +244,19 @@ const Viewport: FunctionComponent<{
         <Controls></Controls>
         <Background className="bg-primary-1100"></Background>
       </ReactFlow>
-      {nodeDropdownData && (
-        <NewNodeDropdown
-          data={nodeDropdownData}
-          onClose={closeDropdown}
-        ></NewNodeDropdown>
-      )}
+      {nodeDropdownData && <NewNodeDropdown data={nodeDropdownData} onClose={closeDropdown}></NewNodeDropdown>}
     </>
   );
 };
 
 const ViewportWrapper: FunctionComponent<{}> = (props) => {
-  const addNode = useDisplayStore((s) => s.addNode, shallow);
+  const addNode = useFileStore((s) => s.addNode, shallow);
   const wrapper = useRef<HTMLDivElement | null>(null);
 
   return (
     <div className="relative grow" ref={wrapper}>
       <ReactFlowProvider>
-        <ViewportDropTarget
-          onNodeDrop={(pos, type) => addNode(type, pos)}
-          wrapper={wrapper}
-        >
+        <ViewportDropTarget onNodeDrop={(pos, type) => addNode(type, pos)} wrapper={wrapper}>
           <Viewport wrapper={wrapper}></Viewport>
         </ViewportDropTarget>
       </ReactFlowProvider>

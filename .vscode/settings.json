@@ -1,0 +1,8 @@
+{
+  "auto-close-tag.disableOnLanguage": [
+    "php",
+    "javascript",
+    "typescript",
+    "plaintext"
+  ]
+}

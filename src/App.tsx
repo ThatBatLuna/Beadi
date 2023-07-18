@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import create from "zustand";
@@ -7,7 +6,6 @@ import Drawer from "./components/Drawer";
 import { MobileView } from "./components/mobile/MobileView";
 import { Settings } from "./components/Settings";
 import Viewport from "./components/Viewport";
-import { runEngineLoop } from "./engine/runner";
 
 type GlobalSettings = {
   mobileView: boolean;
@@ -44,5 +42,3 @@ function App() {
 }
 
 export default App;
-
-runEngineLoop();

@@ -1,7 +1,10 @@
 import { FunctionComponent } from "react";
-import { NodeDef, NodeHeaderProps } from "../engine/node";
-import { useCommittedData } from "../engine/store";
+import { NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
+import create from "zustand";
+import { createNodeDriverStore } from "../engine/nodeDriverStore";
+
+const useTimerNodeProgressStore = createNodeDriverStore<number>(0);
 
 export function gaussianRandom(mean = 0, stdev = 1) {
   let u = 1 - Math.random(); //Converting [0,1) to (0,1)
@@ -12,95 +15,95 @@ export function gaussianRandom(mean = 0, stdev = 1) {
 }
 
 const TimerNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
-  const progress = useCommittedData<number>(id, "progress") || 0.0;
+  const progress = useTimerNodeProgressStore(id);
 
   return (
     <div className="h-4 mx-2 overflow-hidden rounded-md bg-primary-1100">
-      <div
-        className="h-full bg-purple-700"
-        style={{ width: `${(progress * 100).toFixed(2)}%` }}
-      ></div>
+      <div className="h-full bg-purple-700" style={{ width: `${(progress * 100).toFixed(2)}%` }}></div>
     </div>
   );
 };
 
-export const timerNodeDef: NodeDef = {
+export const timerNodeDef = nodeDef({
   label: "Random Timer Node",
   category: categories["generators"],
   type: "timer",
   header: TimerNode,
-  outputs: [
-    {
-      id: "value",
+  outputs: {
+    value: {
       label: "Value",
       type: "boolean",
     },
-    {
-      id: "progress",
+    progress: {
       label: "Progress",
       type: "number",
     },
-  ],
-  inputs: [
-    {
-      id: "onTime",
+  },
+  inputs: {
+    onTime: {
       label: "On Time",
       type: "number",
       default: 1.0,
     },
-    {
-      id: "onTimeDeviation",
+    onTimeDeviation: {
       label: "On Time Dev",
       type: "number",
       default: 0.0,
       min: 0.0,
       max: 1.0,
     },
-    {
-      id: "offTime",
+    offTime: {
       label: "Off Time",
       type: "number",
       default: 1.0,
     },
-    {
-      id: "offTimeDeviation",
+    offTimeDeviation: {
       label: "Off Time Dev",
       type: "number",
       default: 0.0,
       min: 0.0,
       max: 1.0,
     },
-  ],
-  executor: (
-    [onTime, onTimeDev, offTime, offTimeDev],
-    { commit, committed }
-  ) => {
-    const last = committed["last"] || false;
-    const toggle = committed["toggleTime"] || new Date().getTime();
-    const lastTime = committed["lastTime"] || new Date().getTime();
-
-    if (new Date().getTime() >= toggle) {
-      //Toggle
-
-      if (last === false) {
-        const dev = gaussianRandom(0, onTimeDev * onTime);
-        commit("toggleTime", new Date().getTime() + (onTime + dev) * 1000);
-        commit("lastTime", toggle);
-        commit("last", true);
-      } else {
-        const dev = gaussianRandom(0, offTimeDev * offTime);
-        commit("toggleTime", new Date().getTime() + (offTime + dev) * 1000);
-        commit("lastTime", toggle);
-        commit("last", false);
-      }
-    }
-
-    const duration = toggle - lastTime;
-    const elapsed = new Date().getTime() - lastTime;
-    const progress = elapsed / duration;
-
-    commit("progress", progress);
-
-    return [last, progress];
   },
-};
+  executor: {
+    initialPersistence: {
+      toggleTime: new Date(),
+      lastTime: new Date(),
+      last: false,
+      progress: 0,
+    },
+
+    executor: ({ onTime, onTimeDeviation, offTime, offTimeDeviation }, persistent) => {
+      if (new Date().getTime() >= persistent.toggleTime.getTime()) {
+        //Toggle
+
+        if (persistent.last === false) {
+          const dev = gaussianRandom(0, onTimeDeviation * onTime);
+          persistent.lastTime = persistent.toggleTime;
+          persistent.toggleTime = new Date(new Date().getTime() + (onTime + dev) * 1000);
+          persistent.last = true;
+        } else {
+          const dev = gaussianRandom(0, offTimeDeviation * offTime);
+          persistent.lastTime = persistent.toggleTime;
+          persistent.toggleTime = new Date(new Date().getTime() + (offTime + dev) * 1000);
+          persistent.last = false;
+        }
+      }
+
+      const duration = persistent.toggleTime.getTime() - persistent.toggleTime.getTime();
+      const elapsed = new Date().getTime() - persistent.lastTime.getTime();
+      const progress = elapsed / duration;
+
+      persistent.progress = progress;
+
+      return {
+        outputs: {
+          value: persistent.last,
+          progress: progress,
+        },
+        driverOutputs: {},
+        persistentData: persistent,
+      };
+    },
+  },
+});

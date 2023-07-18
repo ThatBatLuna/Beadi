@@ -4,16 +4,13 @@ import NumberInput from "../input/NumberInput";
 import { TextInput } from "../input/TextInput";
 import { HandleInputProps } from "./NodeRenderer";
 
-const NumberHandleInput: FunctionComponent<HandleInputProps> = ({
-  nodeId,
-  input,
-}) => {
-  const [value, setValue] = useInputHandleData<any>(nodeId, input.id);
+const NumberHandleInput: FunctionComponent<HandleInputProps> = ({ nodeId, handleId, input }) => {
+  const [value, setValue] = useInputHandleData<any>(nodeId, handleId);
 
   return (
     <NumberInput
-      id={`${nodeId}__${input.id}`}
-      name={input.id}
+      id={`${nodeId}__${handleId}`}
+      name={handleId}
       label={input.label}
       min={input.min}
       max={input.max}
@@ -23,27 +20,15 @@ const NumberHandleInput: FunctionComponent<HandleInputProps> = ({
   );
 };
 
-const StringHandleInput: FunctionComponent<HandleInputProps> = ({
-  nodeId,
-  input,
-}) => {
-  const [value, setValue] = useInputHandleData<any>(nodeId, input.id);
+const StringHandleInput: FunctionComponent<HandleInputProps> = ({ handleId, nodeId, input }) => {
+  const [value, setValue] = useInputHandleData<any>(nodeId, handleId);
 
   return (
-    <TextInput
-      id={`${nodeId}__${input.id}`}
-      name={input.id}
-      label={input.label}
-      value={value}
-      onChange={(e) => setValue(e)}
-    ></TextInput>
+    <TextInput id={`${nodeId}__${handleId}`} name={handleId} label={input.label} value={value} onChange={(e) => setValue(e)}></TextInput>
   );
 };
 
-export const NODE_HANDLE_INPUT_TYPES: Record<
-  string,
-  FunctionComponent<HandleInputProps>
-> = {
+export const NODE_HANDLE_INPUT_TYPES: Record<string, FunctionComponent<HandleInputProps>> = {
   number: NumberHandleInput,
   string: StringHandleInput,
 };
