@@ -18,7 +18,7 @@ import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
-import { nodeDefs } from "../nodes/nodes";
+import { nodeDefs } from "../registries";
 import { InputHandleDef, OutputHandleDef } from "../engine/node";
 
 function position(e: HTMLElement) {

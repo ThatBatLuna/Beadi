@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactNode, useMemo } from "react";
 import { Node } from "reactflow";
 import { MobileWelcome } from "./Welcome";
-import { nodeDefs } from "../../nodes/nodes";
+import { nodeDefs } from "../../registries";
 
 type MobileNodeRendererProps = {
   node: Node;

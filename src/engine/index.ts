@@ -1,5 +1,5 @@
 import { Node, Edge } from "reactflow";
-import { nodeDefs } from "../nodes/nodes";
+import { nodeDefs } from "../registries";
 import { getConversionFunction } from "./handles";
 import { NodeExecutor } from "./node";
 import { useFileStore } from "./store";
@@ -9,14 +9,11 @@ import { restartLoopWithModel } from "./runner";
 
 export function watchForChanges() {
   useFileStore.subscribe((store) => {
-    const newNodes = _.sortBy(
-      Object.values(store.data.nodes).map((it) => ({
-        id: it.id,
-        type: it.type,
-        settings: it.data.settings,
-      })),
-      (it) => it.id
-    );
+    const newNodes = _.mapValues(store.data.nodes, (it) => ({
+      id: it.id,
+      type: it.type,
+      settings: it.data.settings,
+    }));
     const newEdges = _.sortBy(
       Object.values(store.data.edges).map((it) => ({
         id: it.id,

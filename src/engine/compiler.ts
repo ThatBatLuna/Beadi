@@ -2,7 +2,7 @@ import _ from "lodash";
 import { useFileStore } from "./store";
 import create from "zustand";
 import { AnyNodeExecutorDef } from "./node";
-import { nodeDefs } from "../nodes/nodes";
+import { nodeDefs } from "../registries";
 import { getConversionFunction } from "./handles";
 
 export type RecipeDependency = {
@@ -12,6 +12,7 @@ export type RecipeDependency = {
 };
 export type Recipe = {
   dependencies: Record<string, RecipeDependency | null>;
+  settings: any;
   nodeId: string;
   type: string;
   // executor: AnyNodeExecutorDef;
@@ -28,7 +29,8 @@ export function buildModel({ nodes, edges }: ModelSources): Model {
   let terminals = [];
   let nodeDict: Record<string, ModelNode> = {};
 
-  for (const node of nodes) {
+  for (const nodeId in nodes) {
+    const node = nodes[nodeId];
     nodeDict[node.id] = node;
     let nodeType = nodeDefs[node.type!!];
     if (nodeType !== undefined) {
@@ -75,6 +77,7 @@ export function buildModel({ nodes, edges }: ModelSources): Model {
             return null;
           }
         }),
+        settings: nodes[nodeId].settings,
         nodeId: nodeId,
         type: nodeType.type,
       });
@@ -189,7 +192,7 @@ export type ModelEdge = {
   targetHandle: string;
 };
 export type ModelSources = {
-  nodes: ModelNode[];
+  nodes: Record<string, ModelNode>;
   edges: ModelEdge[];
 };
 export type ModelStore = {
@@ -199,7 +202,7 @@ export type ModelStore = {
 
 export const modelState = create<ModelStore>()(() => ({
   sources: {
-    nodes: [],
+    nodes: {},
     edges: [],
   },
   model: null,

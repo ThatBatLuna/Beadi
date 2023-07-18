@@ -1,4 +1,4 @@
-import { AnyNodeDef, NodeDef } from "../engine/node";
+import { AnyNodeDef, NodeDef } from "./engine/node";
 
 // import {
 //   addNodeDef,
@@ -15,7 +15,8 @@ import { AnyNodeDef, NodeDef } from "../engine/node";
 // import { mixNodeDef } from "../nodes/MixNode";
 // import { positiveWaveNodeDef } from "../nodes/PositiveWave";
 // import { randomNodeDef } from "../nodes/RandomNode";
-import { timerNodeDef } from "../nodes/TimerNode";
+import { timerNodeDef } from "./nodes/TimerNode";
+import { inputAdapterNode } from "./nodes/InputAdapterNode";
 // import { clampNodeDef } from "./ClampNode";
 // import { commentNodeDef } from "./CommentNode";
 // import { curveNodeDef } from "./CurveNode";
@@ -24,7 +25,11 @@ import { timerNodeDef } from "../nodes/TimerNode";
 // import { mediaFurryNodeDef } from "./MediaFurry";
 // import { sensorNodeDef } from "./SensorNode";
 // import { sliderNodeDef } from "./SliderNode";
-import { toggleNodeDef } from "./ToggleNode";
+import { toggleNodeDef } from "./nodes/ToggleNode";
+import { AnyInputAdapterDef, AnyOutputAdapterDef, InputAdapterDef } from "./engine/adapter";
+import { remoteInputAdapter, testRemoteInputAdapter } from "./remotePlugin/inputAdapter";
+import { remoteOutputAdapter, testRemoteOutputAdapter } from "./remotePlugin/outputAdapter";
+import { outputAdapterNode } from "./nodes/OutputAdapterNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
@@ -43,6 +48,8 @@ const nodeDefList: AnyNodeDef[] = [
   // buttonNodeDef,
   // sliderNodeDef,
   toggleNodeDef as any,
+  inputAdapterNode as any,
+  outputAdapterNode as any,
   // clampNodeDef,
   // curveNodeDef,
   // delayNodeDef,
@@ -53,3 +60,17 @@ const nodeDefList: AnyNodeDef[] = [
 ];
 
 export const nodeDefs: Record<string, AnyNodeDef> = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
+
+const inputAdapterDefList: AnyInputAdapterDef[] = [remoteInputAdapter, testRemoteInputAdapter];
+
+export const inputAdapterDefs: Record<string, AnyInputAdapterDef> = Object.assign(
+  {},
+  ...inputAdapterDefList.map((it) => ({ [it.id]: it }))
+);
+
+const outputAdapterDefList: AnyOutputAdapterDef[] = [remoteOutputAdapter, testRemoteOutputAdapter];
+
+export const outputAdapterDefs: Record<string, AnyOutputAdapterDef> = Object.assign(
+  {},
+  ...outputAdapterDefList.map((it) => ({ [it.id]: it }))
+);

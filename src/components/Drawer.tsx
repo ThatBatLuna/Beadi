@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { FunctionComponent, useMemo } from "react";
-import { nodeDefs } from "../nodes/nodes";
+import { nodeDefs } from "../registries";
 import { Entry } from "./drawer/Entry";
 import Logo from "./Logo";
 
@@ -24,10 +24,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
       <ul>
         {nodes.map((category, index) => (
           <li key={category.name} className="mb-2">
-            <h2
-              className="px-2 py-1 font-bold text-black"
-              style={{ backgroundColor: category.color }}
-            >
+            <h2 className="px-2 py-1 font-bold text-black" style={{ backgroundColor: category.color }}>
               {category.name}
             </h2>
             <ul>
@@ -38,9 +35,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
           </li>
         ))}
       </ul>
-        <div className="mt-auto text-xs text-center text-slate-500">
-          ©Mona Mayrhofer, 2023 Linz, Austria
-        </div>
+      <div className="mt-auto text-xs text-center text-slate-500">©Mona Mayrhofer, 2023 Linz, Austria</div>
     </div>
   );
 };

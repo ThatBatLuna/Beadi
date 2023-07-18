@@ -40,11 +40,16 @@ export type OutputHandleDefs = Record<string, OutputHandleDef>;
 export type NodeHeaderProps = { id: string; data: any };
 export type MobileViewProps = { id: string; data: any };
 
+export type NodeContext<TSettings> = {
+  id: string;
+  settings: TSettings;
+};
+
 export type DriverProps = {
   nodePersistence: Record<string, any>;
 };
-export type InputDriver<TDriverInputs> = () => TDriverInputs;
-export type OutputDriver<TDriverOutputs> = (outputs: TDriverOutputs) => void;
+export type InputDriver<TDriverInputs, TSettings> = (context: NodeContext<TSettings>) => TDriverInputs;
+export type OutputDriver<TDriverOutputs, TSettings> = (outputs: TDriverOutputs, context: NodeContext<TSettings>) => void;
 
 export type InputTypeOf<THandleDef extends HandleDef> = THandleDef extends { type: "number" }
   ? number
@@ -63,37 +68,60 @@ export type OutputTypesOf<THandleDefs extends Record<string, OutputHandleDef>> =
   [Key in keyof THandleDefs]: OutputTypeOf<THandleDefs[Key]>;
 };
 
-export type AnyNodeExecutorDef = NodeExecutorDef<InputHandleDefs, Record<string, unknown>, OutputHandleDefs, Record<string, unknown>, any>;
+export type AnyNodeExecutorDef = NodeExecutorDef<
+  InputHandleDefs,
+  Record<string, unknown>,
+  OutputHandleDefs,
+  Record<string, unknown>,
+  any,
+  any
+>;
 type NodeExecutorDef<
   TInputHandleDefs extends InputHandleDefs,
   TDriverInputs extends Record<string, any>,
   TOutputHandleDefs extends OutputHandleDefs,
   TDriverOutputs extends Record<string, any>,
-  TPersistence
+  TPersistence,
+  TSettings
 > = {
   initialPersistence: TPersistence;
   executor: NodeExecutor<InputTypesOf<TInputHandleDefs>, TDriverInputs, OutputTypesOf<TOutputHandleDefs>, TDriverOutputs, TPersistence>;
-  inputDriver?: InputDriver<TDriverInputs>;
-  outputDriver?: OutputDriver<TDriverOutputs>;
+  inputDriver?: InputDriver<TDriverInputs, TSettings>;
+  outputDriver?: OutputDriver<TDriverOutputs, TSettings>;
 };
 
-export function nodeDef<
+export function nodeDef<TSettings>() {
+  return <
+    TInputHandleDefs extends InputHandleDefs,
+    TDriverInputs extends Record<string, any>,
+    TOutputHandleDefs extends OutputHandleDefs,
+    TDriverOutputs extends Record<string, any>,
+    TPersistence
+  >(
+    n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>
+  ) => {
+    return n;
+  };
+}
+function innerNodeDef<
   TInputHandleDefs extends InputHandleDefs,
   TDriverInputs extends Record<string, any>,
   TOutputHandleDefs extends OutputHandleDefs,
   TDriverOutputs extends Record<string, any>,
-  TPersistence
->(n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence>) {
+  TPersistence,
+  TSettings
+>(n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>) {
   return n;
 }
 
-export type AnyNodeDef = NodeDef<InputHandleDefs, Record<string, unknown>, OutputHandleDefs, Record<string, unknown>, any>;
+export type AnyNodeDef = NodeDef<InputHandleDefs, Record<string, unknown>, OutputHandleDefs, Record<string, unknown>, any, any>;
 export type NodeDef<
   TInputHandleDefs extends InputHandleDefs,
   TDriverInputs extends Record<string, any>,
   TOutputHandleDefs extends OutputHandleDefs,
   TDriverOutputs extends Record<string, any>,
-  TPersistence
+  TPersistence,
+  TSettings
 > = {
   label: string;
   publishable?: boolean;
@@ -105,5 +133,5 @@ export type NodeDef<
   nodeComponent?: ComponentType<NodeProps>;
   inputs: TInputHandleDefs;
   outputs: TOutputHandleDefs;
-  executor: NodeExecutorDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence>;
+  executor: NodeExecutorDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>;
 };

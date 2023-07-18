@@ -3,7 +3,7 @@ import { BeadiMessage, RemoteControlEndpoint, handleMessage, sendMessage } from 
 import _ from "lodash";
 import produce from "immer";
 import { useFileStore } from "../../engine/store";
-import { nodeDefs } from "../../nodes/nodes";
+import { nodeDefs } from "../../registries";
 
 type RemotePublishStoreState =
   | {

@@ -1,7 +1,7 @@
 import { nodeDef } from "../engine/node";
 import { categories } from "./category";
 
-export const toggleNodeDef = nodeDef({
+export const toggleNodeDef = nodeDef()({
   label: "Toggle",
   category: categories["control"],
   type: "toggle",

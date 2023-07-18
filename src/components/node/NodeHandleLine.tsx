@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useFileStore } from "../../engine/store";
 import { handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
-import { nodeDefs } from "../../nodes/nodes";
+import { nodeDefs } from "../../registries";
 
 type NodeHandleLineProps = {
   input?: ReactNode;

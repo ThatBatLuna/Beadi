@@ -3,7 +3,7 @@ import { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition, applyN
 import create from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { nodeDefs } from "../nodes/nodes";
+import { nodeDefs } from "../registries";
 import _ from "lodash";
 import { useCallback } from "react";
 

@@ -24,7 +24,7 @@ const TimerNode: FunctionComponent<NodeHeaderProps> = ({ id }) => {
   );
 };
 
-export const timerNodeDef = nodeDef({
+export const timerNodeDef = nodeDef()({
   label: "Random Timer Node",
   category: categories["generators"],
   type: "timer",

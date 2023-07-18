@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { addEdge, applyEdgeChanges, applyNodeChanges, Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition } from "reactflow";
 import create from "zustand";
 import { persist } from "zustand/middleware";
-import { nodeDefs } from "../nodes/nodes";
+import { nodeDefs } from "../registries";
 
 type NodeId = string;
 

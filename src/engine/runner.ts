@@ -2,8 +2,8 @@ import _ from "lodash";
 import { Model, modelState } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
-import { OutputTypeOf, nodeDef } from "./node";
-import { nodeDefs } from "../nodes/nodes";
+import { NodeContext, OutputTypeOf, nodeDef } from "./node";
+import { nodeDefs } from "../registries";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -31,6 +31,11 @@ function runEngineLoop(model: Model) {
     // console.log(1000 / delta);
     //
     for (const step of model.executionPlan) {
+      const nodeContext: NodeContext<any> = {
+        id: step.nodeId,
+        settings: step.settings,
+      };
+
       const nodeType = nodeDefs[step.type];
       // const inputs = step.dependencies.map((it) => (it.convert ? it.convert(data[it.id]) : data[it.id]));
       const inputs = _.mapValues(step.dependencies, (dependency, handleId) => {
@@ -42,7 +47,7 @@ function runEngineLoop(model: Model) {
       });
 
       const persistent = persistentData[step.nodeId];
-      const driverInputs = nodeType.executor.inputDriver?.();
+      const driverInputs = nodeType.executor.inputDriver?.(nodeContext);
       // const committedData =
       const outputs = nodeType.executor.executor(inputs, persistent, driverInputs ?? {});
 
@@ -57,7 +62,7 @@ function runEngineLoop(model: Model) {
 
       handleValues[step.nodeId] = outputs.outputs;
       persistentData[step.nodeId] = outputs.persistentData;
-      nodeType.executor.outputDriver?.(outputs.driverOutputs);
+      nodeType.executor.outputDriver?.(outputs.driverOutputs, nodeContext);
     }
 
     timeout = setTimeout(update, timestep) as any;

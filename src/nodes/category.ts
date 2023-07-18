@@ -1,6 +1,10 @@
 import { Category } from "../engine/node";
 
 export const categories: Record<string, Category> = {
+  inout: {
+    label: "InOut",
+    color: "#28FD82",
+  },
   math: {
     label: "Math",
     color: "#FFFD82",
