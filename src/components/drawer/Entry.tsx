@@ -1,9 +1,9 @@
 import { FunctionComponent } from "react";
 import { useDrag } from "react-dnd";
-import { NodeDef } from "../../engine/node";
+import { AnyNodeDef, NodeDef } from "../../engine/node";
 
 type EntryProps = {
-  nodeDef: NodeDef;
+  nodeDef: AnyNodeDef;
 };
 export const Entry: FunctionComponent<EntryProps> = ({ nodeDef }) => {
   //eslint-disable-next-line

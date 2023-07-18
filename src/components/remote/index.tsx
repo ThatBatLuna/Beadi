@@ -89,7 +89,7 @@ export const useRemotePublishStore = create<RemotePublishStore>()((set, get) => 
     }
   },
   setEndpoints: (endpoints) => {
-    console.log(get().endpoints, endpoints);
+    // console.log(get().endpoints, endpoints);
     if (!_.isEqual(get().endpoints, endpoints)) {
       const state = get().state;
       if (state.state === "connected") {

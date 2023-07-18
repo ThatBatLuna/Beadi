@@ -204,34 +204,3 @@ export const modelState = create<ModelStore>()(() => ({
   },
   model: null,
 }));
-
-useFileStore.subscribe((store) => {
-  const newNodes = _.sortBy(
-    Object.values(store.data.nodes).map((it) => ({
-      id: it.id,
-      type: it.type,
-      settings: it.data.settings,
-    })),
-    (it) => it.id
-  );
-  const newEdges = _.sortBy(
-    Object.values(store.data.edges).map((it) => ({
-      id: it.id,
-      source: it.source,
-      target: it.target,
-      sourceHandle: it.sourceHandle,
-      targetHandle: it.targetHandle,
-    })),
-    (it) => it.id
-  );
-  const newState: ModelSources = {
-    nodes: newNodes,
-    edges: newEdges,
-  };
-  if (!_.isEqual(newState, modelState.getState().sources)) {
-    modelState.setState({
-      sources: newState,
-      model: buildModel(newState),
-    });
-  }
-});

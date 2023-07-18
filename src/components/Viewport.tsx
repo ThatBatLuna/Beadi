@@ -167,8 +167,9 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
         style={{ top: data.screenPos.y, left: data.screenPos.x }}
       >
         <ul className="overflow-y-scroll max-h-60">
-          {handles.map((it) => (
+          {handles.map((it, index) => (
             <li
+              key={index}
               onClick={() => complete(it.node.type, it.handleId, it.output)}
               className="flex flex-row items-center gap-2 px-2 hover:bg-primary-800"
             >

@@ -15,31 +15,28 @@ type NodeHandleLineProps = {
   id: string;
 };
 
-const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
-  input,
-  kind,
-  type,
-  label,
-  id,
-  connected,
-}) => {
-  const nodes = useFileStore((store) => store.nodes);
+const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, type, label, id, connected }) => {
+  const nodes = useFileStore((store) => store.data.nodes);
 
   const isValidConnection = useCallback(
     (connection: Connection) => {
-      const targetType = nodes.find((it) => it.id === connection.target)?.type;
-      const sourceType = nodes.find((it) => it.id === connection.source)?.type;
+      if (
+        connection.source === null ||
+        connection.target === null ||
+        connection.sourceHandle === null ||
+        connection.targetHandle === null
+      ) {
+        return false;
+      }
+      const targetType = nodes[connection.target].type;
+      const sourceType = nodes[connection.source].type;
       console.log(connection, targetType, sourceType, nodes);
       if (targetType !== undefined && sourceType !== undefined) {
         return (
           connection.source !== connection.target &&
           handlesCompatible(
-            nodeDefs[sourceType].outputs.find(
-              (output) => output.id === connection.sourceHandle
-            )?.type || "",
-            nodeDefs[targetType].inputs.find(
-              (input) => input.id === connection.targetHandle
-            )?.type || ""
+            nodeDefs[sourceType].outputs[connection.sourceHandle].type,
+            nodeDefs[targetType].inputs[connection.targetHandle].type
           )
         );
       }

@@ -2,6 +2,48 @@ import { Node, Edge } from "reactflow";
 import { nodeDefs } from "../nodes/nodes";
 import { getConversionFunction } from "./handles";
 import { NodeExecutor } from "./node";
+import { useFileStore } from "./store";
+import _ from "lodash";
+import { ModelSources, buildModel, modelState } from "./compiler";
+import { restartLoopWithModel } from "./runner";
+
+export function watchForChanges() {
+  useFileStore.subscribe((store) => {
+    const newNodes = _.sortBy(
+      Object.values(store.data.nodes).map((it) => ({
+        id: it.id,
+        type: it.type,
+        settings: it.data.settings,
+      })),
+      (it) => it.id
+    );
+    const newEdges = _.sortBy(
+      Object.values(store.data.edges).map((it) => ({
+        id: it.id,
+        source: it.source,
+        target: it.target,
+        sourceHandle: it.sourceHandle,
+        targetHandle: it.targetHandle,
+      })),
+      (it) => it.id
+    );
+    const newState: ModelSources = {
+      nodes: newNodes,
+      edges: newEdges,
+    };
+    if (!_.isEqual(newState, modelState.getState().sources)) {
+      modelState.setState({
+        sources: newState,
+        model: buildModel(newState),
+      });
+    }
+  });
+
+  modelState.subscribe((state) => {
+    restartLoopWithModel(state.model);
+  });
+}
+
 /*
 
 Constant 2 --->  Add 1 --\

@@ -129,7 +129,21 @@ export const useFileStore = create<FileStore>()(
           }
         });
       },
-      onEdgesChange: (changes) => {},
+      onEdgesChange: (changes) => {
+        set((draft) => {
+          for (const c of changes) {
+            if (c.type === "add") {
+              console.warn("Add is not yet handled.");
+            } else if (c.type === "remove") {
+              delete draft.data.edges[c.id];
+            } else if (c.type === "reset") {
+              console.warn("Reset is not yet handled.");
+            } else if (c.type === "select") {
+              console.warn("Select is not yet handled.");
+            }
+          }
+        });
+      },
 
       setHandle: (nodeId, handleId, data) => {
         set((store) => {

@@ -7,6 +7,7 @@ import reportWebVitals from "./reportWebVitals";
 import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { RemoteControlPage } from "./components/remote/control";
+import { watchForChanges } from "./engine";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
@@ -22,14 +23,14 @@ const router = createBrowserRouter([
   },
 ]);
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <RouterProvider router={router}></RouterProvider>
   </React.StrictMode>
 );
+
+watchForChanges();
 
 // const bpscript = document.createElement("script");
 // bpscript.src =

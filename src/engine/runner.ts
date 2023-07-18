@@ -65,12 +65,12 @@ function runEngineLoop(model: Model) {
   timeout = setTimeout(update, timestep) as any;
 }
 
-modelState.subscribe((state) => {
+export function restartLoopWithModel(model: Model | null) {
   if (timeout !== null) {
     console.log("Stopping old Engine Loop");
     clearTimeout(timeout);
   }
-  if (state.model !== null) {
-    runEngineLoop(state.model);
+  if (model !== null) {
+    runEngineLoop(model);
   }
-});
+}
