@@ -1,15 +1,15 @@
 import { InputAdapterDef, OutputAdapterDef } from "../engine/adapter";
 
 export const remoteOutputAdapter: OutputAdapterDef<number> = {
-  id: "remoteInput",
+  id: "remoteOutput",
   pushData: (nodeId, data) => {
-    // console.log("Output: ", data);
+    console.log("Output: ", data);
   },
   label: "Remote",
 };
 
 export const testRemoteOutputAdapter: OutputAdapterDef<number> = {
-  id: "remoteInput2",
+  id: "remoteOutput2",
   pushData: (nodeId, data) => {
     // console.log("Output2: ", data);
   },

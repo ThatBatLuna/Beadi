@@ -19,6 +19,7 @@ export type BeadiNodeData<TDisplaySettings, TSettings, THandles extends Record<s
   displaySettings: TDisplaySettings;
   settings: TSettings;
   handles: THandles;
+  name?: string;
 };
 
 export type BeadiEdge = Edge & {

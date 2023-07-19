@@ -6,30 +6,16 @@ import { AnyNodeDef, NodeDef } from "./engine/node";
 //   multiplyNodeDef,
 //   subtractNodeDef,
 // } from "../nodes/AddNode";
-// import { buttonNodeDef } from "../nodes/ButtonNode";
-// import { buttplugNodeDef } from "../nodes/ButtplugNode";
-// import { constantValueNodeDef } from "../nodes/ConstantValueNode";
-// import { displayNodeDef } from "../nodes/Display";
-// import { hysteresisNodeDef } from "../nodes/HysteresisNode";
-// import { memoryNodeDef } from "../nodes/MemoryNode";
-// import { mixNodeDef } from "../nodes/MixNode";
-// import { positiveWaveNodeDef } from "../nodes/PositiveWave";
-// import { randomNodeDef } from "../nodes/RandomNode";
+import { buttonNodeDef } from "./nodes/ButtonNode";
 import { timerNodeDef } from "./nodes/TimerNode";
 import { inputAdapterNode } from "./nodes/InputAdapterNode";
-// import { clampNodeDef } from "./ClampNode";
-// import { commentNodeDef } from "./CommentNode";
-// import { curveNodeDef } from "./CurveNode";
-// import { delayNodeDef } from "./DelayNode";
-// import { edgeDetectorNodeDef } from "./EdgeDetector";
-// import { mediaFurryNodeDef } from "./MediaFurry";
-// import { sensorNodeDef } from "./SensorNode";
-// import { sliderNodeDef } from "./SliderNode";
 import { toggleNodeDef } from "./nodes/ToggleNode";
 import { AnyInputAdapterDef, AnyOutputAdapterDef, InputAdapterDef } from "./engine/adapter";
 import { remoteInputAdapter, testRemoteInputAdapter } from "./remotePlugin/inputAdapter";
 import { remoteOutputAdapter, testRemoteOutputAdapter } from "./remotePlugin/outputAdapter";
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";
+import { randomNodeDef } from "./nodes/RandomNode";
+import { memoryNodeDef } from "./nodes/MemoryNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
@@ -42,10 +28,10 @@ const nodeDefList: AnyNodeDef[] = [
   // buttplugNodeDef,
   // mixNodeDef,
   // hysteresisNodeDef,
-  // memoryNodeDef,
-  // randomNodeDef,
+  memoryNodeDef as any,
+  randomNodeDef as any,
   timerNodeDef as any,
-  // buttonNodeDef,
+  buttonNodeDef as any,
   // sliderNodeDef,
   toggleNodeDef as any,
   inputAdapterNode as any,

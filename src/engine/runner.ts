@@ -24,7 +24,8 @@ function runEngineLoop(model: Model) {
 
   function update() {
     //Prepopulate HandleValues Dictionary with signal data
-    const handleValues: HandleValues = useSignalBus.getState().popAll();
+    const handleValues: HandleValues = {};
+    const signals = useSignalBus.getState().popAll();
 
     // const delta = Date.now() - last;
     // last = Date.now();
@@ -39,10 +40,18 @@ function runEngineLoop(model: Model) {
       const nodeType = nodeDefs[step.type];
       // const inputs = step.dependencies.map((it) => (it.convert ? it.convert(data[it.id]) : data[it.id]));
       const inputs = _.mapValues(step.dependencies, (dependency, handleId) => {
-        if (dependency !== null) {
-          return handleValues[dependency.nodeId][dependency.handleId];
+        if (nodeType.inputs[handleId].type === "impulse") {
+          if (dependency !== null) {
+            return signals[dependency.nodeId]?.[dependency.handleId] || [];
+          } else {
+            return [];
+          }
         } else {
-          return useFileStore.getState().getHandle(step.nodeId, handleId);
+          if (dependency !== null) {
+            return handleValues[dependency.nodeId][dependency.handleId];
+          } else {
+            return useFileStore.getState().getHandle(step.nodeId, handleId);
+          }
         }
       });
 

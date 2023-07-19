@@ -24,7 +24,7 @@ export const useSignalBus = create<SignalBus>()((set, get) => ({
         ...signals.nodeSignals,
         [nodeId]: {
           ...signals.nodeSignals[nodeId],
-          [handleId]: [...signals.nodeSignals[nodeId]?.[handleId], data],
+          [handleId]: [...(signals.nodeSignals[nodeId]?.[handleId] || []), data],
         },
       },
     }));
@@ -50,3 +50,8 @@ export const useSignalBus = create<SignalBus>()((set, get) => ({
   //     return signals;
   //   },
 }));
+
+/** Solely exists to make the code more readable when returning impulses from executors */
+export function emitImpulse(times?: number): number {
+  return times ?? 1;
+}
