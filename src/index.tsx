@@ -8,6 +8,7 @@ import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { RemoteControlPage } from "./components/remote/control";
 import { watchForChanges } from "./engine";
+import { useFileStore } from "./engine/store";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
@@ -31,6 +32,8 @@ root.render(
 );
 
 watchForChanges();
+
+useFileStore.subscribe((it) => console.log(it.data));
 
 // const bpscript = document.createElement("script");
 // bpscript.src =

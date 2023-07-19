@@ -8,13 +8,14 @@ type InputAdapterNodeSettings = {
   adapterId: string;
 };
 
-const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps> = ({ id }) => {
-  const [updateNode, adapter] = useFileStore((s) => [s.updateNode, s.data.nodes[id].data.settings as InputAdapterNodeSettings]);
+const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapterNodeSettings, any>> = ({ id, data }) => {
+  const updateNode = useFileStore((s) => s.updateNode);
+  const adapterId = data.settings.adapterId;
 
   return (
     <select
       onChange={(e) => updateNode(id, (draft) => ((draft.data.settings as InputAdapterNodeSettings)["adapterId"] = e.target.value))}
-      value={adapter.adapterId}
+      value={adapterId}
     >
       {Object.values(inputAdapterDefs).map((it) => (
         <option key={it.id} value={it.id}>
@@ -40,6 +41,9 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
   executor: {
     inputDriver: (context) => {
       const adapter = inputAdapterDefs[context.settings.adapterId];
+      if (context.settings.adapterId === undefined) {
+        return { value: 0 };
+      }
       return { value: adapter.getData(context.id) };
     },
     outputDriver: () => {},

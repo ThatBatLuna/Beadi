@@ -1,5 +1,5 @@
 import { Draft } from "immer";
-import { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition, applyNodeChanges } from "reactflow";
+import { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition, applyEdgeChanges, applyNodeChanges } from "reactflow";
 import create from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -7,31 +7,23 @@ import { nodeDefs } from "../registries";
 import _ from "lodash";
 import { useCallback } from "react";
 
-export interface NodeData {
-  mobileVisible?: boolean;
-  published?: boolean;
-  name?: string;
-}
-
-export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
-  id: Node<NodeData>["id"];
-  position: Node<NodeData>["position"];
-  type: NonNullable<Node<NodeData>["type"]>;
-  data: {
-    displaySettings: TDisplaySettings;
-    settings: TSettings;
-    handles: THandles;
-  };
+export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, unknown>>;
+export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = Node<
+  BeadiNodeData<TDisplaySettings, TSettings, THandles>
+> & {
+  type: NonNullable<Node<BeadiNodeData<TDisplaySettings, TSettings, THandles>>["type"]>;
 };
 
-export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, unknown>>;
+export type UnknownBeadiNodeData = BeadiNodeData<unknown, unknown, Record<string, unknown>>;
+export type BeadiNodeData<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
+  displaySettings: TDisplaySettings;
+  settings: TSettings;
+  handles: THandles;
+};
 
-export type BeadiEdge = {
-  id: Edge["id"];
+export type BeadiEdge = Edge & {
   sourceHandle: NonNullable<Edge["sourceHandle"]>;
   targetHandle: NonNullable<Edge["targetHandle"]>;
-  source: Edge["source"];
-  target: Edge["target"];
 };
 
 export type BeadiFileData = {
@@ -107,41 +99,49 @@ export const useFileStore = create<FileStore>()(
         }
       },
       onNodesChange: (changes) => {
+        const newNodes = _.keyBy(applyNodeChanges(changes, Object.values(get().data.nodes)), (it) => it.id) as Record<
+          string,
+          UnknownBeadiNode
+        >;
         set((draft) => {
-          for (const c of changes) {
-            if (c.type === "add") {
-              console.warn("Add is not yet handled.");
-            } else if (c.type === "dimensions") {
-              console.warn("Dimensions is not yet handled.");
-            } else if (c.type === "position") {
-              if (c.position !== undefined) {
-                draft.data.nodes[c.id].position = c.position;
-              } else {
-                console.warn("Position without position is not yet handled.");
-              }
-            } else if (c.type === "remove") {
-              delete draft.data.nodes[c.id];
-            } else if (c.type === "reset") {
-              console.warn("Reset is not yet handled.");
-            } else if (c.type === "select") {
-              console.warn("Select is not yet handled.");
-            }
-          }
+          draft.data.nodes = newNodes;
         });
+        // set((draft) => {
+        //   for (const c of changes) {
+        //     if (c.type === "add") {
+        //       console.warn("Add is not yet handled.");
+        //     } else if (c.type === "dimensions") {
+        //       console.warn("Dimensions is not yet handled.");
+        //     } else if (c.type === "position") {
+        //       if (c.position !== undefined) {
+        //         draft.data.nodes[c.id].position = c.position;
+
+        //         const doDelete = [];
+        //         for (const eId in draft.data.edges) {
+        //           if (draft.data.edges[eId].target == c.id || draft.data.edges[eId].source == c.id) {
+        //             doDelete.push(eId);
+        //           }
+        //         }
+        //         for (const eId of doDelete) {
+        //           delete draft.data.edges[eId];
+        //         }
+        //       } else {
+        //         console.warn("Position without position is not yet handled.");
+        //       }
+        //     } else if (c.type === "remove") {
+        //       delete draft.data.nodes[c.id];
+        //     } else if (c.type === "reset") {
+        //       console.warn("Reset is not yet handled.");
+        //     } else if (c.type === "select") {
+        //       console.warn("Select is not yet handled.");
+        //     }
+        //   }
+        // });
       },
       onEdgesChange: (changes) => {
+        const newEdges = _.keyBy(applyEdgeChanges(changes, Object.values(get().data.edges)), (it) => it.id) as Record<string, BeadiEdge>;
         set((draft) => {
-          for (const c of changes) {
-            if (c.type === "add") {
-              console.warn("Add is not yet handled.");
-            } else if (c.type === "remove") {
-              delete draft.data.edges[c.id];
-            } else if (c.type === "reset") {
-              console.warn("Reset is not yet handled.");
-            } else if (c.type === "select") {
-              console.warn("Select is not yet handled.");
-            }
-          }
+          draft.data.edges = newEdges;
         });
       },
 
@@ -201,7 +201,7 @@ export const useFileStore = create<FileStore>()(
 export type UseInputHandleData<T> = [T, (value: T) => void];
 export function useInputHandleData<T>(nodeId: string, handleId: string): UseInputHandleData<T> {
   const value = useFileStore((state) => {
-    return state.data.nodes[nodeId].data.handles[handleId];
+    return state.data.nodes[nodeId]?.data?.handles?.[handleId];
   });
   const setHandle = useFileStore((state) => state.setHandle);
   const setValue = useCallback(

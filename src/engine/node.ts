@@ -1,6 +1,7 @@
 import { ComponentType } from "react";
 import { NodeProps } from "reactflow";
 import { ImpulseEmissions } from "./signal";
+import { BeadiNodeData } from "./store";
 
 export type Category = {
   label: string;
@@ -37,7 +38,10 @@ export type NodeExecutor<TInputs, TDriverInputs, TOutputs, TDriverOutputs, TPers
 export type InputHandleDefs = Record<string, InputHandleDef>;
 export type OutputHandleDefs = Record<string, OutputHandleDef>;
 
-export type NodeHeaderProps = { id: string; data: any };
+export type NodeHeaderProps<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
+  id: string;
+  data: BeadiNodeData<TDisplaySettings, TSettings, THandles>;
+};
 export type MobileViewProps = { id: string; data: any };
 
 export type NodeContext<TSettings> = {
@@ -96,39 +100,31 @@ export function nodeDef<TSettings>() {
     TDriverInputs extends Record<string, any>,
     TOutputHandleDefs extends OutputHandleDefs,
     TDriverOutputs extends Record<string, any>,
-    TPersistence
+    TPersistence,
+    THeaderProps extends NodeHeaderProps<any, TSettings, InputTypesOf<TInputHandleDefs>>
   >(
-    n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>
+    n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings, THeaderProps>
   ) => {
     return n;
   };
 }
-function innerNodeDef<
-  TInputHandleDefs extends InputHandleDefs,
-  TDriverInputs extends Record<string, any>,
-  TOutputHandleDefs extends OutputHandleDefs,
-  TDriverOutputs extends Record<string, any>,
-  TPersistence,
-  TSettings
->(n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>) {
-  return n;
-}
 
-export type AnyNodeDef = NodeDef<InputHandleDefs, Record<string, unknown>, OutputHandleDefs, Record<string, unknown>, any, any>;
+export type AnyNodeDef = NodeDef<InputHandleDefs, Record<string, unknown>, OutputHandleDefs, Record<string, unknown>, any, any, any>;
 export type NodeDef<
   TInputHandleDefs extends InputHandleDefs,
   TDriverInputs extends Record<string, any>,
   TOutputHandleDefs extends OutputHandleDefs,
   TDriverOutputs extends Record<string, any>,
   TPersistence,
-  TSettings
+  TSettings,
+  THeaderProps extends NodeHeaderProps<any, TSettings, InputTypesOf<TInputHandleDefs>>
 > = {
   label: string;
   publishable?: boolean;
   category: Category;
   type: string;
   /** Specifies what should be rendered above the handles */
-  header?: ComponentType<NodeHeaderProps>;
+  header?: ComponentType<THeaderProps>;
   /** Overrides the how the entire node is rendered. Default to the node-shell */
   nodeComponent?: ComponentType<NodeProps>;
   inputs: TInputHandleDefs;

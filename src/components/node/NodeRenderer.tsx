@@ -4,8 +4,8 @@ import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
 import { AnyNodeDef, InputHandleDef, NodeDef } from "../../engine/node";
-import { NodeData } from "../../engine/store";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
+import { UnknownBeadiNodeData } from "../../engine/store";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
@@ -25,7 +25,7 @@ function getHandleInput({ type, input, nodeId, handleId }: HandleInputCProps) {
   return undefined;
 }
 
-export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<NodeData>> {
+export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<UnknownBeadiNodeData>> {
   const HeaderComponent = def.header;
   const inputs = Object.entries(def.inputs).filter(([inputId, it]) => it.hidden !== true);
 

@@ -8,7 +8,7 @@ type OutputAdapterNodeSettings = {
   adapterId: string;
 };
 
-const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps> = ({ id }) => {
+const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, OutputAdapterNodeSettings, any>> = ({ id }) => {
   const [updateNode, settings] = useFileStore((s) => [s.updateNode, s.data.nodes[id].data.settings as OutputAdapterNodeSettings]);
 
   return (
@@ -45,7 +45,10 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
     inputDriver: undefined,
     outputDriver: ({ value }, context) => {
       const adapter = outputAdapterDefs[context.settings.adapterId];
-      return { value: adapter.pushData(context.id, value) };
+      if (adapter === undefined) {
+        return {};
+      }
+      adapter.pushData(context.id, value);
     },
     initialPersistence: undefined,
     executor: ({ value }) => {
