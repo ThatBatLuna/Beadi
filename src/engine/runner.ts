@@ -4,6 +4,7 @@ import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
 import { NodeContext, OutputTypeOf, nodeDef } from "./node";
 import { nodeDefs } from "../registries";
+import { usePreviewStore } from "./preview";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -74,6 +75,7 @@ function runEngineLoop(model: Model) {
       nodeType.executor.outputDriver?.(outputs.driverOutputs, nodeContext);
     }
 
+    usePreviewStore.setState({ outputHandlePreviews: handleValues });
     timeout = setTimeout(update, timestep) as any;
   }
   timeout = setTimeout(update, timestep) as any;

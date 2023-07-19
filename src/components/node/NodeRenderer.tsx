@@ -47,9 +47,10 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
           <NodeHandleLine
             key={inputId}
             kind="input"
+            nodeId={id}
             type={input.type}
             label={input.label}
-            id={inputId}
+            handleId={inputId}
             connected={connections[index]}
             input={getHandleInput({
               type: input.type,
@@ -60,7 +61,14 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
           ></NodeHandleLine>
         ))}
         {Object.entries(def.outputs).map(([outputId, output]) => (
-          <NodeHandleLine key={outputId} id={outputId} kind="output" type={output.type} label={output.label}></NodeHandleLine>
+          <NodeHandleLine
+            key={outputId}
+            handleId={outputId}
+            kind="output"
+            type={output.type}
+            label={output.label}
+            nodeId={id}
+          ></NodeHandleLine>
         ))}
       </NodeShell>
     );
