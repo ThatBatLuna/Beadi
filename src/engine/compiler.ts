@@ -19,38 +19,62 @@ export type Recipe = {
 };
 
 export type Model = {
+  preprocessIndependent: Recipe[];
   executionPlan: Recipe[];
   errors: Record<string, string>;
 };
 
-export function buildModel({ nodes, edges }: ModelSources): Model {
+type EdgedNode = ModelNode & {
+  originalIncomingEdges: Record<string, ModelEdge>;
+  incomingEdges: ModelEdge[];
+  outgoingEdges: ModelEdge[];
+};
+
+export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
+  const nodes = _.omitBy(rawNodes, (node) => !(node.type in nodeDefs));
+
   //Find all terminating handles
   console.log("Rebuilding Model");
+  const errors: Record<string, string> = {};
 
-  const edgedNodes = _.mapValues(nodes, (n) => ({
+  //NodeId -> FragmentId -> Data
+  const edgedNodes: Record<string, EdgedNode> = _.mapValues(nodes, (n) => ({
     ...n,
-    originalIncomingEdges: {} as Record<string, ModelEdge>,
-    incomingEdges: [] as ModelEdge[],
-    outgoingEdges: [] as ModelEdge[],
+    originalIncomingEdges: {},
+    incomingEdges: [],
+    outgoingEdges: [],
   }));
   for (const e of edges) {
-    edgedNodes[e.target].incomingEdges.push(e);
-    edgedNodes[e.source].outgoingEdges.push(e);
+    if (!(e.source in nodes)) {
+      console.error("Could not find node source node of edge", e.id, " (", e.source, " => ", e.target, ")");
+      continue;
+    }
+    if (!(e.target in nodes)) {
+      console.error("Could not find node source node of edge", e.id, " (", e.source, " => ", e.target, ")");
+      continue;
+    }
+    const sourceHandleDef = nodeDefs[nodes[e.source].type].outputs[e.sourceHandle];
+    //If its an impulse, we don't care about the ordering
+    //If its an independent output it is present anyways before any executors are called.
+    if (sourceHandleDef.type !== "impulse" && sourceHandleDef.independent !== true) {
+      edgedNodes[e.target].incomingEdges.push(e);
+      edgedNodes[e.source].outgoingEdges.push(e);
+    }
     edgedNodes[e.target].originalIncomingEdges[e.targetHandle] = e;
   }
 
-  const startNodes: (typeof edgedNodes)[string][] = [];
+  const startNodes: EdgedNode[] = [];
   const restNodes: typeof edgedNodes = {};
-  for (const id in edgedNodes) {
-    if (edgedNodes[id].incomingEdges.length === 0) {
-      startNodes.push(edgedNodes[id]);
+  for (const node of Object.values(edgedNodes)) {
+    if (node.incomingEdges.length === 0) {
+      startNodes.push(node);
     } else {
-      restNodes[id] = edgedNodes[id];
+      restNodes[node.id] = node;
     }
   }
 
   const plan: Recipe[] = [];
-  const errors: Record<string, string> = {};
+
   while (startNodes.length > 0) {
     let node = startNodes.pop()!!;
     //PLAN PUSH
@@ -93,6 +117,12 @@ export function buildModel({ nodes, edges }: ModelSources): Model {
 
   return {
     executionPlan: plan,
+    preprocessIndependent: _.values(nodes).map((node) => ({
+      dependencies: {},
+      nodeId: node.id,
+      settings: node.settings,
+      type: node.type,
+    })),
     errors,
   };
 }

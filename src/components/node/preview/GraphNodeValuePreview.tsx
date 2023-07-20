@@ -94,7 +94,7 @@ export const GraphNodeValuePreview: FunctionComponent<NodeHandleValuePreviewProp
   }, [props.nodeId, props.handleId]);
   return (
     <div>
-      <Graph history={preview.history} index={preview.index} fixed={true} />
+      <Graph history={preview.history} index={preview.index} fixed={false} />
     </div>
   );
 };

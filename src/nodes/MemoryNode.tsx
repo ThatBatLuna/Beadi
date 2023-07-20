@@ -9,6 +9,7 @@ export const memoryNodeDef = nodeDef()({
     value: {
       label: "Value",
       type: "number",
+      independent: true,
     },
   },
   inputs: {
@@ -32,15 +33,21 @@ export const memoryNodeDef = nodeDef()({
 
     executor: ({ value, save }, persistent) => {
       if (save.length > 0) {
+        console.log("Saving", value);
         persistent.value = value;
       }
 
       return {
         driverOutputs: {},
+        outputs: {},
+        persistentData: persistent,
+      };
+    },
+    independentExecutor: (persistent) => {
+      return {
         outputs: {
           value: persistent.value,
         },
-        persistentData: persistent,
       };
     },
   },

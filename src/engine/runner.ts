@@ -32,6 +32,22 @@ function runEngineLoop(model: Model) {
     // last = Date.now();
     // console.log(1000 / delta);
     //
+
+    //Exeucte all independent outputs before the executionPlan commences
+
+    for (const step of model.preprocessIndependent) {
+      const nodeContext: NodeContext<any> = {
+        id: step.nodeId,
+        settings: step.settings,
+      };
+      const nodeType = nodeDefs[step.type];
+      if (nodeType.executor.independentExecutor !== undefined) {
+        const persistent = persistentData[step.nodeId];
+        const outputs = nodeType.executor.independentExecutor(persistent);
+        handleValues[step.nodeId] = outputs.outputs;
+      }
+    }
+
     for (const step of model.executionPlan) {
       const nodeContext: NodeContext<any> = {
         id: step.nodeId,
