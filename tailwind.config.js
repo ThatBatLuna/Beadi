@@ -15,7 +15,11 @@ module.exports = {
           1100: "#0A0810",
         },
       },
+      boxShadow: {
+        "error": "0 0 10px 3px red"
+      }
     },
+
   },
   plugins: [],
 };

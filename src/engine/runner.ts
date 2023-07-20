@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Model, modelState } from "./compiler";
+import { Model, useModelState } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
 import { NodeContext, OutputTypeOf, nodeDef } from "./node";

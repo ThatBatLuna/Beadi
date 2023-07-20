@@ -20,6 +20,7 @@ export type Recipe = {
 
 export type Model = {
   executionPlan: Recipe[];
+  errors: Record<string, string>;
 };
 
 export function buildModel({ nodes, edges }: ModelSources): Model {
@@ -49,6 +50,7 @@ export function buildModel({ nodes, edges }: ModelSources): Model {
   }
 
   const plan: Recipe[] = [];
+  const errors: Record<string, string> = {};
   while (startNodes.length > 0) {
     let node = startNodes.pop()!!;
     //PLAN PUSH
@@ -84,8 +86,14 @@ export function buildModel({ nodes, edges }: ModelSources): Model {
     }
   }
 
+  for (const id in restNodes) {
+    console.warn("Compiler found a loop at node id: ", id);
+    errors[id] = "Node cannot be executed, because it sits within a loop of dependencies.";
+  }
+
   return {
     executionPlan: plan,
+    errors,
   };
 }
 
@@ -193,7 +201,7 @@ export type ModelStore = {
   model: Model | null;
 };
 
-export const modelState = create<ModelStore>()(() => ({
+export const useModelState = create<ModelStore>()(() => ({
   sources: {
     nodes: {},
     edges: [],

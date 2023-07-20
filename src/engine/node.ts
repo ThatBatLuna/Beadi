@@ -15,7 +15,6 @@ export interface HandleDef {
 }
 
 export interface InputHandleDef extends HandleDef {
-  terminal?: boolean;
   default: any;
   hidden?: boolean;
   min?: number;

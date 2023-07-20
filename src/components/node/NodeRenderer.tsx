@@ -6,6 +6,7 @@ import NodeShell from "./NodeShell";
 import { AnyNodeDef, InputHandleDef, NodeDef } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 import { UnknownBeadiNodeData } from "../../engine/store";
+import { useModelState } from "../../engine/compiler";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
@@ -35,13 +36,14 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
 
   return ({ id, data }) => {
     const edges = useEdges();
+    const errors = useModelState((s) => s.model?.errors?.[id]);
 
     const connections = useMemo(() => {
       return inputs.map(([inputId, input]) => edges.findIndex((it) => it.target === id && it.targetHandle === inputId) >= 0);
     }, [edges, id]);
 
     return (
-      <NodeShell title={def.label} color={def.category.color}>
+      <NodeShell title={def.label} color={def.category.color} errors={errors}>
         {HeaderComponent && <HeaderComponent id={id} data={data}></HeaderComponent>}
         {inputs.map(([inputId, input], index) => (
           <NodeHandleLine

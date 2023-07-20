@@ -159,7 +159,6 @@ export const displayNodeDef: NodeDef = {
   mobileView: DisplayMobileView,
   inputs: [
     {
-      terminal: true,
       id: "value",
       label: "Value",
       type: "number",

@@ -244,14 +244,12 @@ export const mediaFurryNodeDef: NodeDef = {
       label: "Next",
       type: "impulse",
       default: 0.0,
-      terminal: true,
     },
     {
       id: "tags",
       label: "Tags",
       type: "string",
       default: "fluffy",
-      terminal: true,
     },
   ],
   executor: ([v], { commit, committed }) => {

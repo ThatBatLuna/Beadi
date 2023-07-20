@@ -1,41 +1,41 @@
-import { NodeDef } from "../engine/node";
+import { NodeDef, nodeDef } from "../engine/node";
 import { categories } from "./category";
 
-function makeMathNodeDef(it: {
-  label: string;
-  type: string;
-  function: (a: number, b: number) => number;
-}): NodeDef {
-  return {
+function makeMathNodeDef(it: { label: string; type: string; function: (a: number, b: number) => number }) {
+  return nodeDef()({
     label: it.label,
     category: categories["math"],
     type: it.type,
     // component: makeNodeRenderer,
-    outputs: [
-      {
-        id: "sum",
-        label: "Sum",
+    outputs: {
+      result: {
+        label: "Result",
         type: "number",
       },
-    ],
-    inputs: [
-      {
-        id: "a",
-        label: "Value",
-        type: "number",
-        default: 0.0,
-      },
-      {
-        id: "b",
-        label: "Value",
-        type: "number",
-        default: 0.0,
-      },
-    ],
-    executor: ([a, b]) => {
-      return [it.function(a, b)];
     },
-  };
+    inputs: {
+      a: {
+        label: "Value",
+        type: "number",
+        default: 0.0,
+      },
+      b: {
+        label: "Value",
+        type: "number",
+        default: 0.0,
+      },
+    },
+    executor: {
+      initialPersistence: undefined,
+      executor: ({ a, b }) => {
+        return {
+          outputs: { result: it.function(a, b) },
+          driverOutputs: {},
+          persistentData: undefined,
+        };
+      },
+    },
+  });
 }
 
 export const addNodeDef = makeMathNodeDef({

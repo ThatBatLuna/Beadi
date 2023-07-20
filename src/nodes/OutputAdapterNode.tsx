@@ -37,7 +37,6 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
       label: "Value",
       type: "number",
       default: 0.0,
-      terminal: true,
     },
   },
   outputs: {},

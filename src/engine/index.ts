@@ -4,7 +4,7 @@ import { getConversionFunction } from "./handles";
 import { NodeExecutor } from "./node";
 import { useFileStore } from "./store";
 import _ from "lodash";
-import { ModelSources, buildModel, modelState } from "./compiler";
+import { ModelSources, buildModel, useModelState } from "./compiler";
 import { restartLoopWithModel } from "./runner";
 
 export function watchForChanges() {
@@ -28,15 +28,15 @@ export function watchForChanges() {
       nodes: newNodes,
       edges: newEdges,
     };
-    if (!_.isEqual(newState, modelState.getState().sources)) {
-      modelState.setState({
+    if (!_.isEqual(newState, useModelState.getState().sources)) {
+      useModelState.setState({
         sources: newState,
         model: buildModel(newState),
       });
     }
   });
 
-  modelState.subscribe((state) => {
+  useModelState.subscribe((state) => {
     restartLoopWithModel(state.model);
   });
 }

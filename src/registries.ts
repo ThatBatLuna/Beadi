@@ -16,15 +16,16 @@ import { remoteOutputAdapter, testRemoteOutputAdapter } from "./remotePlugin/out
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";
 import { randomNodeDef } from "./nodes/RandomNode";
 import { memoryNodeDef } from "./nodes/MemoryNode";
+import { addNodeDef, divideNodeDef, multiplyNodeDef, subtractNodeDef } from "./nodes/AddNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
   // constantValueNodeDef,
   // positiveWaveNodeDef,
-  // addNodeDef,
-  // subtractNodeDef,
-  // divideNodeDef,
-  // multiplyNodeDef,
+  addNodeDef,
+  subtractNodeDef,
+  divideNodeDef,
+  multiplyNodeDef,
   // buttplugNodeDef,
   // mixNodeDef,
   // hysteresisNodeDef,

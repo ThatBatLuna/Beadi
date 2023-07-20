@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { CSSProperties, FunctionComponent, ReactNode } from "react";
 
 type NodeShellProps = {
@@ -6,26 +7,22 @@ type NodeShellProps = {
   color: string;
   style?: CSSProperties;
   headerIcons?: ReactNode;
+  errors?: string | undefined;
 };
 
-const NodeShell: FunctionComponent<NodeShellProps> = ({
-  children,
-  title,
-  style,
-  color,
-  headerIcons,
-}) => {
+const NodeShell: FunctionComponent<NodeShellProps> = ({ children, title, style, color, headerIcons, errors }) => {
   return (
-    <div className="flex flex-col text-black w-[200px]" style={style}>
-      <div
-        className="flex flex-row px-2 text-black bg-red-800 rounded-t-md"
-        style={{ backgroundColor: color }}
-      >
+    <div className={clsx("flex flex-col text-black w-[200px] rounded-md", { "shadow-error": errors !== undefined })} style={style}>
+      <div className={clsx("flex flex-row px-2 text-black bg-red-800 rounded-t-md")} style={{ backgroundColor: color }}>
         <h1 className="px-1">{title}</h1>
         <div className="grow"></div>
         {headerIcons}
       </div>
-      <div className="flex-col py-2 text-white rounded-sm bg-primary-900 rounded-b-md">
+      <div
+        className={clsx("flex-col py-2 text-white rounded-sm bg-primary-900 rounded-b-md", {
+          "bg-red-700": errors !== undefined,
+        })}
+      >
         {children}
       </div>
     </div>

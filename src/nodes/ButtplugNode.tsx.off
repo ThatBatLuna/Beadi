@@ -178,7 +178,6 @@ export const buttplugNodeDef: NodeDef = {
   outputs: [],
   inputs: [
     {
-      terminal: true,
       id: "value",
       label: "Value",
       type: "number",
