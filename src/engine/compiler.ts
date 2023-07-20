@@ -26,73 +26,66 @@ export function buildModel({ nodes, edges }: ModelSources): Model {
   //Find all terminating handles
   console.log("Rebuilding Model");
 
-  let terminals = [];
-  let nodeDict: Record<string, ModelNode> = {};
+  const edgedNodes = _.mapValues(nodes, (n) => ({
+    ...n,
+    originalIncomingEdges: {} as Record<string, ModelEdge>,
+    incomingEdges: [] as ModelEdge[],
+    outgoingEdges: [] as ModelEdge[],
+  }));
+  for (const e of edges) {
+    edgedNodes[e.target].incomingEdges.push(e);
+    edgedNodes[e.source].outgoingEdges.push(e);
+    edgedNodes[e.target].originalIncomingEdges[e.targetHandle] = e;
+  }
 
-  for (const nodeId in nodes) {
-    const node = nodes[nodeId];
-    nodeDict[node.id] = node;
-    let nodeType = nodeDefs[node.type!!];
-    if (nodeType !== undefined) {
-      for (const inputId in nodeType.inputs) {
-        const input = nodeType.inputs[inputId];
-        if (input.terminal) {
-          terminals.push({
-            node: node.id,
-            handle: inputId,
-          });
+  const startNodes: (typeof edgedNodes)[string][] = [];
+  const restNodes: typeof edgedNodes = {};
+  for (const id in edgedNodes) {
+    if (edgedNodes[id].incomingEdges.length === 0) {
+      startNodes.push(edgedNodes[id]);
+    } else {
+      restNodes[id] = edgedNodes[id];
+    }
+  }
+
+  const plan: Recipe[] = [];
+  while (startNodes.length > 0) {
+    let node = startNodes.pop()!!;
+    //PLAN PUSH
+    plan.push({
+      type: node.type,
+      nodeId: node.id,
+      settings: node.settings,
+      dependencies: _.mapValues(nodeDefs[node.type].inputs, (inputDef, handleId) => {
+        if (handleId in node.originalIncomingEdges) {
+          const sourceNode = nodes[node.originalIncomingEdges[handleId].source];
+          return {
+            nodeId: node.originalIncomingEdges[handleId].source,
+            handleId: node.originalIncomingEdges[handleId].sourceHandle,
+            convert: getConversionFunction(
+              nodeDefs[sourceNode.type].outputs[node.originalIncomingEdges[handleId].sourceHandle].type,
+              inputDef.type
+            ),
+          };
+        } else {
+          return null;
         }
+      }),
+    });
+
+    //Remove all outgoing edges from the graph.
+    for (const edge of node.outgoingEdges) {
+      let targetNode = restNodes[edge.target];
+      _.remove(targetNode.incomingEdges, (incomingEdge) => incomingEdge.id === edge!!.id);
+      if (targetNode.incomingEdges.length === 0) {
+        startNodes.push(targetNode);
+        delete restNodes[edge.target];
       }
     }
-  }
-
-  let executedNodes = new Set<string>([]);
-  let executionPlan: Recipe[] = [];
-
-  function resolveInputHandles(nodeId: string) {
-    if (!executedNodes.has(nodeId)) {
-      // console.group("Resolving ", nodeId);
-      const nodeType = nodeDefs[nodeDict[nodeId].type!!];
-      let suppliers = edges.filter((edge) => edge.target === nodeId);
-      let outputForInput: Record<string, RecipeDependency> = {};
-      for (const edge of suppliers) {
-        const supplierNode = edge.source;
-
-        const supplierType = nodeDefs[nodeDict[supplierNode].type].outputs[edge.sourceHandle]?.type;
-
-        outputForInput[edge.targetHandle || "??"] = {
-          convert: getConversionFunction(supplierType, nodeType.inputs[edge.targetHandle].type),
-          nodeId: edge.source,
-          handleId: edge.sourceHandle,
-        };
-        //Resolve the supplier Node
-        resolveInputHandles(supplierNode);
-      }
-
-      executionPlan.push({
-        dependencies: _.mapValues(nodeType.inputs, (handle, handleId) => {
-          if (handleId in outputForInput) {
-            return outputForInput[handleId];
-          } else {
-            return null;
-          }
-        }),
-        settings: nodes[nodeId].settings,
-        nodeId: nodeId,
-        type: nodeType.type,
-      });
-      executedNodes.add(nodeId);
-
-      // console.groupEnd();
-    }
-  }
-
-  for (const handle of terminals) {
-    resolveInputHandles(handle.node);
   }
 
   return {
-    executionPlan: executionPlan,
+    executionPlan: plan,
   };
 }
 
