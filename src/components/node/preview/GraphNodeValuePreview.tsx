@@ -6,6 +6,7 @@ import produce from "immer";
 
 const HISTORY_LENGTH = 3 * 60;
 const HEIGHT = 100;
+const MIN_HEIGHT = 1.0;
 
 type GraphProps = {
   history: (number | undefined)[];
@@ -30,6 +31,12 @@ const Graph: FunctionComponent<GraphProps> = ({ history, index, fixed }) => {
   if (fixed) {
     min = 0.0;
     max = 1.0;
+  } else {
+    const mean = (max + min) / 2;
+    if (max - min < MIN_HEIGHT) {
+      max = mean + MIN_HEIGHT / 2.0;
+      min = mean - MIN_HEIGHT / 2.0;
+    }
   }
 
   const offset = -(min + max) / 2;
