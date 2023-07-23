@@ -1,59 +1,34 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
-import { useIOValueStore } from "../inputOutputStore";
-import _ from "lodash";
+import { LocalRemoteInterfaceSource, localSourceFactory } from "./localSource";
 
 // ==== INTERFACE SOURCE ====
-type RemoteInterfaceSource = {
+export type CommonRemoteInterfaceSource<TType extends string> = {
   destroy: () => void;
   updateValue: (valueId: string, value: any) => void;
-} & (
-  | {
-      canUpdateWidgets: true;
-      updateWidgets: (recipe: (draft: Draft<RemoteInterfaceWidget[]>) => void) => void;
-      publish: () => void;
-    }
-  | {
-      canUpdateWidgets: false;
-    }
-);
+  type: TType;
+};
+export type RemoteRemoteInterfaceSource = CommonRemoteInterfaceSource<"remote"> & {
+  state: {};
+};
 
-type RemoteInterfaceSourceFactory = (updateInterface: (recipe: (draft: Draft<RemoteInterface>) => void) => void) => RemoteInterfaceSource;
+export type RemoteInterfaceSourceFactory<T extends CommonRemoteInterfaceSource<string>> = (
+  updateInterface: (recipe: (draft: Draft<RemoteInterface<T>>) => void) => void,
+  getInterface: () => RemoteInterface<T>
+) => T;
 
-const interfaceSources: Record<string, RemoteInterfaceSourceFactory> = {
-  local: (updateInterface) => {
-    useIOValueStore.subscribe((state) => {
-      updateInterface((draft) => {
-        draft.values = _.mapValues(state.values, (val) => ({
-          value: val.value,
-          localValue: val.value,
-          valueId: val.valueId,
-        }));
-      });
-    });
-
+const interfaceSources = {
+  local: localSourceFactory,
+  remote: (() => {
     return {
-      canUpdateWidgets: true,
-      updateWidgets: (recipe) => {
-        updateInterface((draft) => {
-          recipe(draft.widgets);
-        });
-      },
-      updateValue: (valueId, value) => {
-        useIOValueStore.getState().updateValue(valueId, value);
-      },
-      publish: () => {},
-      destroy: () => {},
-    };
-  },
-  remote: () => {
-    return {
-      canUpdateWidgets: false,
+      type: "remote",
       destroy: () => {},
       updateValue: (valueId, value) => {},
+      state: {},
     };
-  },
-};
+  }) satisfies RemoteInterfaceSourceFactory<RemoteRemoteInterfaceSource>,
+} as const;
+type AnyRemoteInterfaceSource = ReturnType<(typeof interfaceSources)[keyof typeof interfaceSources]>;
 
 // ===== INTERFACE STORE ====
 
@@ -67,7 +42,7 @@ export type RemoteInterfaceWidget = {
   type: string;
   settings: any;
 };
-export interface RemoteInterface {
+export interface RemoteInterface<TSource extends CommonRemoteInterfaceSource<string>> {
   id: string;
   //=== VALUES ===
   values: Record<string, RemoteInterfaceValue<any>>;
@@ -75,11 +50,11 @@ export interface RemoteInterface {
   // === WIDGETS ===
   widgets: RemoteInterfaceWidget[];
 
-  source: RemoteInterfaceSource;
+  source: TSource;
 }
 
 type InterfaceStore = {
-  interfaces: Record<string, RemoteInterface>;
+  interfaces: Record<string, RemoteInterface<AnyRemoteInterfaceSource>>;
 
   addInterface: (sourceType: string) => string;
 };
@@ -90,13 +65,18 @@ export const useInterfaceStore = create<InterfaceStore>()((set, get) => ({
   addInterface: (sourceType) => {
     const id = `${new Date().getTime()}`;
 
-    const source = interfaceSources[sourceType]((recipe) => {
-      set((s) =>
-        produce(s, (draft) => {
-          recipe(draft.interfaces[id]);
-        })
-      );
-    });
+    const source = interfaceSources[sourceType as keyof typeof interfaceSources](
+      (recipe) => {
+        set((s) =>
+          produce(s, (draft) => {
+            //Any cast because we know that draft.interfaces[id] has the right type because we are just setting it down below
+            recipe(draft.interfaces[id] as any);
+          })
+        );
+      },
+      //Any cast because we know that draft.interfaces[id] has the right type because we are just setting it down below
+      () => get().interfaces[id] as any
+    );
 
     set((s) =>
       produce(s, (draft) => {

@@ -47,7 +47,7 @@ export const SliderWidgetSettingsEditor: FunctionComponent<RemoteWidgetSettingsP
   const values = useInterfaceStore((it) => Object.keys(it.interfaces[interfaceId].values).map((valueId) => valueId));
   const save = useInterfaceStore((it) => {
     const source = it.interfaces[interfaceId].source;
-    return source.canUpdateWidgets ? source.updateWidgets : null;
+    return source.type === "local" ? source.updateWidgets : null;
   });
 
   const onChange =

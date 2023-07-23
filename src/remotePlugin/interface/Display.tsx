@@ -3,6 +3,7 @@ import { remoteWidgets } from "../registry";
 import _ from "lodash";
 import { Button } from "../../components/input/Button";
 import { RemoteInterfaceWidget, useInterfaceStore } from "./store";
+import { LocalSourceDisplay } from "./localSource";
 
 type WidgetDisplayProps<TSettings> = {
   instance: RemoteInterfaceWidget;
@@ -31,8 +32,9 @@ export const RemoteInterfaceDisplay: FunctionComponent<RemoteInterfaceBuilderPro
   const widgets = useInterfaceStore((s) => s.interfaces[interfaceId].widgets);
   const updateWidgets = useInterfaceStore((s) => {
     const source = s.interfaces[interfaceId].source;
-    return source.canUpdateWidgets ? source.updateWidgets : null;
+    return source.type === "local" ? source.updateWidgets : null;
   });
+  const interfaceType = useInterfaceStore((s) => s.interfaces[interfaceId].source.type);
   // const widgets = useRemoteFileStore((s) => s.data.widgets);
 
   // const addWidget = useRemoteFileStore((s) => s.addWidget);
@@ -53,6 +55,7 @@ export const RemoteInterfaceDisplay: FunctionComponent<RemoteInterfaceBuilderPro
 
   return (
     <div>
+      {interfaceType === "local" && <LocalSourceDisplay interfaceId={interfaceId}></LocalSourceDisplay>}
       <ul>
         {widgets.map((it) => (
           <li key={it.widgetId}>
