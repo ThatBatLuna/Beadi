@@ -1,7 +1,7 @@
 import { ChangeEventHandler, FunctionComponent, useCallback, useState } from "react";
-import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps, useWidgetValueHandle } from "../builder/widget";
+import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps, useWidgetValueHandle } from "../interface/widget";
 import { Select } from "../../components/input/Select";
-import { useInterfaceStore } from "../interface";
+import { useInterfaceStore } from "../interface/store";
 
 type SliderWidgetSettings = {
   valueId: string;

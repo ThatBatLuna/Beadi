@@ -1,6 +1,6 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
-import { useIOValueStore } from "./inputOutputStore";
+import { useIOValueStore } from "../inputOutputStore";
 import _ from "lodash";
 
 // ==== INTERFACE SOURCE ====

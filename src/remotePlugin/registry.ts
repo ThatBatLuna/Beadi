@@ -1,4 +1,4 @@
-import { AnyRemoteWidgetDef, RemoteWidgetDef } from "./builder/widget";
+import { AnyRemoteWidgetDef, RemoteWidgetDef } from "./interface/widget";
 import { sliderWidgetDef } from "./widgets/SliderWidget";
 
 const remoteWidgetsList: AnyRemoteWidgetDef[] = [sliderWidgetDef];

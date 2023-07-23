@@ -2,7 +2,7 @@ import { FunctionComponent, useCallback } from "react";
 import { remoteWidgets } from "../registry";
 import _ from "lodash";
 import { Button } from "../../components/input/Button";
-import { RemoteInterfaceWidget, useInterfaceStore } from "../interface";
+import { RemoteInterfaceWidget, useInterfaceStore } from "./store";
 
 type WidgetDisplayProps<TSettings> = {
   instance: RemoteInterfaceWidget;
@@ -27,7 +27,7 @@ const WidgetDisplay: FunctionComponent<WidgetDisplayProps<any>> = ({ instance, i
 type RemoteInterfaceBuilderProps = {
   interfaceId: string;
 };
-export const RemoteInterfaceBuilder: FunctionComponent<RemoteInterfaceBuilderProps> = ({ interfaceId }) => {
+export const RemoteInterfaceDisplay: FunctionComponent<RemoteInterfaceBuilderProps> = ({ interfaceId }) => {
   const widgets = useInterfaceStore((s) => s.interfaces[interfaceId].widgets);
   const updateWidgets = useInterfaceStore((s) => {
     const source = s.interfaces[interfaceId].source;

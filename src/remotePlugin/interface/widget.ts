@@ -1,5 +1,5 @@
 import { ComponentType, FunctionComponent, useCallback } from "react";
-import { useInterfaceStore } from "../interface";
+import { useInterfaceStore } from "./store";
 
 export type RemoteWidgetProps<T, TSettings> = {
   settings: TSettings;

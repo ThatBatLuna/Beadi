@@ -3,8 +3,8 @@ import { Tab } from "../components/Settings";
 import { MdSettingsRemote } from "react-icons/md";
 import { FunctionComponent } from "react";
 import { Typo } from "../components/Typo";
-import { RemoteInterfaceBuilder } from "./builder";
-import { useInterfaceStore } from "./interface";
+import { RemoteInterfaceDisplay } from "./interface/Display";
+import { useInterfaceStore } from "./interface/store";
 import { Button } from "../components/input/Button";
 
 const RemoteSettingsTab: FunctionComponent<{}> = () => {
@@ -17,7 +17,7 @@ const RemoteSettingsTab: FunctionComponent<{}> = () => {
         {interfaceIds.map((it) => (
           <li key={it}>
             <Typo>Interface {it}</Typo>
-            <RemoteInterfaceBuilder interfaceId={it}></RemoteInterfaceBuilder>
+            <RemoteInterfaceDisplay interfaceId={it}></RemoteInterfaceDisplay>
           </li>
         ))}
       </ul>
