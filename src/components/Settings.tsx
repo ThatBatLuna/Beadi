@@ -1,92 +1,54 @@
 import clsx from "clsx";
-import {
-  ComponentType,
-  FunctionComponent,
-  ReactNode,
-  useMemo,
-  useState,
-} from "react";
-import {
-  BsChevronBarRight,
-  BsController,
-  BsFile,
-  BsFillPlugFill,
-} from "react-icons/bs";
+import { ComponentType, FunctionComponent, ReactNode, useMemo, useState } from "react";
+import { BsChevronBarRight, BsController, BsFile, BsFillPlugFill } from "react-icons/bs";
 import { ButtplugSettings } from "./settings/ButtplugSettings";
 import { FileSettings } from "./settings/FileSettings";
 import { MobileInterfaceTab } from "./settings/MobileInterface";
 import { MdOutlineSettingsRemote, MdSettingsRemote } from "react-icons/md";
 import { RemoteSettings } from "./settings/RemoteSettings";
+import { settingsTabs } from "../registries";
 
-type Tab = {
-  name: string;
+export type Tab = {
+  id: string;
   label: string;
   icon: ReactNode;
   tab: ComponentType<{}>;
 };
 
-const tabs: Record<string, Tab> = {
-  buttplug: {
-    name: "buttplug",
-    label: "Buttplug",
-    icon: <BsFillPlugFill className="w-full h-full"></BsFillPlugFill>,
-    tab: ButtplugSettings,
-  },
-  file: {
-    name: "file",
-    label: "File",
-    icon: <BsFile className="w-full h-full"></BsFile>,
-    tab: FileSettings,
-  },
-  mobile: {
-    name: "mobile",
-    label: "Mobile Interface",
-    icon: <BsController className="w-full h-full"></BsController>,
-    tab: MobileInterfaceTab,
-  },
-  remote: {
-    name: "remote",
-    label: "Remote Control",
-    icon: (
-      <MdOutlineSettingsRemote className="w-full h-full"></MdOutlineSettingsRemote>
-    ),
-    tab: RemoteSettings,
-  },
+export const fileTab: Tab = {
+  id: "file",
+  label: "File",
+  icon: <BsFile className="w-full h-full"></BsFile>,
+  tab: FileSettings,
 };
 
 export const Settings: FunctionComponent<{}> = () => {
-  const [tab, setTab] = useState<string | null>("buttplug");
+  const [tab, setTab] = useState<string | null>(Object.keys(settingsTabs)[0]);
 
   const Component = useMemo(() => {
     if (tab == null) {
       return null;
     } else {
-      return tabs[tab].tab;
+      return settingsTabs[tab].tab;
     }
   }, [tab]);
 
   return (
     <div className="flex flex-row shadow-sm bg-primary-1100">
       <ul className="flex flex-col gap-1 text-white">
-        {Object.entries(tabs).map(([key, value]) => (
+        {Object.entries(settingsTabs).map(([key, value]) => (
           <li
             key={key}
             onClick={() => setTab(key)}
-            className={clsx(
-              "w-10 h-10 p-2 rounded-l-md cursor-pointer",
-              tab === key ? "bg-primary-900" : "bg-primary-1000"
-            )}
+            className={clsx("w-10 h-10 p-2 rounded-l-md cursor-pointer", tab === key ? "bg-primary-900" : "bg-primary-1000")}
           >
             {value.icon}
           </li>
         ))}
         <li
-          className={clsx(
-            "w-10 h-10 p-2 mt-auto cursor-pointer transition-all",
-            {
-              "opacity-0": tab === null,
-            }
-          )}
+          className={clsx("w-10 h-10 p-2 mt-auto cursor-pointer transition-all", {
+            "opacity-0": tab === null,
+          })}
           onClick={() => setTab(null)}
         >
           <BsChevronBarRight className="w-full h-full"></BsChevronBarRight>
@@ -98,9 +60,7 @@ export const Settings: FunctionComponent<{}> = () => {
           "w-0": Component === null,
         })}
       >
-        <div className="flex flex-col overflow-y-scroll w-96">
-          {Component && <Component></Component>}
-        </div>
+        <div className="flex flex-col overflow-y-scroll w-96">{Component && <Component></Component>}</div>
       </div>
     </div>
   );

@@ -36,10 +36,6 @@ function runEngineLoop(model: Model) {
     //Exeucte all independent outputs before the executionPlan commences
 
     for (const step of model.preprocessIndependent) {
-      const nodeContext: NodeContext<any> = {
-        id: step.nodeId,
-        settings: step.settings,
-      };
       const nodeType = nodeDefs[step.type];
       if (nodeType.executor.independentExecutor !== undefined) {
         const persistent = persistentData[step.nodeId];
@@ -86,7 +82,8 @@ function runEngineLoop(model: Model) {
         }
       }
 
-      handleValues[step.nodeId] = outputs.outputs;
+      //Merge new outputs into old outputs to preserve the independently evalutated outputs
+      handleValues[step.nodeId] = _.merge({}, handleValues[step.nodeId], outputs.outputs);
       persistentData[step.nodeId] = outputs.persistentData;
       nodeType.executor.outputDriver?.(outputs.driverOutputs, nodeContext);
     }

@@ -4,7 +4,7 @@ import { categories } from "./category";
 import { inputAdapterDefs } from "../registries";
 import { useFileStore } from "../engine/store";
 
-type InputAdapterNodeSettings = {
+export type InputAdapterNodeSettings = {
   adapterId: string;
 };
 

@@ -11,12 +11,14 @@ import { timerNodeDef } from "./nodes/TimerNode";
 import { inputAdapterNode } from "./nodes/InputAdapterNode";
 import { toggleNodeDef } from "./nodes/ToggleNode";
 import { AnyInputAdapterDef, AnyOutputAdapterDef, InputAdapterDef } from "./engine/adapter";
-import { remoteInputAdapter, testRemoteInputAdapter } from "./remotePlugin/inputAdapter";
-import { remoteOutputAdapter, testRemoteOutputAdapter } from "./remotePlugin/outputAdapter";
+import { remoteInputAdapter, remoteInputFromOutputAdapter, testRemoteInputAdapter } from "./remotePlugin/inputAdapter";
+import { remoteOutputAdapter, remoteOutputToInputAdapter, testRemoteOutputAdapter } from "./remotePlugin/outputAdapter";
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";
 import { randomNodeDef } from "./nodes/RandomNode";
 import { memoryNodeDef } from "./nodes/MemoryNode";
 import { addNodeDef, divideNodeDef, multiplyNodeDef, subtractNodeDef } from "./nodes/AddNode";
+import { Tab, fileTab as fileTabDef } from "./components/Settings";
+import { remoteSettingsTab as remoteSettingsTabDef } from "./remotePlugin/RemoteDrawerPage";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
@@ -48,16 +50,20 @@ const nodeDefList: AnyNodeDef[] = [
 
 export const nodeDefs: Record<string, AnyNodeDef> = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
 
-const inputAdapterDefList: AnyInputAdapterDef[] = [remoteInputAdapter, testRemoteInputAdapter];
+const inputAdapterDefList: AnyInputAdapterDef[] = [remoteInputAdapter, remoteInputFromOutputAdapter, testRemoteInputAdapter];
 
 export const inputAdapterDefs: Record<string, AnyInputAdapterDef> = Object.assign(
   {},
   ...inputAdapterDefList.map((it) => ({ [it.id]: it }))
 );
 
-const outputAdapterDefList: AnyOutputAdapterDef[] = [remoteOutputAdapter, testRemoteOutputAdapter];
+const outputAdapterDefList: AnyOutputAdapterDef[] = [remoteOutputAdapter, remoteOutputToInputAdapter, testRemoteOutputAdapter];
 
 export const outputAdapterDefs: Record<string, AnyOutputAdapterDef> = Object.assign(
   {},
   ...outputAdapterDefList.map((it) => ({ [it.id]: it }))
 );
+
+const settingsTabsList: Tab[] = [fileTabDef, remoteSettingsTabDef];
+
+export const settingsTabs: Record<string, Tab> = Object.assign({}, ...settingsTabsList.map((it) => ({ [it.id]: it })));

@@ -9,6 +9,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { RemoteControlPage } from "./components/remote/control";
 import { watchForChanges } from "./engine";
 import { useFileStore } from "./engine/store";
+import { addLocalSource, tempStartLocalSourceWatcher } from "./remotePlugin/remoteValueStore";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
@@ -32,6 +33,7 @@ root.render(
 );
 
 watchForChanges();
+addLocalSource();
 
 useFileStore.subscribe((it) => console.log(it.data));
 

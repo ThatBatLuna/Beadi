@@ -8,6 +8,14 @@ export const remoteOutputAdapter: OutputAdapterDef<number> = {
   label: "Remote",
 };
 
+export const remoteOutputToInputAdapter: OutputAdapterDef<number> = {
+  id: "remoteOutputToInput",
+  pushData: (nodeId, data) => {
+    console.log("RemoteOutputToRemoteInput", data);
+  },
+  label: "Set Remote Input",
+};
+
 export const testRemoteOutputAdapter: OutputAdapterDef<number> = {
   id: "remoteOutput2",
   pushData: (nodeId, data) => {
