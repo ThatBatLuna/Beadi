@@ -6,7 +6,7 @@ import { OutputAdapterNodeSettings } from "../nodes/OutputAdapterNode";
 import _ from "lodash";
 
 export type ValuePath = {
-  sourceId: string;
+  interfaceId: string;
   valueId: string;
 };
 type RemoteValueState<T> = {

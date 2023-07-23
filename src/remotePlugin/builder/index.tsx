@@ -1,14 +1,14 @@
 import { FunctionComponent, useCallback } from "react";
-import { WidgetInstance, useRemoteFileStore } from "./store";
 import { remoteWidgets } from "../registry";
-import { useRemoteValueStore } from "../remoteValueStore";
 import _ from "lodash";
 import { Button } from "../../components/input/Button";
+import { RemoteInterfaceWidget, useInterfaceStore } from "../interface";
 
 type WidgetDisplayProps<TSettings> = {
-  instance: WidgetInstance<TSettings>;
+  instance: RemoteInterfaceWidget;
+  interfaceId: string;
 };
-const WidgetDisplay: FunctionComponent<WidgetDisplayProps<any>> = ({ instance }) => {
+const WidgetDisplay: FunctionComponent<WidgetDisplayProps<any>> = ({ instance, interfaceId }) => {
   const widgetDef = remoteWidgets[instance.type];
 
   if (widgetDef === undefined) {
@@ -17,46 +17,58 @@ const WidgetDisplay: FunctionComponent<WidgetDisplayProps<any>> = ({ instance })
 
   if (instance.settings === null) {
     const Display = widgetDef.settings;
-    return <Display settings={instance.settings} widgetId={instance.id}></Display>;
+    return <Display settings={instance.settings} widgetId={instance.widgetId} interfaceId={interfaceId}></Display>;
   } else {
     const Display = widgetDef.display;
-    return <Display settings={instance.settings} widgetId={instance.id}></Display>;
+    return <Display settings={instance.settings} widgetId={instance.widgetId} interfaceId={interfaceId}></Display>;
   }
 };
 
-export const RemoteInterfaceBuilder: FunctionComponent<{}> = () => {
-  const widgets = useRemoteFileStore((s) => s.data.widgets);
+type RemoteInterfaceBuilderProps = {
+  interfaceId: string;
+};
+export const RemoteInterfaceBuilder: FunctionComponent<RemoteInterfaceBuilderProps> = ({ interfaceId }) => {
+  const widgets = useInterfaceStore((s) => s.interfaces[interfaceId].widgets);
+  const updateWidgets = useInterfaceStore((s) => {
+    const source = s.interfaces[interfaceId].source;
+    return source.canUpdateWidgets ? source.updateWidgets : null;
+  });
+  // const widgets = useRemoteFileStore((s) => s.data.widgets);
 
-  const addWidget = useRemoteFileStore((s) => s.addWidget);
+  // const addWidget = useRemoteFileStore((s) => s.addWidget);
 
-  const makeWidget = useCallback(
-    (id: string) => {
-      const widgetId = new Date().getTime();
-      addWidget({
-        id: `${id}_${widgetId}`,
-        type: id,
-        settings: _.cloneDeep(remoteWidgets[id].defaultSettings),
-      });
-    },
-    [addWidget]
-  );
+  const makeWidget =
+    updateWidgets === null
+      ? null
+      : (widgetType: string) => {
+          const id = `${widgetType}_${new Date().getTime()}`;
+          updateWidgets((draft) => {
+            draft.push({
+              widgetId: id,
+              type: widgetType,
+              settings: _.cloneDeep(remoteWidgets[widgetType].defaultSettings),
+            });
+          });
+        };
 
   return (
     <div>
       <ul>
         {widgets.map((it) => (
-          <li key={it.id}>
-            <WidgetDisplay instance={it}></WidgetDisplay>
+          <li key={it.widgetId}>
+            <WidgetDisplay instance={it} interfaceId={interfaceId}></WidgetDisplay>
           </li>
         ))}
       </ul>
-      <ul>
-        {Object.entries(remoteWidgets).map(([id, def]) => (
-          <li key={id}>
-            <Button onClick={() => makeWidget(def.id)}>Add {def.id}</Button>
-          </li>
-        ))}
-      </ul>
+      {makeWidget && (
+        <ul>
+          {Object.entries(remoteWidgets).map(([id, def]) => (
+            <li key={id}>
+              <Button onClick={() => makeWidget(def.id)}>Add {def.id}</Button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

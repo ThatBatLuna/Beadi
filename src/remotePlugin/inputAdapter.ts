@@ -1,10 +1,10 @@
 import { InputAdapterDef } from "../engine/adapter";
-import { useRemoteValueStore } from "./remoteValueStore";
+import { useIOValueStore } from "./inputOutputStore";
 
 export const remoteInputAdapter: InputAdapterDef<number> = {
   id: "remoteInput",
   getData: (nodeId: string) => {
-    const value = useRemoteValueStore.getState().sources["local"].values[nodeId].value;
+    const value = useIOValueStore.getState().values[nodeId]?.value;
     return value ?? 0.0;
   },
   label: "Remote",

@@ -9,7 +9,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { RemoteControlPage } from "./components/remote/control";
 import { watchForChanges } from "./engine";
 import { useFileStore } from "./engine/store";
-import { addLocalSource, tempStartLocalSourceWatcher } from "./remotePlugin/remoteValueStore";
+import { tempSyncIOValueStore } from "./remotePlugin/inputOutputStore";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
@@ -33,7 +33,6 @@ root.render(
 );
 
 watchForChanges();
-addLocalSource();
 
 useFileStore.subscribe((it) => console.log(it.data));
 
@@ -54,3 +53,4 @@ useFileStore.subscribe((it) => console.log(it.data));
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+tempSyncIOValueStore();

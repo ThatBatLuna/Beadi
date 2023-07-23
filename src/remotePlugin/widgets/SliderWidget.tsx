@@ -1,29 +1,27 @@
 import { ChangeEventHandler, FunctionComponent, useCallback, useState } from "react";
 import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps, useWidgetValueHandle } from "../builder/widget";
-import { ValuePath, useRemoteValueStore } from "../remoteValueStore";
-import { useRemoteFileStore } from "../builder/store";
 import { Select } from "../../components/input/Select";
+import { useInterfaceStore } from "../interface";
 
 type SliderWidgetSettings = {
-  valuePath: ValuePath;
+  valueId: string;
 };
 
-export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWidgetSettings>> = ({ settings }) => {
-  const { onChange, value, localValue } = useWidgetValueHandle<number>(settings.valuePath);
-
-  const [interactiveValue, setInteractiveValue] = useState<number>(localValue);
+export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWidgetSettings>> = ({ settings, interfaceId }) => {
+  const handle = useWidgetValueHandle<number>(settings.valueId, interfaceId);
+  const [interactiveValue, setInteractiveValue] = useState<number>(handle?.localValue ?? 0.0);
   const [focused, setFocused] = useState(false);
 
-  const setValue = useCallback(
-    (e: number) => {
-      onChange(e);
-      setInteractiveValue(e);
-    },
-    [onChange]
-  );
+  const setValue = (e: number) => {
+    handle?.onChange(e);
+    setInteractiveValue(e);
+  };
 
-  const displayValue = focused ? interactiveValue : localValue;
+  const displayValue = focused ? interactiveValue : handle?.localValue ?? 0.0;
 
+  if (handle === null) {
+    return <p>Invalid widget</p>;
+  }
   return (
     <div>
       <input
@@ -36,45 +34,45 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(parseFloat(e.target.value))}
       />
-      <input type="range" min="0" max="1" step="0.01" value={value} disabled={true} />
+      <input type="range" min="0" max="1" step="0.01" value={handle.value} disabled={true} />
     </div>
   );
 };
 
-export const SliderWidgetSettingsEditor: FunctionComponent<RemoteWidgetSettingsProps<SliderWidgetSettings>> = ({ settings, widgetId }) => {
-  const values = useRemoteValueStore((it) =>
-    Object.entries(it.sources).flatMap(([sourceId, source]) =>
-      Object.keys(source.values).map((valueId) => ({
-        sourceId,
-        valueId,
-      }))
-    )
-  );
-  const save = useRemoteFileStore((it) => it.updateWidget);
+export const SliderWidgetSettingsEditor: FunctionComponent<RemoteWidgetSettingsProps<SliderWidgetSettings>> = ({
+  settings,
+  interfaceId,
+  widgetId,
+}) => {
+  const values = useInterfaceStore((it) => Object.keys(it.interfaces[interfaceId].values).map((valueId) => valueId));
+  const save = useInterfaceStore((it) => {
+    const source = it.interfaces[interfaceId].source;
+    return source.canUpdateWidgets ? source.updateWidgets : null;
+  });
 
-  const onChange = useCallback(
-    (e: ValuePath | null) => {
-      if (e !== null) {
-        save(widgetId, (widget) => {
-          widget.settings = {
-            valuePath: e,
-          };
-        });
-      }
-    },
-    [save, widgetId]
-  );
+  const onChange =
+    save === null
+      ? null
+      : (e: string | null) => {
+          if (e !== null) {
+            save((draft) => {
+              const index = draft.findIndex((it) => it.widgetId === widgetId);
+              draft[index].settings = {
+                valueId: e,
+              } satisfies SliderWidgetSettings;
+            });
+          }
+        };
 
+  if (onChange === null) {
+    return <div>Invalid Widget</div>;
+  }
   return (
     <div>
       <Select
         options={values}
-        selected={settings?.valuePath ?? null}
-        renderOption={(valuePath) => (
-          <>
-            {valuePath?.sourceId} - {valuePath?.valueId}
-          </>
-        )}
+        selected={settings?.valueId ?? null}
+        renderOption={(valueId) => <>{valueId}</>}
         allowUnselect={true}
         onSelect={onChange}
       ></Select>

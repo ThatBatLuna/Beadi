@@ -1,13 +1,15 @@
 import { ComponentType, FunctionComponent, useCallback } from "react";
-import { ValuePath, useRemoteValueStore } from "../remoteValueStore";
+import { useInterfaceStore } from "../interface";
 
 export type RemoteWidgetProps<T, TSettings> = {
   settings: TSettings;
+  interfaceId: string;
   widgetId: string;
 };
 export type RemoteWidgetSettingsProps<TSettings> = {
   settings: TSettings | null;
   widgetId: string;
+  interfaceId: string;
   // onSave: (settings: TSettings) => void;
 };
 
@@ -19,26 +21,31 @@ export type RemoteWidgetDef<TSettings> = {
   settings: ComponentType<RemoteWidgetSettingsProps<TSettings>>;
 };
 
-type WidgetValueHandle<T> = {
+type WidgetValueHandle<T> = null | {
   value: T;
   localValue: T;
   onChange: (value: T) => void;
 };
-export function useWidgetValueHandle<T>(valuePath: ValuePath): WidgetValueHandle<T> {
-  const value = useRemoteValueStore((s) => s.sources[valuePath.sourceId]?.values[valuePath.valueId]);
+export function useWidgetValueHandle<T>(valueId: string, interfaceId: string): WidgetValueHandle<T> {
+  const value = useInterfaceStore((s) => s.interfaces[interfaceId]?.values?.[valueId]);
+  // const value = useRemoteValueStore((s) => s.sources[valuePath.sourceId]?.values[valuePath.valueId]);
 
-  const updateValue = useRemoteValueStore((s) => s.updateValue);
+  const updateValue = useInterfaceStore((s) => s.interfaces[interfaceId]?.source?.updateValue);
 
   const onChange = useCallback(
     (value: any) => {
-      updateValue(valuePath, value);
+      updateValue(valueId, value);
     },
-    [updateValue, valuePath]
+    [updateValue, valueId]
   );
 
-  return {
-    onChange,
-    value: value.value,
-    localValue: value.localValue,
-  };
+  if (value !== undefined) {
+    return {
+      onChange,
+      value: value.value,
+      localValue: value.localValue,
+    };
+  } else {
+    return null;
+  }
 }
