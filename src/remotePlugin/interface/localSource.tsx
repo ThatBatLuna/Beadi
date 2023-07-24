@@ -30,7 +30,13 @@ export type LocalRemoteInterfaceSource = CommonRemoteInterfaceSource<"local"> & 
   state: LocalSourceState;
 };
 
-export const localSourceFactory: RemoteInterfaceSourceFactory<LocalRemoteInterfaceSource> = (updateInterface, getInterface) => {
+type LocalFactoryProps = {};
+
+export const localSourceFactory: RemoteInterfaceSourceFactory<LocalFactoryProps, LocalRemoteInterfaceSource> = (
+  props,
+  updateInterface,
+  getInterface
+) => {
   const unsubscribe = useIOValueStore.subscribe((state) => {
     updateInterface((draft) => {
       draft.values = _.mapValues(state.values, (val) => ({

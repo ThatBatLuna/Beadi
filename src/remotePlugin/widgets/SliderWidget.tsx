@@ -2,6 +2,7 @@ import { ChangeEventHandler, FunctionComponent, useCallback, useState } from "re
 import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps, useWidgetValueHandle } from "../interface/widget";
 import { Select } from "../../components/input/Select";
 import { useInterfaceStore } from "../interface/store";
+import { useIOValueStore } from "../inputOutputStore";
 
 type SliderWidgetSettings = {
   valueId: string;
@@ -30,7 +31,10 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
         max="1"
         step="0.01"
         value={displayValue}
-        onFocus={() => setFocused(true)}
+        onFocus={() => {
+          setFocused(true);
+          setInteractiveValue(handle?.localValue);
+        }}
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(parseFloat(e.target.value))}
       />
@@ -44,7 +48,8 @@ export const SliderWidgetSettingsEditor: FunctionComponent<RemoteWidgetSettingsP
   interfaceId,
   widgetId,
 }) => {
-  const values = useInterfaceStore((it) => Object.keys(it.interfaces[interfaceId].values).map((valueId) => valueId));
+  const values = useIOValueStore((store) => Object.keys(store.values));
+  // const values = useInterfaceStore((it) => Object.keys(it.interfaces[interfaceId].values).map((valueId) => valueId));
   const save = useInterfaceStore((it) => {
     const source = it.interfaces[interfaceId].source;
     return source.type === "local" ? source.updateWidgets : null;

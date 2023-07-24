@@ -1,5 +1,5 @@
 import create from "zustand";
-import { useFileStore } from "../engine/store";
+import { FileStore, useFileStore } from "../engine/store";
 import produce from "immer";
 import _ from "lodash";
 import { InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
@@ -30,7 +30,7 @@ export const useIOValueStore = create<IOValueStore>()((set, get) => ({
 }));
 
 export function tempSyncIOValueStore() {
-  useFileStore.subscribe((state) => {
+  const func = (state: FileStore) => {
     const inputAdapterNodes = Object.values(state.data.nodes).filter((it) => {
       if (it.type === "inputAdapter") {
         const settings = it.data.settings as InputAdapterNodeSettings;
@@ -41,12 +41,15 @@ export function tempSyncIOValueStore() {
       }
       return false;
     });
+    console.log("inputAdapterNodes: ", inputAdapterNodes);
 
     useIOValueStore.setState((state) => {
       const localValues = Object.values(state.values);
 
       const missingValues = _.differenceWith(inputAdapterNodes, localValues, (node, value) => node.id === value.valueId);
       const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
+
+      console.log("useIOValueStore setState: ", localValues, "+", missingValues, " -", extraValues);
 
       return produce(state, (draft) => {
         for (const extra of extraValues) {
@@ -62,5 +65,9 @@ export function tempSyncIOValueStore() {
         }
       });
     });
-  });
+  };
+
+  useFileStore.subscribe(func);
+
+  func(useFileStore.getState());
 }

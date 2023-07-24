@@ -1,6 +1,7 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
 import { LocalRemoteInterfaceSource, localSourceFactory } from "./localSource";
+import { remoteSourceFactory } from "./remoteSource";
 
 // ==== INTERFACE SOURCE ====
 export type CommonRemoteInterfaceSource<TType extends string> = {
@@ -8,25 +9,16 @@ export type CommonRemoteInterfaceSource<TType extends string> = {
   updateValue: (valueId: string, value: any) => void;
   type: TType;
 };
-export type RemoteRemoteInterfaceSource = CommonRemoteInterfaceSource<"remote"> & {
-  state: {};
-};
 
-export type RemoteInterfaceSourceFactory<T extends CommonRemoteInterfaceSource<string>> = (
+export type RemoteInterfaceSourceFactory<TProps, T extends CommonRemoteInterfaceSource<string>> = (
+  props: TProps,
   updateInterface: (recipe: (draft: Draft<RemoteInterface<T>>) => void) => void,
   getInterface: () => RemoteInterface<T>
 ) => T;
 
 const interfaceSources = {
   local: localSourceFactory,
-  remote: (() => {
-    return {
-      type: "remote",
-      destroy: () => {},
-      updateValue: (valueId, value) => {},
-      state: {},
-    };
-  }) satisfies RemoteInterfaceSourceFactory<RemoteRemoteInterfaceSource>,
+  remote: remoteSourceFactory,
 } as const;
 type AnyRemoteInterfaceSource = ReturnType<(typeof interfaceSources)[keyof typeof interfaceSources]>;
 
@@ -56,16 +48,21 @@ export interface RemoteInterface<TSource extends CommonRemoteInterfaceSource<str
 type InterfaceStore = {
   interfaces: Record<string, RemoteInterface<AnyRemoteInterfaceSource>>;
 
-  addInterface: (sourceType: string) => string;
+  addInterface: <TSourceType extends keyof typeof interfaceSources>(
+    sourceType: TSourceType,
+    props: Parameters<(typeof interfaceSources)[TSourceType]>[0]
+  ) => string;
 };
 
 export const useInterfaceStore = create<InterfaceStore>()((set, get) => ({
   interfaces: {},
 
-  addInterface: (sourceType) => {
+  addInterface: (sourceType, props) => {
     const id = `${new Date().getTime()}`;
 
-    const source = interfaceSources[sourceType as keyof typeof interfaceSources](
+    const source = interfaceSources[sourceType](
+      //Any case because this is ensured through the generics of this function
+      props as any,
       (recipe) => {
         set((s) =>
           produce(s, (draft) => {
