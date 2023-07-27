@@ -10,6 +10,7 @@ function makeDisconnectedState(set: Setter, get: Getter): PublishConnectionState
     state: "disconnected",
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on disconnected socket");
+      useIOValueStore.getState().setValue(valueId, value);
     },
     publish: () => {
       publish(set, get);
@@ -25,6 +26,7 @@ function makeConnectingState(socket: WebSocket): PublishConnectionState & { stat
     socket,
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on connecting socket");
+      useIOValueStore.getState().setValue(valueId, value);
     },
   };
 }

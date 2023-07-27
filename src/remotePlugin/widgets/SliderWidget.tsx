@@ -1,8 +1,8 @@
 import { ChangeEventHandler, FunctionComponent, useCallback, useState } from "react";
-import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps, useWidgetValueHandle } from "../interface/widget";
+import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps } from "../interface/widget";
 import { Select } from "../../components/input/Select";
-import { useInterfaceStore } from "../interface/store";
 import { useIOValueStore } from "../inputOutputStore";
+import { useInterfaceFileStore, useWidgetValueHandle } from "../interface/stores";
 
 type SliderWidgetSettings = {
   valueId: string;
@@ -10,15 +10,15 @@ type SliderWidgetSettings = {
 
 export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWidgetSettings>> = ({ settings, interfaceId }) => {
   const handle = useWidgetValueHandle<number>(settings.valueId, interfaceId);
-  const [interactiveValue, setInteractiveValue] = useState<number>(handle?.localValue ?? 0.0);
+  const [interactiveValue, setInteractiveValue] = useState<number>(handle.value ?? 0.0);
   const [focused, setFocused] = useState(false);
 
   const setValue = (e: number) => {
-    handle?.onChange(e);
+    handle.setValue(e);
     setInteractiveValue(e);
   };
 
-  const displayValue = focused ? interactiveValue : handle?.localValue ?? 0.0;
+  const displayValue = focused ? interactiveValue : handle.value ?? 0.0;
 
   if (handle === null) {
     return <p>Invalid widget</p>;
@@ -33,7 +33,7 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
         value={displayValue}
         onFocus={() => {
           setFocused(true);
-          setInteractiveValue(handle?.localValue);
+          setInteractiveValue(handle.value);
         }}
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(parseFloat(e.target.value))}
@@ -50,28 +50,19 @@ export const SliderWidgetSettingsEditor: FunctionComponent<RemoteWidgetSettingsP
 }) => {
   const values = useIOValueStore((store) => Object.keys(store.values));
   // const values = useInterfaceStore((it) => Object.keys(it.interfaces[interfaceId].values).map((valueId) => valueId));
-  const save = useInterfaceStore((it) => {
-    const source = it.interfaces[interfaceId].source;
-    return source.type === "local" ? source.updateWidgets : null;
-  });
+  const save = useInterfaceFileStore((it) => it.updateInterface);
 
-  const onChange =
-    save === null
-      ? null
-      : (e: string | null) => {
-          if (e !== null) {
-            save((draft) => {
-              const index = draft.findIndex((it) => it.widgetId === widgetId);
-              draft[index].settings = {
-                valueId: e,
-              } satisfies SliderWidgetSettings;
-            });
-          }
-        };
+  const onChange = (e: string | null) => {
+    if (e !== null) {
+      save(interfaceId, (draft) => {
+        const index = draft.layout.findIndex((it) => it.widgetId === widgetId);
+        draft.layout[index].settings = {
+          valueId: e,
+        } satisfies SliderWidgetSettings;
+      });
+    }
+  };
 
-  if (onChange === null) {
-    return <div>Invalid Widget</div>;
-  }
   return (
     <div>
       <Select

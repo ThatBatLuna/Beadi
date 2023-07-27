@@ -4,6 +4,7 @@ import produce, { Draft } from "immer";
 import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
+import _ from "lodash";
 
 type RemoteConnection = {
   remoteConnectionId: string;
@@ -144,7 +145,7 @@ function startSyncRemoteStateStore() {
   console.log("Start syncRemoteStateStore");
   const syncRemoteStateStore = (state: RemoteStore) => {
     const oldRemotes = useRemoteStateStore.getState().remotes;
-    const { missing, extra } = diffByKeys(oldRemotes, state.remotes);
+    const { missing, extra } = diffByKeys(oldRemotes, state.remotes, (a, b) => _.isEqual(a.definition, b));
 
     useRemoteStateStore.setState((s) =>
       produce(s, (draft) => {
