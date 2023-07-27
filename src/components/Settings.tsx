@@ -1,11 +1,7 @@
 import clsx from "clsx";
 import { ComponentType, FunctionComponent, ReactNode, useMemo, useState } from "react";
-import { BsChevronBarRight, BsController, BsFile, BsFillPlugFill } from "react-icons/bs";
-import { ButtplugSettings } from "./settings/ButtplugSettings";
+import { BsChevronBarRight, BsFile } from "react-icons/bs";
 import { FileSettings } from "./settings/FileSettings";
-import { MobileInterfaceTab } from "./settings/MobileInterface";
-import { MdOutlineSettingsRemote, MdSettingsRemote } from "react-icons/md";
-import { RemoteSettings } from "./settings/RemoteSettings";
 import { settingsTabs } from "../registries";
 
 export type Tab = {

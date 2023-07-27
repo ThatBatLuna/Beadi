@@ -6,7 +6,6 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { RemoteControlPage } from "./components/remote/control";
 import { watchForChanges } from "./engine";
 import { useFileStore } from "./engine/store";
 import { tempSyncIOValueStore } from "./remotePlugin/inputOutputStore";
@@ -18,10 +17,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-  },
-  {
-    path: "/remote/:id",
-    element: <RemoteControlPage />,
   },
 ]);
 
