@@ -7,6 +7,8 @@ import { InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
 type IOValueState<T> = {
   valueId: string;
   value: T;
+  type: string;
+  //And additional metadata
 };
 
 type IOValueStore = {
@@ -57,8 +59,7 @@ export function tempSyncIOValueStore() {
         }
         for (const missing of missingValues) {
           draft.values[missing.id] = {
-            // type: "number", //TODO Real type here
-            // source: "local",
+            type: "number", //TODO Real type here
             value: 0,
             valueId: missing.id,
           };

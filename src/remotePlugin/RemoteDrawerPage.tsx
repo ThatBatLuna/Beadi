@@ -3,27 +3,26 @@ import { Tab } from "../components/Settings";
 import { MdSettingsRemote } from "react-icons/md";
 import { FunctionComponent } from "react";
 import { Typo } from "../components/Typo";
-import { RemoteInterfaceDisplay } from "./interface/Display";
-import { useInterfaceStore } from "./interface/store";
 import { Button } from "../components/input/Button";
+import { InterfaceList } from "./interface/InterfaceList";
+import { useInterfaceDisplayStore, useInterfaceFileStore } from "./interface/stores";
+import { ConnectionManager } from "./remote/ConnectionManager";
 
 const RemoteSettingsTab: FunctionComponent<{}> = () => {
-  const interfaceIds = useInterfaceStore((s) => Object.keys(s.interfaces));
-  const addInterface = useInterfaceStore((s) => s.addInterface);
+  const addRemoteInterface = useInterfaceDisplayStore((s) => s.addRemoteInterface);
+  const addLocalInterface = useInterfaceFileStore((s) => s.addInterface);
 
   return (
-    <div className="flex flex-col w-full gap-2 p-2">
-      <ul>
-        {interfaceIds.map((it) => (
-          <li key={it}>
-            <Typo>Interface {it}</Typo>
-            <RemoteInterfaceDisplay interfaceId={it}></RemoteInterfaceDisplay>
-          </li>
-        ))}
-      </ul>
-      <Button onClick={() => addInterface("local", {})}>Add Local Interface</Button>
-      <Button onClick={() => addInterface("remote", { code: "debug-session-id" })}>Add Remote Interface</Button>
-    </div>
+    <>
+      <div className="flex flex-col w-full gap-2 p-2">
+        <InterfaceList></InterfaceList>
+        <Button onClick={() => addLocalInterface()}>Add Local Interface</Button>
+        <Button onClick={() => addRemoteInterface({ code: "debug-session-id" })}>Add Remote Interface</Button>
+      </div>
+      <div>
+        <ConnectionManager></ConnectionManager>
+      </div>
+    </>
   );
 };
 
