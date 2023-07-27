@@ -79,7 +79,7 @@ export const useRemoteStateStore = create<RemoteStateStore>()((set, get) => ({
 type Setter = (recipe: (draft: Draft<RemoteConnectionState>) => void | RemoteConnectionState) => void;
 function openRemoteConnection(connection: RemoteConnection, set: Setter): RemoteConnectionHandle {
   console.log("Opening Remote Socket ", connection.code);
-  const socket = new WebSocket(`ws://localhost:6969/control/${connection.code}`);
+  const socket = new WebSocket(`${process.env.REACT_APP_REMOTE_SERVER_URL}/control/${connection.code}`);
 
   socket.addEventListener("open", (event) => {
     console.log("WebSocket Opened: ", event);

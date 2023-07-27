@@ -93,7 +93,7 @@ export const usePublishStateStore = create<PublishStateStore>()((set, get) => ({
 type Setter = (recipe: (draft: Draft<PublishStateStore>) => void | PublishStateStore) => void;
 type Getter = () => PublishStateStore;
 function publish(set: Setter, get: Getter): void {
-  const socket = new WebSocket("ws://localhost:6969/publish");
+  const socket = new WebSocket(`${process.env.REACT_APP_REMOTE_SERVER_URL}/publish`);
 
   socket.addEventListener("open", (event) => {
     console.log("WebSocket Opened: ", event);

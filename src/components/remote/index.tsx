@@ -34,7 +34,7 @@ export const useRemotePublishStore = create<RemotePublishStore>()((set, get) => 
   },
   endpoints: [],
   connect: () => {
-    const socket = new WebSocket("ws://localhost:6969/publish");
+    const socket = new WebSocket(`${process.env.REACT_APP_REMOTE_SERVER_URL}/publish`);
     set({ state: { state: "connecting", socket } });
 
     socket.addEventListener("open", (event) => {
