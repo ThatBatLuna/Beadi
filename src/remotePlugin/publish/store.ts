@@ -1,6 +1,6 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { BeadiMessage, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
@@ -85,10 +85,15 @@ type PublishConnectionState =
 type PublishStateStore = {
   state: PublishConnectionState;
 };
-export const usePublishStateStore = create<PublishStateStore>()((set, get) => ({
-  state: makeDisconnectedState((recipe) => set((s) => produce(s, recipe)), get),
-  close: () => {},
-}));
+export const usePublishStateStore = create<PublishStateStore>()(
+  devtools(
+    (set, get) => ({
+      state: makeDisconnectedState((recipe) => set((s) => produce(s, recipe)), get),
+      close: () => {},
+    }),
+    { name: "usePublishStateStore" }
+  )
+);
 
 type Setter = (recipe: (draft: Draft<PublishStateStore>) => void | PublishStateStore) => void;
 type Getter = () => PublishStateStore;

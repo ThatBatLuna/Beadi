@@ -11,6 +11,9 @@ type InterfaceListEntryProps = {
 export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({ interfaceId, brokerType }) => {
   const [editing, setEditing] = useState(false);
   const canEdit = brokerType === "local";
+
+  const deleteInterface = () => {};
+
   if (editing && canEdit) {
     return (
       <div className="p-2">
@@ -22,6 +25,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
     return (
       <div className="p-2">
         {canEdit && <Button onClick={() => setEditing(true)}>Edit</Button>}
+        <Button onClick={() => setEditing(false)}>Delete</Button>
         <Interface key={interfaceId} interfaceId={interfaceId}></Interface>
       </div>
     );

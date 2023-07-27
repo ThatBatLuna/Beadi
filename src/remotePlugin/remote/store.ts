@@ -3,7 +3,7 @@ import { diffBy, diffByKeys } from "../../utils/diffBy";
 import produce, { Draft } from "immer";
 import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
-import { persist } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { Interface } from "../interface/stores";
 
@@ -17,27 +17,32 @@ export type RemoteStore = {
   removeConnection: (connectionId: string) => void;
 };
 export const useRemoteStore = create(
-  persist(
-    immer<RemoteStore>((set, get) => ({
-      remotes: {},
-      addConnection: (connection) => {
-        const id = `${new Date().getTime()}`;
-        set((draft) => {
-          draft.remotes[id] = {
-            ...connection,
-            remoteConnectionId: id,
-          };
-        });
-      },
-      removeConnection: (id) => {
-        set((draft) => {
-          delete draft.remotes[id];
-        });
-      },
-    })),
+  devtools(
+    persist(
+      immer<RemoteStore>((set, get) => ({
+        remotes: {},
+        addConnection: (connection) => {
+          const id = `${new Date().getTime()}`;
+          set((draft) => {
+            draft.remotes[id] = {
+              ...connection,
+              remoteConnectionId: id,
+            };
+          });
+        },
+        removeConnection: (id) => {
+          set((draft) => {
+            delete draft.remotes[id];
+          });
+        },
+      })),
+      {
+        name: "remoteConnections",
+        getStorage: () => window.sessionStorage,
+      }
+    ),
     {
-      name: "remoteConnections",
-      getStorage: () => window.sessionStorage,
+      name: "useRemoteStore",
     }
   )
 );

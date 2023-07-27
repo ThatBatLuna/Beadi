@@ -1,7 +1,7 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
-import { persist } from "zustand/middleware";
-import { diffBy, diffByKeys } from "../../utils/diffBy";
+import { devtools, persist } from "zustand/middleware";
+import { diffByKeys } from "../../utils/diffBy";
 import _ from "lodash";
 import { useCallback } from "react";
 import { usePublishStateStore } from "../publish/store";
@@ -32,26 +32,31 @@ type InterfaceDisplayStore = {
 };
 /** Make mutations to the displayed interfaces on this store, that gets synced into useInterfaceDisplayStateStore, read from there */
 export const useInterfaceDisplayStore = create(
-  persist<InterfaceDisplayStore>(
-    (set, get) => ({
-      interfaces: {},
+  devtools(
+    persist<InterfaceDisplayStore>(
+      (set, get) => ({
+        interfaces: {},
 
-      addRemoteInterface: (interfaceId, settings) => {
-        set((s) =>
-          produce(s, (draft) => {
-            draft.interfaces[interfaceId] = {
-              interfaceId: interfaceId,
-              brokerType: "remote",
-              brokerSettings: settings,
-            };
-          })
-        );
-      },
-    }),
+        addRemoteInterface: (interfaceId, settings) => {
+          set((s) =>
+            produce(s, (draft) => {
+              draft.interfaces[interfaceId] = {
+                interfaceId: interfaceId,
+                brokerType: "remote",
+                brokerSettings: settings,
+              };
+            })
+          );
+        },
+      }),
+      {
+        name: "interfaceDisplay",
+        getStorage: () => window.sessionStorage,
+        version: 1,
+      }
+    ),
     {
-      name: "interfaceDisplay",
-      getStorage: () => window.sessionStorage,
-      version: 1,
+      name: "useInterfaceDisplayStore",
     }
   )
 );
@@ -73,34 +78,37 @@ type InterfaceFileStore = {
   updateInterface: (interfaceId: string, recipe: (draft: Draft<Interface>) => void) => void;
 };
 export const useInterfaceFileStore = create<InterfaceFileStore>()(
-  persist(
-    (set, get) => ({
-      interfaces: {},
-      addInterface: () => {
-        const interfaceId = `${new Date().getTime()}`;
-        set((s) =>
-          produce(s, (draft) => {
-            draft.interfaces[interfaceId] = {
-              interfaceId: interfaceId,
-              layout: [],
-              name: "New Interface",
-            };
-          })
-        );
-      },
-      updateInterface: (interfaceId, recipe) => {
-        set((s) =>
-          produce(s, (draft) => {
-            recipe(draft.interfaces[interfaceId]);
-          })
-        );
-      },
-    }),
-    {
-      name: "interfaceFile",
-      getStorage: () => window.localStorage,
-      version: 1,
-    }
+  devtools(
+    persist(
+      (set, get) => ({
+        interfaces: {},
+        addInterface: () => {
+          const interfaceId = `${new Date().getTime()}`;
+          set((s) =>
+            produce(s, (draft) => {
+              draft.interfaces[interfaceId] = {
+                interfaceId: interfaceId,
+                layout: [],
+                name: "New Interface",
+              };
+            })
+          );
+        },
+        updateInterface: (interfaceId, recipe) => {
+          set((s) =>
+            produce(s, (draft) => {
+              recipe(draft.interfaces[interfaceId]);
+            })
+          );
+        },
+      }),
+      {
+        name: "interfaceFile",
+        getStorage: () => window.localStorage,
+        version: 1,
+      }
+    ),
+    { name: "useInterfaceFileStore" }
   )
 );
 
@@ -120,9 +128,14 @@ type InterfaceDisplayState = {
 type InterfaceDisplayStateStore = {
   interfaces: Record<string, InterfaceDisplayState>;
 };
-export const useInterfaceDisplayStateStore = create<InterfaceDisplayStateStore>()((set, get) => ({
-  interfaces: {},
-}));
+export const useInterfaceDisplayStateStore = create<InterfaceDisplayStateStore>()(
+  devtools(
+    (set, get) => ({
+      interfaces: {},
+    }),
+    { name: "useInterfaceDisplayStateStore" }
+  )
+);
 
 type Setter = (recipe: (draft: Draft<InterfaceDisplayState>) => void) => void;
 type Getter = () => InterfaceDisplayState;
