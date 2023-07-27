@@ -5,6 +5,7 @@ import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import _ from "lodash";
+import { Interface } from "../interface/stores";
 
 type RemoteConnection = {
   remoteConnectionId: string;
@@ -59,6 +60,7 @@ type RemoteConnectionState =
       socket: WebSocket;
       id: string;
       values: Record<string, RemoteConnectionValue>;
+      interfaces: Record<string, Interface>;
     };
 
 export type RemoteConnectionHandle = {
@@ -96,6 +98,7 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
             state: "connected",
             id: payload.id,
             socket: socket,
+            interfaces: _.keyBy(payload.interfaces, (i) => i.interfaceId),
             values: Object.assign(
               {},
               ...payload.endpoints.map((it) => ({

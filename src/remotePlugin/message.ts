@@ -1,3 +1,15 @@
+import { Interface } from "./interface/stores";
+
+type RemoteControlWidget = {
+  widgetId: string;
+  widgetType: string;
+  settings: any;
+};
+export type RemoteControlInterface = {
+  name: string;
+  interfaceId: string;
+  layout: RemoteControlWidget[];
+};
 export type RemoteControlEndpoint = {
   id: string;
   type: string;
@@ -11,8 +23,12 @@ export type BeadiMessage = {
   PublishEndpoints?: {
     endpoints: RemoteControlEndpoint[];
   };
+  PublishInterfaces?: {
+    interfaces: Interface[];
+  };
   WelcomeController?: {
     endpoints: RemoteControlEndpoint[];
+    interfaces: Interface[];
     id: string;
   };
   ValueChanged?: {
@@ -25,10 +41,7 @@ type BeadiMessageHandlers = {
   [k in keyof BeadiMessage]?: (data: Required<BeadiMessage>[k]) => void;
 };
 
-export function handleMessage(
-  message: BeadiMessage,
-  handlers: BeadiMessageHandlers
-) {
+export function handleMessage(message: BeadiMessage, handlers: BeadiMessageHandlers) {
   for (const key in message) {
     const k = key as keyof BeadiMessage;
     if (k in handlers) {

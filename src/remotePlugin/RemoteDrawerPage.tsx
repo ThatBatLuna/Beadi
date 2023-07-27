@@ -21,7 +21,6 @@ const RemoteSettingsTab: FunctionComponent<{}> = () => {
       <div className="flex flex-col w-full gap-2 p-2">
         <InterfaceList></InterfaceList>
         <Button onClick={() => addLocalInterface()}>Add Local Interface</Button>
-        <Button onClick={() => addRemoteInterface({ code: "debug-session-id" })}>Add Remote Interface</Button>
       </div>
       <div>
         <ConnectionManager></ConnectionManager>

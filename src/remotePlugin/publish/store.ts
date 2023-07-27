@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { BeadiMessage, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
+import { useInterfaceFileStore } from "../interface/stores";
 
 function makeDisconnectedState(set: Setter, get: Getter): PublishConnectionState & { state: "disconnected" } {
   return {
@@ -31,15 +32,33 @@ function makeConnectingState(socket: WebSocket): PublishConnectionState & { stat
   };
 }
 function makeConnectedState(socket: WebSocket, id: string): PublishConnectionState & { state: "connected" } {
+  const unsubscribeValueChanges = useIOValueStore.subscribe((it) => {});
+
+  const unsubscribeInterfaceChanges = useInterfaceFileStore.subscribe((state) => {
+    sendMessage(socket, {
+      PublishInterfaces: {
+        interfaces: Object.values(state.interfaces),
+      },
+    });
+  });
+
   return {
     state: "connected",
     close: () => {
+      unsubscribeValueChanges();
+      unsubscribeInterfaceChanges();
       socket.close();
     },
     id,
     socket,
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on connected socket");
+      sendMessage(socket, {
+        ValueChanged: {
+          endpoint: valueId,
+          value: value,
+        },
+      });
     },
   };
 }
@@ -106,6 +125,11 @@ function publish(set: Setter, get: Getter): void {
                 type: v.type,
                 value: v.value,
               })),
+            },
+          });
+          sendMessage(socket, {
+            PublishInterfaces: {
+              interfaces: Object.values(useInterfaceFileStore.getState().interfaces),
             },
           });
         },

@@ -7,16 +7,17 @@ import { useCallback } from "react";
 import { usePublishStateStore } from "../publish/store";
 import { useIOValueStore } from "../inputOutputStore";
 import { useRemoteStateStore } from "../remote/store";
-import { remoteInputAdapter } from "../inputAdapter";
+import { sendMessage } from "../message";
 
+type RemoteBrokerSettings = {
+  remoteId: string;
+};
 type InterfaceDisplayDef = {
   interfaceId: string;
 } & (
   | {
       brokerType: "remote";
-      brokerSettings: {
-        remoteId: string;
-      };
+      brokerSettings: RemoteBrokerSettings;
     }
   | {
       brokerType: "local";
@@ -27,7 +28,7 @@ type InterfaceDisplayStore = {
   interfaces: Record<string, InterfaceDisplayDef>;
 
   /** Local Interfaces are synced from the files tore */
-  addRemoteInterface: (brokerSettings?: any) => void;
+  addRemoteInterface: (interfaceId: string, brokerSettings: RemoteBrokerSettings) => void;
 };
 /** Make mutations to the displayed interfaces on this store, that gets synced into useInterfaceDisplayStateStore, read from there */
 export const useInterfaceDisplayStore = create(
@@ -35,14 +36,13 @@ export const useInterfaceDisplayStore = create(
     (set, get) => ({
       interfaces: {},
 
-      addRemoteInterface: (settings) => {
-        const interfaceId = `${new Date().getTime()}`;
+      addRemoteInterface: (interfaceId, settings) => {
         set((s) =>
           produce(s, (draft) => {
             draft.interfaces[interfaceId] = {
               interfaceId: interfaceId,
               brokerType: "remote",
-              brokerSettings: settings ?? {},
+              brokerSettings: settings,
             };
           })
         );
@@ -61,7 +61,7 @@ type Widget = {
   widgetType: string;
   settings: any;
 };
-type Interface = {
+export type Interface = {
   name: string;
   interfaceId: string;
   layout: Widget[];
@@ -135,9 +135,11 @@ function createRemoteBrokeredInterface(
     if (remoteState.state === "connected") {
       set((draft) => {
         draft.values = remoteState.values;
+        draft.layout = remoteState.interfaces[def.interfaceId].layout;
       });
     }
   });
+
   return {
     brokerType: "remote",
     brokerState: {},
@@ -146,6 +148,15 @@ function createRemoteBrokeredInterface(
     values: {},
     updateValue: (valueId, value) => {
       console.log("Remotely updating ", valueId, " to ", value);
+      const state = useRemoteStateStore.getState().remotes[def.brokerSettings.remoteId].state;
+      if (state.state === "connected") {
+        sendMessage(state.socket, {
+          ValueChanged: {
+            endpoint: valueId,
+            value: value,
+          },
+        });
+      }
     },
     closeBroker: () => {
       unsubscribeIO();
