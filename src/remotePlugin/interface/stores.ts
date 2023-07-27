@@ -242,12 +242,23 @@ export function setupInterfaceListeners() {
 
 setupInterfaceListeners();
 
-type WidgetValueHandle<T> = {
-  value: T;
-  setValue: (n: T) => void;
+const NULL_SET_VALUE = (value: any) => {
+  console.log("Tried to setValue on an invalid widget");
 };
+type WidgetValueHandle<T> =
+  | {
+      value: T;
+      setValue: (n: T) => void;
+      error: undefined;
+    }
+  | {
+      value: null;
+      setValue: (n: T) => void;
+      error: string;
+    };
 export function useWidgetValueHandle<T>(valueId: string, interfaceId: string): WidgetValueHandle<T> {
   const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
+
   const updateValue = iface.updateValue;
   const setValue = useCallback(
     (v: T) => {
@@ -255,8 +266,26 @@ export function useWidgetValueHandle<T>(valueId: string, interfaceId: string): W
     },
     [valueId, updateValue]
   );
+
+  if (iface === undefined) {
+    return {
+      value: null,
+      setValue: () => NULL_SET_VALUE,
+      error: `Invalid Interface ${interfaceId}`,
+    };
+  }
+
+  if (iface.values[valueId] === undefined) {
+    return {
+      value: null,
+      setValue: () => NULL_SET_VALUE,
+      error: `Value ${valueId} does not exist in Interface ${interfaceId}`,
+    };
+  }
+
   return {
     value: iface.values[valueId].value,
     setValue,
+    error: undefined,
   };
 }

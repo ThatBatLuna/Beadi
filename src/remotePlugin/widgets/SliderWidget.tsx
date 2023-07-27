@@ -20,8 +20,8 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
 
   const displayValue = focused ? interactiveValue : handle.value ?? 0.0;
 
-  if (handle === null) {
-    return <p>Invalid widget</p>;
+  if (handle.error !== undefined) {
+    return <p>Invalid widget: {handle.error}</p>;
   }
   return (
     <div>
