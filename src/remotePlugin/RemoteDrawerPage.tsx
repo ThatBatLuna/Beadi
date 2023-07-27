@@ -7,6 +7,7 @@ import { Button } from "../components/input/Button";
 import { InterfaceList } from "./interface/InterfaceList";
 import { useInterfaceDisplayStore, useInterfaceFileStore } from "./interface/stores";
 import { ConnectionManager } from "./remote/ConnectionManager";
+import { PublishManager } from "./publish/PublishManager";
 
 const RemoteSettingsTab: FunctionComponent<{}> = () => {
   const addRemoteInterface = useInterfaceDisplayStore((s) => s.addRemoteInterface);
@@ -14,6 +15,9 @@ const RemoteSettingsTab: FunctionComponent<{}> = () => {
 
   return (
     <>
+      <div>
+        <PublishManager></PublishManager>
+      </div>
       <div className="flex flex-col w-full gap-2 p-2">
         <InterfaceList></InterfaceList>
         <Button onClick={() => addLocalInterface()}>Add Local Interface</Button>

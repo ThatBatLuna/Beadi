@@ -16,13 +16,13 @@ type IOValueStore = {
   values: Record<string, IOValueState<any>>;
 
   /** Send value update request */
-  updateValue: (valueId: string, value: any) => void;
+  setValue: (valueId: string, value: any) => void;
 };
 
 /** Used by all input-/outputAdapters to push/pull their values from/to */
 export const useIOValueStore = create<IOValueStore>()((set, get) => ({
   values: {},
-  updateValue: (id, value) => {
+  setValue: (id, value) => {
     set((s) =>
       produce(s, (draft) => {
         draft.values[id].value = value;
