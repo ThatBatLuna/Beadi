@@ -3,9 +3,10 @@ import { NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
 import { inputAdapterDefs } from "../registries";
 import { useFileStore } from "../engine/store";
+import { Select } from "../components/input/Select";
 
 export type InputAdapterNodeSettings = {
-  adapterId: string;
+  adapterId: string | null;
 };
 
 const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapterNodeSettings, any>> = ({ id, data }) => {
@@ -13,16 +14,13 @@ const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapter
   const adapterId = data.settings.adapterId;
 
   return (
-    <select
-      onChange={(e) => updateNode(id, (draft) => ((draft.data.settings as InputAdapterNodeSettings)["adapterId"] = e.target.value))}
-      value={adapterId}
-    >
-      {Object.values(inputAdapterDefs).map((it) => (
-        <option key={it.id} value={it.id}>
-          {it.label}
-        </option>
-      ))}
-    </select>
+    <Select
+      options={Object.values(inputAdapterDefs)}
+      allowUnselect={true}
+      selected={adapterId === null ? null : inputAdapterDefs[adapterId]}
+      onSelect={(def) => updateNode(id, (draft) => ((draft.data.settings as InputAdapterNodeSettings)["adapterId"] = def?.id ?? null))}
+      renderOption={(s) => s.label}
+    ></Select>
   );
 };
 
@@ -40,6 +38,9 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
   inputs: {},
   executor: {
     inputDriver: (context) => {
+      if (context.settings.adapterId === null) {
+        return { value: 0 };
+      }
       const adapter = inputAdapterDefs[context.settings.adapterId];
       if (context.settings.adapterId === undefined) {
         return { value: 0 };
