@@ -3,6 +3,7 @@ import { useInterfaceDisplayStateStore } from "./stores";
 import { Interface } from "./Interface";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";
+import { MdDeviceHub, MdEdit, MdExpandLess, MdExpandMore, MdMore } from "react-icons/md";
 
 type InterfaceListEntryProps = {
   interfaceId: string;
@@ -10,6 +11,7 @@ type InterfaceListEntryProps = {
 };
 export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({ interfaceId, brokerType }) => {
   const [editing, setEditing] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const canEdit = brokerType === "local";
 
   if (editing && canEdit) {
@@ -21,9 +23,16 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
     );
   } else {
     return (
-      <div className="p-2">
-        {canEdit && <Button onClick={() => setEditing(true)}>Edit</Button>}
-        <Interface key={interfaceId} interfaceId={interfaceId}></Interface>
+      <div className="p-2 bg-primary-1000 rounded-md my-2">
+        <div className="flex flex-row">
+          {!canEdit && <MdDeviceHub></MdDeviceHub>}
+          {canEdit && <span>L</span>}
+          <div className="grow"></div>
+          {canEdit && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
+          {!expanded && <Button onClick={() => setExpanded(true)} icon={<MdExpandMore />}></Button>}
+          {expanded && <Button onClick={() => setExpanded(false)} icon={<MdExpandLess />}></Button>}
+        </div>
+        {expanded && <Interface key={interfaceId} interfaceId={interfaceId}></Interface>}
       </div>
     );
   }

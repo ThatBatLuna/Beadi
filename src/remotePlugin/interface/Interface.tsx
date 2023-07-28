@@ -10,8 +10,6 @@ export const Interface: FunctionComponent<InterfaceProps> = ({ interfaceId }) =>
 
   return (
     <div>
-      {JSON.stringify(interfaceState)}
-
       <ul>
         {interfaceState.layout.map((it) => (
           <li key={it.widgetId}>

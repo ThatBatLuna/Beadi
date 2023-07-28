@@ -20,12 +20,10 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
 
   const displayValue = focused ? interactiveValue : handle.value ?? 0.0;
 
-  if (handle.error !== undefined) {
-    return <p>Invalid widget: {handle.error}</p>;
-  }
   return (
-    <div>
+    <div className="w-full relative my-2 rounded-md">
       <input
+        className="w-full"
         type="range"
         min="0"
         max="1"
@@ -33,12 +31,21 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
         value={displayValue}
         onFocus={() => {
           setFocused(true);
-          setInteractiveValue(handle.value);
+          setInteractiveValue(handle.value ?? 0.0);
         }}
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(parseFloat(e.target.value))}
       />
-      <input type="range" min="0" max="1" step="0.01" value={handle.value} disabled={true} />
+      <input
+        className="w-full absolute top-2 left-0 pointer-events-none"
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value={handle.value ?? 0.0}
+        disabled={true}
+      />
+      {handle.error !== undefined && <div className="absolute inset-0 bg-red-600 opacity-80 rounded-md">{handle.error}</div>}
     </div>
   );
 };
