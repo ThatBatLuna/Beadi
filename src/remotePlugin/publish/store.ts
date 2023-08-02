@@ -118,40 +118,42 @@ function publish(set: Setter, get: Getter): void {
   });
   socket.addEventListener("message", (event) => {
     console.log("WebSocket message: ", event);
+    let data: BeadiMessage;
     try {
-      const data: BeadiMessage = JSON.parse(event.data);
-      handleMessage(data, {
-        Welcome: (payload) => {
-          set((s) => {
-            s.state = makeConnectedState(socket, payload.id);
-          });
-          sendMessage(socket, {
-            PublishEndpoints: {
-              endpoints: Object.values(useIOValueStore.getState().values).map((v) => ({
-                id: v.valueId,
-                type: v.type,
-                value: v.value,
-              })),
-            },
-          });
-          sendMessage(socket, {
-            PublishInterfaces: {
-              interfaces: Object.values(useInterfaceFileStore.getState().interfaces),
-            },
-          });
-        },
-        PublishEndpoints: (payload) => {
-          console.log("TODO Compare payload endpoints to actually published endpoints and warn if they diverge");
-        },
-        ValueChanged: ({ endpoint, value }) => {
-          console.log("ValueChanged request got to Set ", endpoint, " to ", value);
-
-          useIOValueStore.getState().setValue(endpoint, value);
-        },
-      });
+      data = JSON.parse(event.data);
     } catch (e) {
-      console.error("Unreadable message: ", event);
+      console.error("Unreadable message: ", event, e);
+      return;
     }
+    handleMessage(data, {
+      Welcome: (payload) => {
+        set((s) => {
+          s.state = makeConnectedState(socket, payload.id);
+        });
+        sendMessage(socket, {
+          PublishEndpoints: {
+            endpoints: Object.values(useIOValueStore.getState().values).map((v) => ({
+              id: v.valueId,
+              type: v.type,
+              value: v.value,
+            })),
+          },
+        });
+        sendMessage(socket, {
+          PublishInterfaces: {
+            interfaces: Object.values(useInterfaceFileStore.getState().interfaces),
+          },
+        });
+      },
+      PublishEndpoints: (payload) => {
+        console.log("TODO Compare payload endpoints to actually published endpoints and warn if they diverge");
+      },
+      ValueChanged: ({ endpoint, value }) => {
+        console.log("ValueChanged request got to Set ", endpoint, " to ", value);
+
+        useIOValueStore.getState().setValue(endpoint, value);
+      },
+    });
   });
 
   set((s) => {
