@@ -161,7 +161,7 @@ function createRemoteBrokeredInterface(
 ): InterfaceDisplayState & { brokerType: "remote" } {
   const syncRemoteStateStore = (s: RemoteStateStore) => {
     const remoteState = s.remotes[def.brokerSettings.remoteId]?.state;
-    if (remoteState !== undefined && remoteState.state === "connected") {
+    if (remoteState !== undefined && remoteState.state === "connected" && remoteState.interfaces[def.interfaceId] !== undefined) {
       set((draft) => {
         draft.values = remoteState.values;
         draft.layout = remoteState.interfaces[def.interfaceId].layout;

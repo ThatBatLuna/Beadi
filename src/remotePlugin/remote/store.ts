@@ -145,6 +145,13 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
           }
         });
       },
+      PublishInterfaces: (payload) => {
+        set((draft) => {
+          if (draft.state === "connected") {
+            draft.interfaces = _.keyBy(payload.interfaces, (i) => i.interfaceId);
+          }
+        });
+      },
       ValueChanged: ({ endpoint, value }) => {
         set((draft) => {
           if (draft.state === "connected") {
