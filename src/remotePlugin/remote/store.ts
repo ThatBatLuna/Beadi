@@ -102,51 +102,53 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
   });
   socket.addEventListener("message", (event) => {
     console.log("WebSocket message: ", event);
+    let data: BeadiMessage;
     try {
-      const data: BeadiMessage = JSON.parse(event.data);
-      handleMessage(data, {
-        WelcomeController: (payload) => {
-          set((s) => ({
-            state: "connected",
-            id: payload.id,
-            socket: socket,
-            interfaces: _.keyBy(payload.interfaces, (i) => i.interfaceId),
-            values: Object.assign(
+      data = JSON.parse(event.data);
+    } catch (e) {
+      console.error("Unparsable message: ", event, e);
+      return;
+    }
+    handleMessage(data, {
+      WelcomeController: (payload) => {
+        set((s) => ({
+          state: "connected",
+          id: payload.id,
+          socket: socket,
+          interfaces: _.keyBy(payload.interfaces, (i) => i.interfaceId),
+          values: Object.assign(
+            {},
+            ...payload.endpoints.map((it) => ({
+              [it.id]: {
+                value: it.value,
+                valueId: it.id,
+              } satisfies RemoteConnectionValue,
+            }))
+          ),
+        }));
+      },
+      PublishEndpoints: (payload) => {
+        set((draft) => {
+          if (draft.state === "connected") {
+            draft.values = Object.assign(
               {},
               ...payload.endpoints.map((it) => ({
-                [it.id]: {
-                  value: it.value,
-                  valueId: it.id,
-                } satisfies RemoteConnectionValue,
+                [it.id]: it,
               }))
-            ),
-          }));
-        },
-        PublishEndpoints: (payload) => {
-          set((draft) => {
-            if (draft.state === "connected") {
-              draft.values = Object.assign(
-                {},
-                ...payload.endpoints.map((it) => ({
-                  [it.id]: it,
-                }))
-              );
+            );
+          }
+        });
+      },
+      ValueChanged: ({ endpoint, value }) => {
+        set((draft) => {
+          if (draft.state === "connected") {
+            if (endpoint in draft.values) {
+              draft.values[endpoint].value = value;
             }
-          });
-        },
-        ValueChanged: ({ endpoint, value }) => {
-          set((draft) => {
-            if (draft.state === "connected") {
-              if (endpoint in draft.values) {
-                draft.values[endpoint].value = value;
-              }
-            }
-          });
-        },
-      });
-    } catch (e) {
-      console.error("Unreadable message: ", event);
-    }
+          }
+        });
+      },
+    });
   });
 
   return {

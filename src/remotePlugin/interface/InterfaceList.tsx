@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from "react";
-import { useInterfaceDisplayStateStore, useInterfaceDisplayStore, useInterfaceFileStore } from "./stores";
+import { useInterfaceDisplayStateStore, useInterfaceFileStore } from "./stores";
 import { Interface } from "./Interface";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";
@@ -13,7 +13,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(true);
   const deleteLocalInterface = useInterfaceFileStore((s) => s.deleteInterface);
-  const deleteRemoteInterface = useInterfaceDisplayStore((s) => s.removeRemoteInterface);
+  // const deleteRemoteInterface = useInterfaceDisplayStore((s) => s.removeRemoteInterface);
   const isLocal = brokerType === "local";
 
   if (editing && isLocal) {
@@ -36,7 +36,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
           {!isLocal && <MdDeviceHub></MdDeviceHub>}
           {isLocal && <span>L</span>}
           <div className="grow"></div>
-          <Button onClick={() => deleteRemoteInterface(interfaceId)} icon={<MdDelete />}></Button>
+          {/* <Button onClick={() => deleteRemoteInterface(interfaceId)} icon={<MdDelete />}></Button> */}
           {isLocal && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
           {!expanded && <Button onClick={() => setExpanded(true)} icon={<MdExpandMore />}></Button>}
           {expanded && <Button onClick={() => setExpanded(false)} icon={<MdExpandLess />}></Button>}
