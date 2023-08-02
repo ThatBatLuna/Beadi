@@ -6,7 +6,7 @@ import _ from "lodash";
 import { useCallback } from "react";
 import { usePublishStateStore } from "../publish/store";
 import { useIOValueStore } from "../inputOutputStore";
-import { useRemoteStateStore } from "../remote/store";
+import { RemoteStateStore, useRemoteStateStore } from "../remote/store";
 import { sendMessage } from "../message";
 
 type RemoteBrokerSettings = {
@@ -29,6 +29,7 @@ type InterfaceDisplayStore = {
 
   /** Local Interfaces are synced from the files tore */
   addRemoteInterface: (interfaceId: string, brokerSettings: RemoteBrokerSettings) => void;
+  removeRemoteInterface: (interfaceId: string) => void;
 };
 /** Make mutations to the displayed interfaces on this store, that gets synced into useInterfaceDisplayStateStore, read from there */
 export const useInterfaceDisplayStore = create(
@@ -45,6 +46,13 @@ export const useInterfaceDisplayStore = create(
                 brokerType: "remote",
                 brokerSettings: settings,
               };
+            })
+          );
+        },
+        removeRemoteInterface: (interfaceId) => {
+          set((s) =>
+            produce(s, (draft) => {
+              delete draft.interfaces[interfaceId];
             })
           );
         },
@@ -76,6 +84,7 @@ type InterfaceFileStore = {
   interfaces: Record<string, Interface>;
   addInterface: () => void;
   updateInterface: (interfaceId: string, recipe: (draft: Draft<Interface>) => void) => void;
+  deleteInterface: (interfaceId: string) => void;
 };
 export const useInterfaceFileStore = create<InterfaceFileStore>()(
   devtools(
@@ -98,6 +107,13 @@ export const useInterfaceFileStore = create<InterfaceFileStore>()(
           set((s) =>
             produce(s, (draft) => {
               recipe(draft.interfaces[interfaceId]);
+            })
+          );
+        },
+        deleteInterface: (interfaceId) => {
+          set((s) =>
+            produce(s, (draft) => {
+              delete draft.interfaces[interfaceId];
             })
           );
         },
@@ -143,7 +159,7 @@ function createRemoteBrokeredInterface(
   def: InterfaceDisplayDef & { brokerType: "remote" },
   set: Setter
 ): InterfaceDisplayState & { brokerType: "remote" } {
-  const unsubscribeIO = useRemoteStateStore.subscribe((s) => {
+  const syncRemoteStateStore = (s: RemoteStateStore) => {
     const remoteState = s.remotes[def.brokerSettings.remoteId].state;
     if (remoteState.state === "connected") {
       set((draft) => {
@@ -151,14 +167,18 @@ function createRemoteBrokeredInterface(
         draft.layout = remoteState.interfaces[def.interfaceId].layout;
       });
     }
-  });
+  };
+
+  const unsubscribeIO = useRemoteStateStore.subscribe(syncRemoteStateStore);
+
+  const remoteState = useRemoteStateStore.getState().remotes[def.brokerSettings.remoteId].state;
 
   return {
     brokerType: "remote",
     brokerState: {},
     interfaceId: def.interfaceId,
-    layout: [],
-    values: {},
+    layout: remoteState.state === "connected" ? _.cloneDeep(remoteState.interfaces[def.interfaceId].layout) : [],
+    values: remoteState.state === "connected" ? _.cloneDeep(remoteState.values) : {},
     updateValue: (valueId, value) => {
       console.log("Remotely updating ", valueId, " to ", value);
       const state = useRemoteStateStore.getState().remotes[def.brokerSettings.remoteId].state;
@@ -187,6 +207,10 @@ function createLocalBrokeredInterface(
   });
   const unsubscribeInterfaceFile = useInterfaceFileStore.subscribe((s) => {
     set((draft) => {
+      if (s.interfaces[def.interfaceId] === undefined) {
+        console.warn("Tried to update interface broker for nonexisting interface.", def.interfaceId);
+        return;
+      }
       draft.layout = s.interfaces[def.interfaceId].layout;
     });
   });

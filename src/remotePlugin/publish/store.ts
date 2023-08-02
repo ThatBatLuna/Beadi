@@ -6,8 +6,9 @@ import { BeadiMessage, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
 import { useInterfaceFileStore } from "../interface/stores";
 
-function makeDisconnectedState(set: Setter, get: Getter): PublishConnectionState & { state: "disconnected" } {
+function makeDisconnectedState(set: Setter, get: Getter, error?: string): PublishConnectionState & { state: "disconnected" } {
   return {
+    error,
     state: "disconnected",
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on disconnected socket");
@@ -66,6 +67,7 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
 type PublishConnectionState =
   | {
       state: "disconnected";
+      error?: string;
       updateValue: (valueId: string, value: any) => void;
       publish: () => void;
     }
@@ -108,7 +110,7 @@ function publish(set: Setter, get: Getter): void {
 
     const old = get().state;
     set((s) => {
-      s.state = makeDisconnectedState(set, get);
+      s.state = makeDisconnectedState(set, get, `Socket closed: ${event.reason} (${event.code})`);
     });
     if (old.state !== "disconnected") {
       old.close();

@@ -1,9 +1,9 @@
 import { FunctionComponent, useState } from "react";
-import { useInterfaceDisplayStateStore } from "./stores";
+import { useInterfaceDisplayStateStore, useInterfaceDisplayStore, useInterfaceFileStore } from "./stores";
 import { Interface } from "./Interface";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";
-import { MdDeviceHub, MdEdit, MdExpandLess, MdExpandMore, MdMore } from "react-icons/md";
+import { MdDelete, MdDeviceHub, MdEdit, MdEditOff, MdExpandLess, MdExpandMore, MdMore } from "react-icons/md";
 
 type InterfaceListEntryProps = {
   interfaceId: string;
@@ -12,23 +12,32 @@ type InterfaceListEntryProps = {
 export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({ interfaceId, brokerType }) => {
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(true);
-  const canEdit = brokerType === "local";
+  const deleteLocalInterface = useInterfaceFileStore((s) => s.deleteInterface);
+  const deleteRemoteInterface = useInterfaceDisplayStore((s) => s.removeRemoteInterface);
+  const isLocal = brokerType === "local";
 
-  if (editing && canEdit) {
+  if (editing && isLocal) {
     return (
-      <div className="p-2">
-        <Button onClick={() => setEditing(false)}>Exit Editor</Button>
-        <InterfaceEditor interfaceId={interfaceId}></InterfaceEditor>;
+      <div className="p-2 bg-primary-1000 rounded-md my-2">
+        <div className="flex flex-row">
+          {!isLocal && <MdDeviceHub></MdDeviceHub>}
+          {isLocal && <span>L</span>}
+          <div className="grow"></div>
+          <Button onClick={() => setEditing(false)} icon={<MdEditOff />}></Button>
+          <Button onClick={() => deleteLocalInterface(interfaceId)} icon={<MdDelete />}></Button>
+        </div>
+        <InterfaceEditor interfaceId={interfaceId}></InterfaceEditor>
       </div>
     );
   } else {
     return (
       <div className="p-2 bg-primary-1000 rounded-md my-2">
         <div className="flex flex-row">
-          {!canEdit && <MdDeviceHub></MdDeviceHub>}
-          {canEdit && <span>L</span>}
+          {!isLocal && <MdDeviceHub></MdDeviceHub>}
+          {isLocal && <span>L</span>}
           <div className="grow"></div>
-          {canEdit && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
+          <Button onClick={() => deleteRemoteInterface(interfaceId)} icon={<MdDelete />}></Button>
+          {isLocal && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
           {!expanded && <Button onClick={() => setExpanded(true)} icon={<MdExpandMore />}></Button>}
           {expanded && <Button onClick={() => setExpanded(false)} icon={<MdExpandLess />}></Button>}
         </div>

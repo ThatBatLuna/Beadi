@@ -9,7 +9,12 @@ export const PublishManager: FunctionComponent<PublishManagerProps> = ({}) => {
 
   return (
     <div className="p-2 bg-primary-1000 flex flex-col rounded-md">
-      {state.state === "disconnected" && <div className="text-center mb-2">Ready to start Remote Control</div>}
+      {state.state === "disconnected" && (
+        <div className="text-center mb-2">
+          <p>Ready to start Remote Control</p>
+          <p>{state.error}</p>
+        </div>
+      )}
       {state.state === "connecting" && <div className="text-center mb-2 animate-pulse">Connecting...</div>}
       {state.state === "connected" && (
         <div className="text-center mb-2">

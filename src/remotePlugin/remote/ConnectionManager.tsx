@@ -3,6 +3,9 @@ import { useRemoteStateStore, useRemoteStore } from "./store";
 import { TextInput } from "../../components/input/TextInput";
 import { Button } from "../../components/input/Button";
 import { useInterfaceDisplayStore } from "../interface/stores";
+import { MdDelete, MdWifi, MdWifiOff } from "react-icons/md";
+import { CollapsibleCard } from "../../components/CollapsibleCard";
+import { Typo } from "../../components/Typo";
 
 type RemoteConnectionDisplayProps = {
   remoteConnectionId: string;
@@ -21,12 +24,22 @@ const RemoteConnectionDisplay: FunctionComponent<RemoteConnectionDisplayProps> =
 
   const state = connectionState.state;
   return (
-    <div>
-      Connection to {connectionState.definition.code}
-      <Button onClick={() => removeConnection(remoteConnectionId)}>X</Button>
-      <code>{JSON.stringify(state)}</code>
+    <CollapsibleCard
+      header={
+        <>
+          {state.state === "connected" && <MdWifi className="w-6 h-6 m-2" />}
+          {state.state === "connecting" && <MdWifi className="w-6 h-6 m-2 animate-pulse" />}
+          {state.state === "disconnected" && <MdWifiOff className="w-6 h-6 m-2" />}
+          <div>{connectionState.definition.code}</div>
+          <div className="grow"></div>
+          <Button onClick={() => removeConnection(remoteConnectionId)} icon={<MdDelete />}></Button>
+        </>
+      }
+    >
       {state.state === "connected" && (
         <>
+          {JSON.stringify(state.values)}
+          <Typo>Interfaces</Typo>
           <ul>
             {Object.entries(state.interfaces).map(([key, iface]) => (
               <li key={key}>
@@ -35,9 +48,15 @@ const RemoteConnectionDisplay: FunctionComponent<RemoteConnectionDisplayProps> =
               </li>
             ))}
           </ul>
+          <Typo>Values</Typo>
+          <ul>
+            {Object.entries(state.values).map(([key, value]) => (
+              <li key={key}>{value.valueId}</li>
+            ))}
+          </ul>
         </>
       )}
-    </div>
+    </CollapsibleCard>
   );
 };
 
@@ -71,7 +90,7 @@ export const ConnectionManager: FunctionComponent<ConnectionManagerProps> = ({})
     <div>
       <ul>
         {remoteStore.map((s) => (
-          <li key={s.definition.remoteConnectionId}>
+          <li key={s.definition.remoteConnectionId} className="my-2">
             <RemoteConnectionDisplay remoteConnectionId={s.definition.remoteConnectionId}></RemoteConnectionDisplay>
           </li>
         ))}
