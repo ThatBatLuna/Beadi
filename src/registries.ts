@@ -1,4 +1,4 @@
-import { AnyNodeDef, NodeDef } from "./engine/node";
+import { AnyNodeDef } from "./engine/node";
 
 // import {
 //   addNodeDef,
@@ -10,7 +10,7 @@ import { buttonNodeDef } from "./nodes/ButtonNode";
 import { timerNodeDef } from "./nodes/TimerNode";
 import { inputAdapterNode } from "./nodes/InputAdapterNode";
 import { toggleNodeDef } from "./nodes/ToggleNode";
-import { AnyInputAdapterDef, AnyOutputAdapterDef, InputAdapterDef } from "./engine/adapter";
+import { AnyInputAdapterDef, AnyOutputAdapterDef } from "./engine/adapter";
 import { remoteInputAdapter, remoteInputFromOutputAdapter, testRemoteInputAdapter } from "./remotePlugin/inputAdapter";
 import { remoteOutputAdapter, remoteOutputToInputAdapter, testRemoteOutputAdapter } from "./remotePlugin/outputAdapter";
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";

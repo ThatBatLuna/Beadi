@@ -1,7 +1,6 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
-import { devtools, persist } from "zustand/middleware";
-import { immer } from "zustand/middleware/immer";
+import { devtools } from "zustand/middleware";
 import { BeadiMessage, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
 import { useInterfaceFileStore } from "../interface/stores";
@@ -160,28 +159,3 @@ function publish(set: Setter, get: Getter): void {
     s.state = makeConnectingState(socket);
   });
 }
-
-// export function startSyncPublishConnectionState() {
-//   const syncToState = (state: PublishStore) => {
-//     const oldState = usePublishStateStore.getState();
-
-//     const oldConnectionState = oldState.state;
-//     const oldIsConnected = oldConnectionState.state === "connecting" || oldConnectionState.state === "connected";
-//     if (oldIsConnected && !state.published) {
-//       //Disconnect
-//       oldConnectionState.close();
-//     }
-//     if (!oldIsConnected && state.published) {
-//       //Connect
-//       usePublishStateStore.setState(
-//         publish((recipe) => {
-//           usePublishStateStore.setState((s) => produce(s, recipe));
-//         }, usePublishStateStore.getState)
-//       );
-//     }
-//   };
-
-//   usePublishStore.subscribe(syncToState);
-//   syncToState(usePublishStore.getState());
-// }
-// startSyncPublishConnectionState();

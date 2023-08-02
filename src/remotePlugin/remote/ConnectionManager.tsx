@@ -2,7 +2,7 @@ import { FunctionComponent, useState } from "react";
 import { useRemoteStateStore, useRemoteStore } from "./store";
 import { TextInput } from "../../components/input/TextInput";
 import { Button } from "../../components/input/Button";
-import { MdDelete, MdOpenInNew, MdWifi, MdWifiOff } from "react-icons/md";
+import { MdDelete, MdWifi, MdWifiOff } from "react-icons/md";
 import { CollapsibleCard } from "../../components/CollapsibleCard";
 import { Typo } from "../../components/Typo";
 
@@ -12,14 +12,6 @@ type RemoteConnectionDisplayProps = {
 const RemoteConnectionDisplay: FunctionComponent<RemoteConnectionDisplayProps> = ({ remoteConnectionId }) => {
   const connectionState = useRemoteStateStore((s) => s.remotes[remoteConnectionId]);
   const removeConnection = useRemoteStore((s) => s.removeConnection);
-
-  // const addRemoteInterface = useInterfaceDisplayStore((s) => s.addRemoteInterface);
-
-  // const openRemoteInterface = (interfaceId: string) => {
-  //   addRemoteInterface(interfaceId, {
-  //     remoteId: remoteConnectionId,
-  //   });
-  // };
 
   const state = connectionState.state;
   return (
@@ -57,7 +49,7 @@ const RemoteConnectionDisplay: FunctionComponent<RemoteConnectionDisplayProps> =
 };
 
 type RemoteConnectionFormProps = {};
-export const RemoteConnectionForm: FunctionComponent<RemoteConnectionFormProps> = ({}) => {
+export const RemoteConnectionForm: FunctionComponent<RemoteConnectionFormProps> = () => {
   const addConnection = useRemoteStore((s) => s.addConnection);
   const [code, setCode] = useState("");
 
@@ -79,7 +71,7 @@ export const RemoteConnectionForm: FunctionComponent<RemoteConnectionFormProps> 
 };
 
 type ConnectionManagerProps = {};
-export const ConnectionManager: FunctionComponent<ConnectionManagerProps> = ({}) => {
+export const ConnectionManager: FunctionComponent<ConnectionManagerProps> = () => {
   const remoteStore = useRemoteStateStore((s) => Object.values(s.remotes));
 
   return (

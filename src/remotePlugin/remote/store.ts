@@ -1,5 +1,5 @@
 import create from "zustand";
-import { diffBy, diffByKeys } from "../../utils/diffBy";
+import { diffByKeys } from "../../utils/diffBy";
 import produce, { Draft } from "immer";
 import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";

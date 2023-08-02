@@ -6,7 +6,7 @@ import _ from "lodash";
 import { useCallback } from "react";
 import { usePublishStateStore } from "../publish/store";
 import { useIOValueStore } from "../inputOutputStore";
-import { RemoteStateStore, useRemoteStateStore, useRemoteStore } from "../remote/store";
+import { RemoteStateStore, useRemoteStateStore } from "../remote/store";
 import { sendMessage } from "../message";
 
 type RemoteBrokerSettings = {
@@ -24,51 +24,6 @@ type InterfaceDisplayDef = {
       brokerSettings: {};
     }
 );
-// type InterfaceDisplayStore = {
-//   interfaces: Record<string, InterfaceDisplayDef>;
-
-//   /** Local Interfaces are synced from the files tore */
-//   addRemoteInterface: (interfaceId: string, brokerSettings: RemoteBrokerSettings) => void;
-//   removeRemoteInterface: (interfaceId: string) => void;
-// };
-/** Make mutations to the displayed interfaces on this store, that gets synced into useInterfaceDisplayStateStore, read from there */
-// export const useInterfaceDisplayStore = create(
-//   devtools(
-//     persist<InterfaceDisplayStore>(
-//       (set, get) => ({
-//         interfaces: {},
-
-//         addRemoteInterface: (interfaceId, settings) => {
-//           set((s) =>
-//             produce(s, (draft) => {
-//               draft.interfaces[interfaceId] = {
-//                 interfaceId: interfaceId,
-//                 brokerType: "remote",
-//                 brokerSettings: settings,
-//               };
-//             })
-//           );
-//         },
-//         removeRemoteInterface: (interfaceId) => {
-//           set((s) =>
-//             produce(s, (draft) => {
-//               delete draft.interfaces[interfaceId];
-//             })
-//           );
-//         },
-//       }),
-//       {
-//         name: "interfaceDisplay",
-//         getStorage: () => window.sessionStorage,
-//         version: 1,
-//       }
-//     ),
-//     {
-//       name: "useInterfaceDisplayStore",
-//     }
-//   )
-// );
-
 type Widget = {
   widgetId: string;
   widgetType: string;
@@ -154,7 +109,7 @@ export const useInterfaceDisplayStateStore = create<InterfaceDisplayStateStore>(
 );
 
 type Setter = (recipe: (draft: Draft<InterfaceDisplayState>) => void) => void;
-type Getter = () => InterfaceDisplayState;
+// type Getter = () => InterfaceDisplayState;
 function createRemoteBrokeredInterface(
   def: InterfaceDisplayDef & { brokerType: "remote" },
   set: Setter
@@ -236,36 +191,6 @@ function createLocalBrokeredInterface(
 export function setupInterfaceListeners() {
   console.log("Setup Interface Listeners");
 
-  // const syncInterfaceDisplayStateStore = (state: InterfaceDisplayStore) => {
-  //   const oldStateStore = useInterfaceDisplayStateStore.getState();
-  //   const { extra, missing } = diffByKeys(oldStateStore.interfaces, state.interfaces);
-
-  //   useInterfaceDisplayStateStore.setState((s) =>
-  //     produce(s, (draft) => {
-  //       for (const extraKey in extra) {
-  //         //TODO Close up the broker.
-  //         draft.interfaces[extraKey].closeBroker();
-  //         delete draft.interfaces[extraKey];
-  //       }
-  //       for (const missingKey in missing) {
-  //         const interfaceDef = missing[missingKey];
-
-  //         const set: Setter = (recipe) => {
-  //           useInterfaceDisplayStateStore.setState((s) => produce(s, (draft) => recipe(draft.interfaces[missingKey])));
-  //         };
-  //         //TODO Open up the broker.
-  //         if (interfaceDef.brokerType === "local") {
-  //           draft.interfaces[missingKey] = createLocalBrokeredInterface(interfaceDef, set);
-  //         } else {
-  //           draft.interfaces[missingKey] = createRemoteBrokeredInterface(interfaceDef, set);
-  //         }
-  //       }
-  //     })
-  //   );
-  // };
-  // useInterfaceDisplayStore.subscribe(syncInterfaceDisplayStateStore);
-  // syncInterfaceDisplayStateStore(useInterfaceDisplayStore.getState());
-
   const syncLocalInterfacesFromFileStore = (state: InterfaceFileStore) => {
     const existingLocalInterfaces = _.pickBy(useInterfaceDisplayStateStore.getState().interfaces, (s) => s.brokerType === "local");
     const { extra, missing } = diffByKeys(existingLocalInterfaces, state.interfaces);
@@ -287,11 +212,6 @@ export function setupInterfaceListeners() {
             },
             set
           );
-          // draft.interfaces[missingKey] = {
-          //   brokerSettings: {},
-          //   brokerType: "local",
-          //   interfaceId: missingKey,
-          // };
         }
       })
     );

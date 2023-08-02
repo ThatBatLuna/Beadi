@@ -3,7 +3,7 @@ import { useInterfaceDisplayStateStore, useInterfaceFileStore } from "./stores";
 import { Interface } from "./Interface";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";
-import { MdDelete, MdDeviceHub, MdEdit, MdEditOff, MdExpandLess, MdExpandMore, MdMore } from "react-icons/md";
+import { MdDelete, MdDeviceHub, MdEdit, MdEditOff, MdExpandLess, MdExpandMore } from "react-icons/md";
 
 type InterfaceListEntryProps = {
   interfaceId: string;
@@ -48,7 +48,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
 };
 
 type InterfaceListProps = {};
-export const InterfaceList: FunctionComponent<InterfaceListProps> = ({}) => {
+export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
   const interfaces = useInterfaceDisplayStateStore((s) =>
     Object.entries(s.interfaces).map(([interfaceId, iface]) => ({
       interfaceId,
