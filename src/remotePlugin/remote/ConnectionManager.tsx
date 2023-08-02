@@ -29,6 +29,7 @@ const RemoteConnectionDisplay: FunctionComponent<RemoteConnectionDisplayProps> =
           {state.state === "connected" && <MdWifi className="w-6 h-6 m-2" />}
           {state.state === "connecting" && <MdWifi className="w-6 h-6 m-2 animate-pulse" />}
           {state.state === "disconnected" && <MdWifiOff className="w-6 h-6 m-2" />}
+          {state.state === "closing" && <MdWifiOff className="w-6 h-6 m-2 animate-pulse" />}
           <div>{connectionState.definition.code}</div>
           <div className="grow"></div>
           <Button onClick={() => removeConnection(remoteConnectionId)} icon={<MdDelete />}></Button>

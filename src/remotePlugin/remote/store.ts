@@ -66,12 +66,18 @@ type RemoteConnectionState =
       id: string;
       values: Record<string, RemoteConnectionValue>;
       interfaces: Record<string, Interface>;
+    }
+  | {
+      state: "closing";
+      socket: WebSocket;
+      id: string;
+      values: Record<string, RemoteConnectionValue>;
+      interfaces: Record<string, Interface>;
     };
-
 export type RemoteConnectionHandle = {
   state: RemoteConnectionState;
   definition: RemoteConnection;
-  close: () => void;
+  close: () => Promise<void>;
 };
 
 export type RemoteStateStore = {
@@ -155,8 +161,17 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
     state: { state: "connecting", socket, id: connection.code },
     definition: connection,
     close: () => {
+      set((draft) => {
+        draft.state = "closing";
+      });
       console.log("Closing Remote Socket ", connection.code);
-      socket.close();
+      const promise = new Promise<void>((resolve) => {
+        socket.addEventListener("close", () => {
+          resolve();
+        });
+        socket.close();
+      });
+      return promise;
     },
   };
 }
@@ -166,14 +181,23 @@ function startSyncRemoteStateStore() {
   const syncRemoteStateStore = (state: RemoteStore) => {
     const oldRemotes = useRemoteStateStore.getState().remotes;
     const { missing, extra } = diffByKeys(oldRemotes, state.remotes, (a, b) => _.isEqual(a.definition, b));
+    console.log("syncRemoteStateStore: ", missing, extra);
 
+    for (const extraKey in extra) {
+      console.log("Closing Remote: ", extraKey);
+      oldRemotes[extraKey].close().then(() => {
+        useRemoteStateStore.setState((s) =>
+          produce(s, (draft) => {
+            console.log("Closed Remote: ", extraKey);
+            delete draft.remotes[extraKey];
+          })
+        );
+      });
+    }
     useRemoteStateStore.setState((s) =>
       produce(s, (draft) => {
-        for (const extraKey in extra) {
-          draft.remotes[extraKey].close();
-          delete draft.remotes[extraKey];
-        }
         for (const missingKey in missing) {
+          console.log("Missing: ", missing, missingKey);
           draft.remotes[missingKey] = openRemoteConnection(missing[missingKey], (recipe) => {
             useRemoteStateStore.setState((s) =>
               produce(s, (draft) => {
