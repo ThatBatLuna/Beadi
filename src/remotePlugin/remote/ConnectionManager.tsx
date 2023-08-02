@@ -3,7 +3,7 @@ import { useRemoteStateStore, useRemoteStore } from "./store";
 import { TextInput } from "../../components/input/TextInput";
 import { Button } from "../../components/input/Button";
 import { useInterfaceDisplayStore } from "../interface/stores";
-import { MdDelete, MdWifi, MdWifiOff } from "react-icons/md";
+import { MdDelete, MdOpenInNew, MdWifi, MdWifiOff } from "react-icons/md";
 import { CollapsibleCard } from "../../components/CollapsibleCard";
 import { Typo } from "../../components/Typo";
 
@@ -38,14 +38,10 @@ const RemoteConnectionDisplay: FunctionComponent<RemoteConnectionDisplayProps> =
     >
       {state.state === "connected" && (
         <>
-          {JSON.stringify(state.values)}
           <Typo>Interfaces</Typo>
           <ul>
             {Object.entries(state.interfaces).map(([key, iface]) => (
-              <li key={key}>
-                {iface.name}
-                <Button onClick={() => openRemoteInterface(iface.interfaceId)}></Button>
-              </li>
+              <li key={key}>{iface.name}</li>
             ))}
           </ul>
           <Typo>Values</Typo>

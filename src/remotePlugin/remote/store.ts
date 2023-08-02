@@ -77,9 +77,16 @@ export type RemoteConnectionHandle = {
 export type RemoteStateStore = {
   remotes: Record<string, RemoteConnectionHandle>;
 };
-export const useRemoteStateStore = create<RemoteStateStore>()((set, get) => ({
-  remotes: {},
-}));
+export const useRemoteStateStore = create(
+  devtools<RemoteStateStore>(
+    (set, get) => ({
+      remotes: {},
+    }),
+    {
+      name: "useRemoteStateStore",
+    }
+  )
+);
 
 type Setter = (recipe: (draft: Draft<RemoteConnectionState>) => void | RemoteConnectionState) => void;
 function openRemoteConnection(connection: RemoteConnection, set: Setter): RemoteConnectionHandle {
