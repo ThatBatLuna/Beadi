@@ -18,10 +18,6 @@ const RemoteSettingsTab: FunctionComponent<{}> = () => {
   return (
     <>
       <div className="flex flex-col w-full gap-2 p-2">
-        <Typo>Publish</Typo>
-        <PublishManager></PublishManager>
-      </div>
-      <div className="flex flex-col w-full gap-2 p-2">
         <Typo>Control</Typo>
         <InterfaceList></InterfaceList>
         <Button onClick={() => addLocalInterface()}>Add Local Interface</Button>
@@ -29,6 +25,10 @@ const RemoteSettingsTab: FunctionComponent<{}> = () => {
       <div className="flex flex-col w-full gap-2 p-2">
         <Typo>Remote Connections</Typo>
         <ConnectionManager></ConnectionManager>
+      </div>
+      <div className="flex flex-col w-full gap-2 p-2">
+        <Typo>Open to Controllers</Typo>
+        <PublishManager></PublishManager>
       </div>
     </>
   );

@@ -16,7 +16,7 @@ export const remoteInputFromOutputAdapter: InputAdapterDef<number> = {
     // console.log("RemoteOutputToRemoteInput", data);
     return 0.0;
   },
-  label: "Set Remote Input",
+  label: "Read Remote Output",
 };
 
 export const testRemoteInputAdapter: InputAdapterDef<number> = {
