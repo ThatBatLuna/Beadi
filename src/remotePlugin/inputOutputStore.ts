@@ -1,8 +1,11 @@
 import create from "zustand";
-import { FileStore, useFileStore } from "../engine/store";
+import { BeadiNode, FileStore, useFileStore } from "../engine/store";
 import produce from "immer";
 import _ from "lodash";
 import { InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
+import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
+import { devtools } from "zustand/middleware";
+import { diffByKeys } from "../utils/diffBy";
 
 type IOValueState<T> = {
   valueId: string;
@@ -20,48 +23,80 @@ type IOValueStore = {
 };
 
 /** Used by all input-/outputAdapters to push/pull their values from/to */
-export const useIOValueStore = create<IOValueStore>()((set, get) => ({
-  values: {},
-  setValue: (id, value) => {
-    set((s) =>
-      produce(s, (draft) => {
-        draft.values[id].value = value;
-      })
-    );
-  },
-}));
+export const useIOValueStore = create(
+  devtools<IOValueStore>(
+    (set, get) => ({
+      values: {},
+      setValue: (id, value) => {
+        set((s) =>
+          produce(s, (draft) => {
+            draft.values[id].value = value;
+          })
+        );
+      },
+    }),
+    { name: "useIOValueStore" }
+  )
+);
 
 export function tempSyncIOValueStore() {
   const func = (state: FileStore) => {
-    const inputAdapterNodes = Object.values(state.data.nodes).filter((it) => {
-      if (it.type === "inputAdapter") {
-        const settings = it.data.settings as InputAdapterNodeSettings;
-        return settings.adapterId === "remoteInput";
-        // }else if(it.type === "outputAdapter") {
-        //     const settings = it.data.settings as OutputAdapterNodeSettings;
-        //     return settings.adapterId === "remoteOutput";
+    const inputAdapterNodes = _.mapValues(
+      _.pickBy(state.data.nodes, (it) => {
+        if (it.type === "inputAdapter") {
+          const settings = it.data.settings as InputAdapterNodeSettings | undefined;
+          if (settings?.adapterId === REMOTE_INPUT_ADAPTER_ID) {
+            const adapterSettings = settings.adapterSettings?.[REMOTE_INPUT_ADAPTER_ID] as RemoteInputAdapterSettings | undefined;
+            return adapterSettings != null;
+          }
+          // }else if(it.type === "outputAdapter") {
+          //     const settings = it.data.settings as OutputAdapterNodeSettings;
+          //     return settings.adapterId === "remoteOutput";
+        }
+        return false;
+      }),
+      (node) => {
+        const adapterSettings = (node.data.settings as InputAdapterNodeSettings).adapterSettings[
+          REMOTE_INPUT_ADAPTER_ID
+        ] as RemoteInputAdapterSettings;
+        return {
+          type: adapterSettings.type,
+          valueId: node.id,
+        };
       }
-      return false;
-    });
+    );
     console.log("inputAdapterNodes: ", inputAdapterNodes);
 
     useIOValueStore.setState((state) => {
       const localValues = Object.values(state.values);
 
-      const missingValues = _.differenceWith(inputAdapterNodes, localValues, (node, value) => node.id === value.valueId);
-      const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
+      // const missingValues = _.differenceWith(inputAdapterNodes, localValues, (node, value) => node.id === value.valueId);
+      // const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
 
-      console.log("useIOValueStore setState: ", localValues, "+", missingValues, " -", extraValues);
+      const { extra, missing, changed } = diffByKeys(
+        state.values,
+        inputAdapterNodes,
+        (a, b) => a.type === b.type && a.valueId === b.valueId
+      );
+      console.log("useIOValueStore setState: ", localValues, "+", missing, " -", extra);
 
       return produce(state, (draft) => {
-        for (const extra of extraValues) {
-          delete draft.values[extra.valueId];
+        for (const extraKey in extra) {
+          delete draft.values[extraKey];
         }
-        for (const missing of missingValues) {
-          draft.values[missing.id] = {
-            type: "number", //TODO Real type here
-            value: 0,
-            valueId: missing.id,
+        for (const missingKey in missing) {
+          draft.values[missingKey] = {
+            type: missing[missingKey].type,
+            value: 0.0,
+            valueId: missingKey,
+          };
+        }
+        console.log("CCC: ", changed);
+        for (const changedKey in changed) {
+          draft.values[changedKey] = {
+            type: changed[changedKey][1].type,
+            value: 0.0,
+            valueId: changedKey,
           };
         }
       });

@@ -35,8 +35,9 @@ export const RemoteInputSettingsEditor: FunctionComponent<RemoteInputSettingsEdi
   );
 };
 
+export const REMOTE_INPUT_ADAPTER_ID = "remoteInput";
 export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, RemoteInputAdapterSettings> = {
-  id: "remoteInput",
+  id: REMOTE_INPUT_ADAPTER_ID,
   getType: (settings) => settings.type,
   getData: (nodeId: string, settings) => {
     const value = useIOValueStore.getState().values[nodeId]?.value;
