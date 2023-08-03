@@ -60,5 +60,5 @@ export const remoteSettingsTab: Tab = {
   id: "remote",
   icon: <RemoteSettingsIcon></RemoteSettingsIcon>,
   label: "Remote",
-  tab: RemoteSettingsTab,
+  tab: <RemoteSettingsTab />,
 };

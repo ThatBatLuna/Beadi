@@ -9,6 +9,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
 import { useFileStore } from "./engine/store";
 import { tempSyncIOValueStore } from "./remotePlugin/inputOutputStore";
+import { settingsTabs } from "./registries";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
@@ -17,6 +18,12 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    children: [
+      ...Object.values(settingsTabs).map((it) => ({
+        path: it.id,
+        element: it.tab,
+      })),
+    ],
   },
 ]);
 
