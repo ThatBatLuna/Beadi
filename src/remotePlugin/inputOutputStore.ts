@@ -11,6 +11,7 @@ type IOValueState<T> = {
   valueId: string;
   value: T;
   type: string;
+  name: string;
   //And additional metadata
 };
 
@@ -62,6 +63,7 @@ export function tempSyncIOValueStore() {
         return {
           type: adapterSettings.type,
           valueId: node.id,
+          name: node.data.name ?? node.id,
         };
       }
     );
@@ -73,11 +75,7 @@ export function tempSyncIOValueStore() {
       // const missingValues = _.differenceWith(inputAdapterNodes, localValues, (node, value) => node.id === value.valueId);
       // const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
 
-      const { extra, missing, changed } = diffByKeys(
-        state.values,
-        inputAdapterNodes,
-        (a, b) => a.type === b.type && a.valueId === b.valueId
-      );
+      const { extra, missing, changed } = diffByKeys(state.values, inputAdapterNodes, (a, b) => a.type === b.type && a.name === b.name);
       console.log("useIOValueStore setState: ", localValues, "+", missing, " -", extra);
 
       return produce(state, (draft) => {
@@ -89,12 +87,14 @@ export function tempSyncIOValueStore() {
             type: missing[missingKey].type,
             value: 0.0,
             valueId: missingKey,
+            name: missing[missingKey].name,
           };
         }
         console.log("CCC: ", changed);
         for (const changedKey in changed) {
           draft.values[changedKey] = {
             type: changed[changedKey][1].type,
+            name: changed[changedKey][1].name,
             value: 0.0,
             valueId: changedKey,
           };
