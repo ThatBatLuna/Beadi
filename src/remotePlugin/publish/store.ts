@@ -4,7 +4,6 @@ import { devtools } from "zustand/middleware";
 import { BeadiMessage, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
 import { useInterfaceFileStore } from "../interface/stores";
-import { useFileStore } from "../../engine/store";
 import _ from "lodash";
 
 function makeDisconnectedState(set: Setter, get: Getter, error?: string): PublishConnectionState & { state: "disconnected" } {

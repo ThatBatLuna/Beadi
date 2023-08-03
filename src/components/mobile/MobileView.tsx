@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { BottomBar } from "./BottomBar";
 import { settingsTabs } from "../../registries";
 import { Outlet } from "react-router-dom";

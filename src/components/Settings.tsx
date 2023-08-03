@@ -1,10 +1,9 @@
 import clsx from "clsx";
-import { ComponentType, FunctionComponent, ReactNode, useMemo, useState } from "react";
-import { BsChevronBarRight, BsFile } from "react-icons/bs";
+import { FunctionComponent, ReactNode } from "react";
 import { FileSettings } from "./settings/FileSettings";
 import { settingsTabs } from "../registries";
 import { MdChevronRight, MdInsertDriveFile } from "react-icons/md";
-import { NavLink, Outlet, useLocation, useMatch } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 export type Tab = {
   id: string;
@@ -21,15 +20,6 @@ export const fileTab: Tab = {
 };
 
 export const Settings: FunctionComponent<{}> = () => {
-  // const [tab, setTab] = useState<string | null>(Object.keys(settingsTabs)[0]);
-
-  // const Component = useMemo(() => {
-  //   if (tab == null) {
-  //     return null;
-  //   } else {
-  //     return settingsTabs[tab].tab;
-  //   }
-  // }, [tab]);
   const isRoot = useLocation();
   const expanded = isRoot.pathname !== "/";
 

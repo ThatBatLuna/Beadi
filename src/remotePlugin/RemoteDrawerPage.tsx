@@ -35,7 +35,7 @@ const RemoteSettingsTab: FunctionComponent<{}> = () => {
 };
 
 type RemoteSettingsIconProps = {};
-export const RemoteSettingsIcon: FunctionComponent<RemoteSettingsIconProps> = ({}) => {
+export const RemoteSettingsIcon: FunctionComponent<RemoteSettingsIconProps> = () => {
   const publishState = usePublishStateStore((s) => s.state.state);
   const remotes = useRemoteStateStore((s) => _.values(s.remotes).filter((s) => s.state.state === "connected").length);
 

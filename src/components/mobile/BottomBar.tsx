@@ -1,12 +1,9 @@
 import clsx from "clsx";
 import { FunctionComponent, ReactNode } from "react";
-import { Link, NavLink, To, useMatch } from "react-router-dom";
+import { NavLink, useMatch } from "react-router-dom";
 
 type BottomBarContainerProps = {
   tab: TabDef;
-
-  // active: boolean;
-  // onClick: () => void;
 };
 const BottomBarContainer: FunctionComponent<BottomBarContainerProps> = ({ tab }) => {
   const active = useMatch(tab.id);
@@ -26,9 +23,7 @@ type TabDef = {
   icon: ReactNode;
 };
 type BottomBarProps = {
-  // activeTabId: string;
   tabs: TabDef[];
-  // onTabChange: (id: string) => void;
 };
 export const BottomBar: FunctionComponent<BottomBarProps> = ({ tabs }) => {
   return (
