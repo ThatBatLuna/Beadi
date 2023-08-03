@@ -3,7 +3,7 @@ import { ComponentType, FunctionComponent, ReactNode, useMemo, useState } from "
 import { BsChevronBarRight, BsFile } from "react-icons/bs";
 import { FileSettings } from "./settings/FileSettings";
 import { settingsTabs } from "../registries";
-import { MdInsertDriveFile } from "react-icons/md";
+import { MdChevronRight, MdInsertDriveFile } from "react-icons/md";
 import { NavLink, Outlet, useLocation, useMatch } from "react-router-dom";
 
 export type Tab = {
@@ -53,7 +53,7 @@ export const Settings: FunctionComponent<{}> = () => {
           }
           to="/"
         >
-          <BsChevronBarRight className="w-full h-full"></BsChevronBarRight>
+          <MdChevronRight className="w-full h-full"></MdChevronRight>
         </NavLink>
       </ul>
       <div
