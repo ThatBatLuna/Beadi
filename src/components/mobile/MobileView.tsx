@@ -13,7 +13,7 @@ export const MobileView: FunctionComponent<{}> = () => {
       <div className="overflow-y-auto grow">
         <Content></Content>
       </div>
-      <BottomBar tabs={Object.values(settingsTabs)} onTabChange={(tab) => setTabId(tab)}></BottomBar>
+      <BottomBar tabs={Object.values(settingsTabs)} onTabChange={(tab) => setTabId(tab)} activeTabId={tabId}></BottomBar>
     </div>
   );
 };

@@ -61,12 +61,14 @@ export const RemoteConnectionForm: FunctionComponent<RemoteConnectionFormProps> 
   };
 
   return (
-    <div>
-      <TextInput onChange={setCode} value={code} label="Code" id="code"></TextInput>
-      <Button onClick={connect} disabled={code.trim() === ""}>
+    <form onSubmit={connect} className="flex flex-row">
+      <div className="grow mr-2">
+        <TextInput onChange={setCode} value={code} label="Code" id="code"></TextInput>
+      </div>
+      <Button type="submit" disabled={code.trim() === ""}>
         Connect
       </Button>
-    </div>
+    </form>
   );
 };
 
@@ -83,7 +85,17 @@ export const ConnectionManager: FunctionComponent<ConnectionManagerProps> = () =
           </li>
         ))}
       </ul>
-      <RemoteConnectionForm></RemoteConnectionForm>
+      <CollapsibleCard
+        forceExpanded={remoteStore.length === 0 ? true : undefined}
+        header={
+          <>
+            <div className="font-bold">Add Remote Connection</div>
+            <div className="grow"></div>
+          </>
+        }
+      >
+        <RemoteConnectionForm></RemoteConnectionForm>
+      </CollapsibleCard>
     </div>
   );
 };
