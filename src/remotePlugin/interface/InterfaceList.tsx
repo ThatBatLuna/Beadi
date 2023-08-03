@@ -4,6 +4,8 @@ import { Interface } from "./Interface";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";
 import { MdDelete, MdDeviceHub, MdEdit, MdEditOff, MdExpandLess, MdExpandMore } from "react-icons/md";
+import { CollapsibleCard } from "../../components/CollapsibleCard";
+import { TextInput } from "../../components/input/TextInput";
 
 type InterfaceListEntryProps = {
   interfaceId: string;
@@ -11,38 +13,54 @@ type InterfaceListEntryProps = {
 };
 export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({ interfaceId, brokerType }) => {
   const [editing, setEditing] = useState(false);
-  const [expanded, setExpanded] = useState(true);
   const deleteLocalInterface = useInterfaceFileStore((s) => s.deleteInterface);
   // const deleteRemoteInterface = useInterfaceDisplayStore((s) => s.removeRemoteInterface);
   const isLocal = brokerType === "local";
+  const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
+  const updateInterface = useInterfaceFileStore((s) => s.updateInterface);
 
   if (editing && isLocal) {
     return (
-      <div className="p-2 bg-primary-1000 rounded-md my-2">
-        <div className="flex flex-row">
-          {!isLocal && <MdDeviceHub></MdDeviceHub>}
-          {isLocal && <span>L</span>}
-          <div className="grow"></div>
-          <Button onClick={() => setEditing(false)} icon={<MdEditOff />}></Button>
-          <Button onClick={() => deleteLocalInterface(interfaceId)} icon={<MdDelete />}></Button>
-        </div>
+      <CollapsibleCard
+        header={
+          <>
+            {!isLocal && <MdDeviceHub className="w-4 h-4 m-2"></MdDeviceHub>}
+            {isLocal && <span className="w-4 mx-2">L</span>}
+            <div className="grow">
+              <TextInput
+                value={iface.def.name}
+                onChange={(e) =>
+                  updateInterface(interfaceId, (d) => {
+                    d.name = e;
+                  })
+                }
+                id={`name_${interfaceId}`}
+              ></TextInput>
+            </div>
+            <Button onClick={() => deleteLocalInterface(interfaceId)} icon={<MdDelete />}></Button>
+            <Button onClick={() => setEditing(false)} icon={<MdEditOff />}></Button>
+          </>
+        }
+      >
         <InterfaceEditor interfaceId={interfaceId}></InterfaceEditor>
-      </div>
+      </CollapsibleCard>
     );
   } else {
     return (
-      <div className="p-2 bg-primary-1000 rounded-md my-2">
-        <div className="flex flex-row">
-          {!isLocal && <MdDeviceHub></MdDeviceHub>}
-          {isLocal && <span>L</span>}
-          <div className="grow"></div>
-          {/* <Button onClick={() => deleteRemoteInterface(interfaceId)} icon={<MdDelete />}></Button> */}
-          {isLocal && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
-          {!expanded && <Button onClick={() => setExpanded(true)} icon={<MdExpandMore />}></Button>}
-          {expanded && <Button onClick={() => setExpanded(false)} icon={<MdExpandLess />}></Button>}
-        </div>
-        {expanded && <Interface key={interfaceId} interfaceId={interfaceId}></Interface>}
-      </div>
+      <CollapsibleCard
+        header={
+          <>
+            {!isLocal && <MdDeviceHub className="w-4 h-4 m-2"></MdDeviceHub>}
+            {isLocal && <span className="w-4 mx-2">L</span>}
+            <span>{iface.def.name}</span>
+            <div className="grow"></div>
+            {/* <Button onClick={() => deleteRemoteInterface(interfaceId)} icon={<MdDelete />}></Button> */}
+            {isLocal && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
+          </>
+        }
+      >
+        <Interface key={interfaceId} interfaceId={interfaceId}></Interface>
+      </CollapsibleCard>
     );
   }
 };
@@ -59,7 +77,7 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
   return (
     <ul>
       {interfaces.map(({ interfaceId, brokerType }) => (
-        <li key={interfaceId}>
+        <li key={interfaceId} className="my-2">
           <InterfaceListEntry interfaceId={interfaceId} brokerType={brokerType}></InterfaceListEntry>
         </li>
       ))}

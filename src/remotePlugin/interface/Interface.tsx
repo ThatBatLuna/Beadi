@@ -11,7 +11,7 @@ export const Interface: FunctionComponent<InterfaceProps> = ({ interfaceId }) =>
   return (
     <div>
       <ul>
-        {interfaceState.layout.map((it) => (
+        {interfaceState.def.layout.map((it) => (
           <li key={it.widgetId}>
             <SliderWidget settings={it.settings} interfaceId={interfaceId} widgetId={it.widgetId}></SliderWidget>
           </li>

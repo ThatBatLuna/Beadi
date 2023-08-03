@@ -3,6 +3,7 @@ import { ComponentType, FunctionComponent, ReactNode, useMemo, useState } from "
 import { BsChevronBarRight, BsFile } from "react-icons/bs";
 import { FileSettings } from "./settings/FileSettings";
 import { settingsTabs } from "../registries";
+import { MdInsertDriveFile } from "react-icons/md";
 
 export type Tab = {
   id: string;
@@ -14,7 +15,7 @@ export type Tab = {
 export const fileTab: Tab = {
   id: "file",
   label: "File",
-  icon: <BsFile className="w-full h-full"></BsFile>,
+  icon: <MdInsertDriveFile className="w-full h-full"></MdInsertDriveFile>,
   tab: FileSettings,
 };
 

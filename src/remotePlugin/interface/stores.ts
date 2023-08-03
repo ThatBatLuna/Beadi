@@ -88,8 +88,9 @@ type InterfaceDisplayValueState = {
   value: any;
 };
 type InterfaceDisplayState = {
-  interfaceId: string;
-  layout: Widget[];
+  // interfaceId: string;
+  // layout: Widget[];
+  def: Interface;
   values: Record<string, InterfaceDisplayValueState>;
   brokerState: any;
   brokerType: string;
@@ -119,7 +120,7 @@ function createRemoteBrokeredInterface(
     if (remoteState !== undefined && remoteState.state === "connected" && remoteState.interfaces[def.interfaceId] !== undefined) {
       set((draft) => {
         draft.values = remoteState.values;
-        draft.layout = remoteState.interfaces[def.interfaceId].layout;
+        draft.def = remoteState.interfaces[def.interfaceId];
       });
     }
   };
@@ -132,8 +133,14 @@ function createRemoteBrokeredInterface(
   return {
     brokerType: "remote",
     brokerState: {},
-    interfaceId: def.interfaceId,
-    layout: remoteState.state === "connected" ? _.cloneDeep(remoteState.interfaces[def.interfaceId].layout) : [],
+    def:
+      remoteState.state === "connected"
+        ? _.cloneDeep(remoteState.interfaces[def.interfaceId])
+        : {
+            interfaceId: def.interfaceId,
+            layout: [],
+            name: "...",
+          },
     values: remoteState.state === "connected" ? _.cloneDeep(remoteState.values) : {},
     updateValue: (valueId, value) => {
       console.log("Remotely updating ", valueId, " to ", value);
@@ -167,15 +174,14 @@ function createLocalBrokeredInterface(
         console.warn("Tried to update interface broker for nonexisting interface.", def.interfaceId);
         return;
       }
-      draft.layout = s.interfaces[def.interfaceId].layout;
+      draft.def = _.cloneDeep(s.interfaces[def.interfaceId]);
     });
   });
 
   return {
     brokerType: "local",
     brokerState: {},
-    interfaceId: def.interfaceId,
-    layout: useInterfaceFileStore.getState().interfaces[def.interfaceId].layout,
+    def: _.cloneDeep(useInterfaceFileStore.getState().interfaces[def.interfaceId]),
     values: useIOValueStore.getState().values,
     updateValue: (valueId, value) => {
       console.log("Locally udpating ", valueId, " to ", value);
