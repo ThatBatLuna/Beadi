@@ -4,6 +4,8 @@ import { devtools } from "zustand/middleware";
 import { BeadiMessage, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
 import { useInterfaceFileStore } from "../interface/stores";
+import { useFileStore } from "../../engine/store";
+import _ from "lodash";
 
 function makeDisconnectedState(set: Setter, get: Getter, error?: string): PublishConnectionState & { state: "disconnected" } {
   return {
@@ -32,14 +34,32 @@ function makeConnectingState(socket: WebSocket): PublishConnectionState & { stat
   };
 }
 function makeConnectedState(socket: WebSocket, id: string): PublishConnectionState & { state: "connected" } {
-  const unsubscribeValueChanges = useIOValueStore.subscribe((it) => {});
-
   const unsubscribeInterfaceChanges = useInterfaceFileStore.subscribe((state) => {
     sendMessage(socket, {
       PublishInterfaces: {
         interfaces: Object.values(state.interfaces),
       },
     });
+  });
+
+  let lastPublishedEndpointDefs: { id: string; type: string }[] = [];
+  const unsubscribeValueChanges = useIOValueStore.subscribe((state) => {
+    const endpointDefs = Object.values(state.values).map((v) => ({
+      id: v.valueId,
+      type: v.type,
+    }));
+    if (!_.isEqual(endpointDefs, lastPublishedEndpointDefs)) {
+      lastPublishedEndpointDefs = endpointDefs;
+      sendMessage(socket, {
+        PublishEndpoints: {
+          endpoints: Object.values(state.values).map((v) => ({
+            id: v.valueId,
+            type: v.type,
+            value: v.value,
+          })),
+        },
+      });
+    }
   });
 
   return {

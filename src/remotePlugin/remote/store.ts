@@ -139,7 +139,10 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
             draft.values = Object.assign(
               {},
               ...payload.endpoints.map((it) => ({
-                [it.id]: it,
+                [it.id]: {
+                  value: it.value,
+                  valueId: it.id,
+                } satisfies RemoteConnectionValue,
               }))
             );
           }
