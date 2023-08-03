@@ -3,7 +3,7 @@ import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
-import { AnyNodeDef, InputHandleDef, NodeDef } from "../../engine/node";
+import { AnyNodeDef, InputHandleDef, NodeDef, getNodeOutputs } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 import { UnknownBeadiNodeData } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
@@ -42,6 +42,8 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
       return inputs.map(([inputId, input]) => edges.findIndex((it) => it.target === id && it.targetHandle === inputId) >= 0);
     }, [edges, id]);
 
+    const nodeOutputs = getNodeOutputs(def.type, data.settings);
+
     return (
       <NodeShell title={def.label} color={def.category.color} errors={errors}>
         {HeaderComponent && <HeaderComponent id={id} data={data}></HeaderComponent>}
@@ -62,7 +64,7 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
             })}
           ></NodeHandleLine>
         ))}
-        {Object.entries(def.outputs).map(([outputId, output]) => (
+        {Object.entries(nodeOutputs).map(([outputId, output]) => (
           <NodeHandleLine
             key={outputId}
             handleId={outputId}

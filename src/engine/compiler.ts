@@ -1,7 +1,6 @@
 import _ from "lodash";
-import { useFileStore } from "./store";
 import create from "zustand";
-import { AnyNodeExecutorDef } from "./node";
+import { getNodeOutputs } from "./node";
 import { nodeDefs } from "../registries";
 import { getConversionFunction } from "./handles";
 
@@ -53,7 +52,13 @@ export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
       console.error("Could not find node source node of edge", e.id, " (", e.source, " => ", e.target, ")");
       continue;
     }
-    const sourceHandleDef = nodeDefs[nodes[e.source].type].outputs[e.sourceHandle];
+    const sourceNodeOutputs = getNodeOutputs(nodes[e.source].type, nodes[e.source].settings);
+    const sourceHandleDef = sourceNodeOutputs?.[e.sourceHandle];
+    if (sourceHandleDef === undefined) {
+      //If this edge invalid, log an error and ignore it
+      console.warn("buildModel encountered invalid edge ", e, " that connects to nonexisting source.");
+      continue;
+    }
     //If its an impulse, we don't care about the ordering
     //If its an independent output it is present anyways before any executors are called.
     if (sourceHandleDef.type !== "impulse" && sourceHandleDef.independent !== true) {
@@ -77,6 +82,7 @@ export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
 
   while (startNodes.length > 0) {
     let node = startNodes.pop()!!;
+
     //PLAN PUSH
     plan.push({
       type: node.type,
@@ -85,13 +91,11 @@ export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
       dependencies: _.mapValues(nodeDefs[node.type].inputs, (inputDef, handleId) => {
         if (handleId in node.originalIncomingEdges) {
           const sourceNode = nodes[node.originalIncomingEdges[handleId].source];
+          const sourceNodeOutputs = getNodeOutputs(sourceNode.type, sourceNode.settings);
           return {
             nodeId: node.originalIncomingEdges[handleId].source,
             handleId: node.originalIncomingEdges[handleId].sourceHandle,
-            convert: getConversionFunction(
-              nodeDefs[sourceNode.type].outputs[node.originalIncomingEdges[handleId].sourceHandle].type,
-              inputDef.type
-            ),
+            convert: getConversionFunction(sourceNodeOutputs[node.originalIncomingEdges[handleId].sourceHandle].type, inputDef.type),
           };
         } else {
           return null;

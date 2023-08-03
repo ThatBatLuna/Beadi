@@ -2,7 +2,8 @@ import { ComponentType } from "react";
 import { NodeProps } from "reactflow";
 import { ImpulseEmissions } from "./signal";
 import { BeadiNodeData } from "./store";
-import { memoryNodeDef } from "../nodes/MemoryNode";
+import { UnknownBeadiNode } from "./store";
+import { nodeDefs } from "../registries";
 
 export type Category = {
   label: string;
@@ -13,6 +14,33 @@ export interface HandleDef {
   // id: string;
   label: string;
   type: HandleType;
+}
+
+export type TypeOfHandleType<THandleDef extends HandleType> = THandleDef extends "number"
+  ? number
+  : THandleDef extends "boolean"
+  ? boolean
+  : THandleDef extends "impulse"
+  ? ImpulseEmissions
+  : unknown;
+
+export function asHandleType<T extends HandleType>(handleType: T, value: any): TypeOfHandleType<T> | null {
+  switch (handleType) {
+    case "boolean":
+      if (typeof value === "boolean") {
+        return value as any;
+      }
+      break;
+    case "impulse":
+      console.warn("asHandleType is not yet implemented for impulse");
+      return value as any;
+    case "number":
+      if (typeof value === "number") {
+        return value as any;
+      }
+      break;
+  }
+  return null;
 }
 
 export interface InputHandleDef extends HandleDef {
@@ -62,14 +90,7 @@ export type DriverProps = {
 export type InputDriver<TDriverInputs, TSettings> = (context: NodeContext<TSettings>) => TDriverInputs;
 export type OutputDriver<TDriverOutputs, TSettings> = (outputs: TDriverOutputs, context: NodeContext<TSettings>) => void;
 
-export type InputTypeOf<THandleDef extends HandleDef> = THandleDef extends { type: "number" }
-  ? number
-  : THandleDef extends { type: "boolean" }
-  ? boolean
-  : THandleDef extends { type: "impulse" }
-  ? ImpulseEmissions
-  : unknown;
-
+export type InputTypeOf<THandleDef extends HandleDef> = TypeOfHandleType<THandleDef["type"]>;
 export type OutputTypeOf<THandleDef extends HandleDef> = THandleDef extends { type: "impulse" } ? number : InputTypeOf<THandleDef>;
 
 export type InputTypesOf<THandleDefs extends Record<string, InputHandleDef>> = {
@@ -159,6 +180,15 @@ export type NodeDef<
   /** Overrides the how the entire node is rendered. Default to the node-shell */
   nodeComponent?: ComponentType<NodeProps>;
   inputs: TInputHandleDefs;
-  outputs: TOutputHandleDefs;
+  outputs: TOutputHandleDefs | ((settings: TSettings) => TOutputHandleDefs);
   executor: NodeExecutorDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>;
 };
+
+export function getNodeOutputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): OutputHandleDefs {
+  const outputs = nodeDefs[nodeType]?.outputs;
+  if (typeof outputs === "function") {
+    return outputs(settings);
+  } else {
+    return outputs;
+  }
+}

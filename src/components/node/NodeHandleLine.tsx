@@ -7,6 +7,7 @@ import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeDefs } from "../../registries";
 import { nodeHandleValuePreviews } from "./NodeHandleValuePreview";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
+import { getNodeOutputs } from "../../engine/node";
 
 type NodeHandleLineProps = {
   input?: ReactNode;
@@ -40,7 +41,7 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, t
         return (
           connection.source !== connection.target &&
           handlesCompatible(
-            nodeDefs[sourceType].outputs[connection.sourceHandle].type,
+            getNodeOutputs(nodes[connection.source].type, nodes[connection.source].data.settings)[connection.sourceHandle].type,
             nodeDefs[targetType].inputs[connection.targetHandle].type
           )
         );

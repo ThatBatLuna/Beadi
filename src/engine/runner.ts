@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { Model, useModelState } from "./compiler";
+import { Model } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
-import { NodeContext, OutputTypeOf, nodeDef } from "./node";
+import { NodeContext, getNodeOutputs } from "./node";
 import { nodeDefs } from "../registries";
 import { usePreviewStore } from "./preview";
 
@@ -73,8 +73,9 @@ function runEngineLoop(model: Model) {
       // const committedData =
       const outputs = nodeType.executor.executor(inputs, persistent, driverInputs ?? {});
 
-      for (const outputId in nodeType.outputs) {
-        if (nodeType.outputs[outputId].type === "impulse") {
+      const nodeTypeOutputs = getNodeOutputs(step.type, step.settings);
+      for (const outputId in nodeTypeOutputs) {
+        if (nodeTypeOutputs[outputId].type === "impulse") {
           for (let i = 0; i < (outputs.outputs[outputId] as number); i++) {
             useSignalBus.getState().emit(step.nodeId, outputId);
           }
