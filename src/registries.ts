@@ -19,6 +19,7 @@ import { memoryNodeDef } from "./nodes/MemoryNode";
 import { addNodeDef, divideNodeDef, multiplyNodeDef, subtractNodeDef } from "./nodes/AddNode";
 import { Tab, fileTab as fileTabDef } from "./components/Settings";
 import { remoteSettingsTab as remoteSettingsTabDef } from "./remotePlugin/RemoteDrawerPage";
+import { switchNodeDef } from "./nodes/SwitchNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
@@ -39,6 +40,7 @@ const nodeDefList: AnyNodeDef[] = [
   toggleNodeDef as any,
   inputAdapterNode as any,
   outputAdapterNode as any,
+  switchNodeDef as any,
   // clampNodeDef,
   // curveNodeDef,
   // delayNodeDef,

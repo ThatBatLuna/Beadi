@@ -8,20 +8,10 @@ export const toggleNodeDef = nodeDef()({
   outputs: {
     value: {
       label: "Value",
-      type: "number",
+      type: "boolean",
     },
   },
   inputs: {
-    a: {
-      label: "Off Value",
-      type: "number",
-      default: 0.0,
-    },
-    b: {
-      label: "On Value",
-      type: "number",
-      default: 0.0,
-    },
     toggle: {
       label: "Toggle",
       type: "impulse",
@@ -42,7 +32,7 @@ export const toggleNodeDef = nodeDef()({
     inputDriver: () => ({}),
     outputDriver: () => {},
     initialPersistence: false,
-    executor: ({ a, b, toggle, on, off }, switchOn: boolean) => {
+    executor: ({ toggle, on, off }, switchOn: boolean) => {
       //If we got an odd amount of toggle commands, then flip the switch (!== is XOR)
       let nextValue = switchOn !== (toggle.length % 2 !== 0);
       if (on) {
@@ -52,7 +42,7 @@ export const toggleNodeDef = nodeDef()({
         nextValue = false;
       }
       return {
-        outputs: { value: switchOn ? b : a },
+        outputs: { value: switchOn },
         driverOutputs: {},
         persistentData: nextValue,
       };

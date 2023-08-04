@@ -25,7 +25,7 @@ type InterfaceDisplayDef = {
       brokerSettings: {};
     }
 );
-type Widget = {
+export type Widget = {
   widgetId: string;
   widgetType: string;
   settings: any;

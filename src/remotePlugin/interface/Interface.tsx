@@ -1,6 +1,19 @@
 import { FunctionComponent } from "react";
-import { useInterfaceDisplayStateStore } from "./stores";
+import { Widget, useInterfaceDisplayStateStore } from "./stores";
 import { SliderWidget } from "../widgets/SliderWidget";
+import { remoteWidgetDefs } from "../registry";
+
+type InterfaceEntryProps = {
+  widget: Widget;
+  interfaceId: string;
+};
+export const InterfaceEntry: FunctionComponent<InterfaceEntryProps> = ({ widget, interfaceId }) => {
+  const WidgetComponent = remoteWidgetDefs[widget.widgetType].display;
+  if (WidgetComponent === undefined) {
+    return <p>Invalid widget {widget.widgetType}</p>;
+  }
+  return <WidgetComponent settings={widget.settings} interfaceId={interfaceId} widgetId={widget.widgetId}></WidgetComponent>;
+};
 
 type InterfaceProps = {
   interfaceId: string;
@@ -13,7 +26,7 @@ export const Interface: FunctionComponent<InterfaceProps> = ({ interfaceId }) =>
       <ul>
         {interfaceState.def.layout.map((it) => (
           <li key={it.widgetId}>
-            <SliderWidget settings={it.settings} interfaceId={interfaceId} widgetId={it.widgetId}></SliderWidget>
+            <InterfaceEntry widget={it} interfaceId={interfaceId}></InterfaceEntry>
           </li>
         ))}
       </ul>
