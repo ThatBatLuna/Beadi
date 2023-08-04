@@ -7,6 +7,7 @@ import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdap
 import { devtools } from "zustand/middleware";
 import { diffByKeys } from "../utils/diffBy";
 import { HandleType } from "../engine/node";
+import { SignalEmissions } from "../engine/signal";
 
 export type IOValueState<T> = {
   valueId: string;
@@ -20,8 +21,14 @@ type IOValueStore = {
   //   values: Record<string, RemoteValueState<any>>;
   values: Record<string, IOValueState<any>>;
 
-  /** Send value update request */
+  /** Set value in IOValueStore*/
   setValue: (valueId: string, value: any) => void;
+
+  /** Will collect all signal emissions between two runs */
+  signalBuffer: Record<string, SignalEmissions<any>>;
+
+  /** Send signal the signalBuffer, that will then be consumed at the start of the next run */
+  emitSignal: (valueId: string, data?: any) => void;
 };
 
 /** Used by all input-/outputAdapters to push/pull their values from/to */
@@ -36,10 +43,38 @@ export const useIOValueStore = create(
           })
         );
       },
+      signalBuffer: {},
+      emitSignal: (valueId, data) => {
+        set((s) =>
+          produce(s, (draft) => {
+            if (!(valueId in draft.signalBuffer)) {
+              draft.signalBuffer[valueId] = [];
+            }
+            draft.signalBuffer[valueId].push(data ?? null);
+          })
+        );
+      },
     }),
+
     { name: "useIOValueStore" }
   )
 );
+
+export function tempPopSignalBuffer() {
+  useIOValueStore.setState((s) =>
+    produce(s, (draft) => {
+      for (const valueId in draft.signalBuffer) {
+        draft.values[valueId] = {
+          valueId: valueId,
+          name: "Todo name",
+          type: "impulse",
+          value: draft.signalBuffer[valueId],
+        };
+        draft.signalBuffer[valueId] = [];
+      }
+    })
+  );
+}
 
 export function tempSyncIOValueStore() {
   const func = (state: FileStore) => {

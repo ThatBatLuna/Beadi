@@ -24,7 +24,7 @@ export const useSignalBus = create<SignalBus>()((set, get) => ({
         ...signals.nodeSignals,
         [nodeId]: {
           ...signals.nodeSignals[nodeId],
-          [handleId]: [...(signals.nodeSignals[nodeId]?.[handleId] || []), data],
+          [handleId]: [...(signals.nodeSignals[nodeId]?.[handleId] || []), data ?? null],
         },
       },
     }));

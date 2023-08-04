@@ -5,6 +5,7 @@ import { useSignalBus } from "./signal";
 import { NodeContext, getNodeOutputs } from "./node";
 import { nodeDefs } from "../registries";
 import { usePreviewStore } from "./preview";
+import { tempPopSignalBuffer } from "../remotePlugin/inputOutputStore";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -27,6 +28,10 @@ function runEngineLoop(model: Model) {
     //Prepopulate HandleValues Dictionary with signal data
     const handleValues: HandleValues = {};
     const signals = useSignalBus.getState().popAll();
+    if (!_.isEmpty(signals)) {
+      console.log("Signals: ", signals);
+    }
+    tempPopSignalBuffer();
 
     // const delta = Date.now() - last;
     // last = Date.now();

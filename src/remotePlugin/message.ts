@@ -36,6 +36,10 @@ export type BeadiMessage = {
     endpoint: string;
     value: number;
   };
+  EmitSignal?: {
+    endpoint: string;
+    value: any;
+  };
 };
 
 type BeadiMessageHandlers = {

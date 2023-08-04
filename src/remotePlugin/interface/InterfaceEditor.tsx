@@ -58,6 +58,16 @@ export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ inter
       });
     });
   };
+  const addButton = () => {
+    const id = `${new Date().getTime()}`;
+    updateInterface(interfaceId, (draft) => {
+      draft.layout.push({
+        settings: {},
+        widgetId: id,
+        widgetType: "button",
+      });
+    });
+  };
 
   return (
     <div>
@@ -70,6 +80,7 @@ export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ inter
       </ul>
       <Button onClick={addSlider}>Add slider</Button>
       <Button onClick={addSwitch}>Add switch</Button>
+      <Button onClick={addButton}>Add button</Button>
     </div>
   );
 };

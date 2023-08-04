@@ -5,6 +5,7 @@ import { useIOValueStore } from "./inputOutputStore";
 import { Select } from "../components/input/Select";
 import { useFileStore } from "../engine/store";
 import { FunctionComponent } from "react";
+import { emitImpulse } from "../engine/signal";
 
 export type RemoteInputAdapterSettings = {
   type: HandleType;
@@ -25,7 +26,7 @@ export const RemoteInputSettingsEditor: FunctionComponent<RemoteInputSettingsEdi
   return (
     <div>
       <Select
-        options={["number", "boolean"] as HandleType[]}
+        options={["number", "boolean", "impulse"] as HandleType[]}
         allowUnselect={false}
         selected={settings?.type ?? null}
         renderOption={(s) => s}
@@ -40,6 +41,11 @@ export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, R
   id: REMOTE_INPUT_ADAPTER_ID,
   getType: (settings) => settings.type,
   getData: (nodeId: string, settings) => {
+    if (settings.type === "impulse") {
+      const value = useIOValueStore.getState().values[nodeId]?.value;
+      const safeValue = asHandleType(settings.type, value);
+      return emitImpulse(safeValue?.length ?? 0);
+    }
     const value = useIOValueStore.getState().values[nodeId]?.value;
     const safeValue = asHandleType(settings.type, value);
     return safeValue ?? 0.0;

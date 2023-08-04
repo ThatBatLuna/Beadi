@@ -97,6 +97,7 @@ type InterfaceDisplayState = {
   brokerState: any;
   brokerType: string;
   updateValue: (valueId: string, value: any) => void;
+  emitSignal: (valueId: string, data: any) => void;
   closeBroker: () => void;
 };
 type InterfaceDisplayStateStore = {
@@ -156,6 +157,9 @@ function createRemoteBrokeredInterface(
         });
       }
     },
+    emitSignal: (valueId, data) => {
+      console.log("TODO Remotely emitting signal (not yet implemented)", valueId, data);
+    },
     closeBroker: () => {
       unsubscribeIO();
     },
@@ -188,6 +192,10 @@ function createLocalBrokeredInterface(
     updateValue: (valueId, value) => {
       console.log("Locally udpating ", valueId, " to ", value);
       usePublishStateStore.getState().state.updateValue(valueId, value);
+    },
+    emitSignal: (valueId, data) => {
+      console.log("Locally emitting signal", valueId, data);
+      usePublishStateStore.getState().state.emitSignal(valueId, data);
     },
     closeBroker: () => {
       unsubscribeIO();
@@ -339,6 +347,46 @@ export function useWidgetValueHandle<T extends HandleType>(
   return {
     value: value.value,
     setValue,
+    error: undefined,
+  };
+}
+
+type WidgetSignalHandle<T> =
+  | {
+      emitSignal: (data: T) => void;
+      error: undefined;
+    }
+  | {
+      emitSignal: (n: T) => void;
+      error: string;
+    };
+export function useWidgetSignalHandle<T>(valueId: string, interfaceId: string): WidgetSignalHandle<T> {
+  const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
+
+  const ifaceEmitSignal = iface.emitSignal;
+  const emitSignal = useCallback(
+    (v: T) => {
+      ifaceEmitSignal(valueId, v);
+    },
+    [valueId, ifaceEmitSignal]
+  );
+
+  if (iface === undefined) {
+    return {
+      emitSignal: () => NULL_SET_VALUE,
+      error: `Invalid Interface ${interfaceId}`,
+    };
+  }
+
+  if (iface.values[valueId] === undefined) {
+    return {
+      emitSignal: () => NULL_SET_VALUE,
+      error: `Value ${valueId} does not exist in Interface ${interfaceId}`,
+    };
+  }
+
+  return {
+    emitSignal,
     error: undefined,
   };
 }

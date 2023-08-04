@@ -35,14 +35,14 @@ export const toggleNodeDef = nodeDef()({
     executor: ({ toggle, on, off }, switchOn: boolean) => {
       //If we got an odd amount of toggle commands, then flip the switch (!== is XOR)
       let nextValue = switchOn !== (toggle.length % 2 !== 0);
-      if (on) {
+      if (on.length > 0) {
         nextValue = true;
       }
-      if (off) {
+      if (off.length > 0) {
         nextValue = false;
       }
       return {
-        outputs: { value: switchOn },
+        outputs: { value: nextValue },
         driverOutputs: {},
         persistentData: nextValue,
       };

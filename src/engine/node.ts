@@ -32,8 +32,10 @@ export function asHandleType<T extends HandleType>(handleType: T, value: any): T
       }
       break;
     case "impulse":
-      console.warn("asHandleType is not yet implemented for impulse");
-      return value as any;
+      if (Array.isArray(value)) {
+        return value as any;
+      }
+      break;
     case "number":
       if (typeof value === "number") {
         return value as any;

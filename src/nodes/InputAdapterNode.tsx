@@ -81,7 +81,11 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
       if (context.settings.adapterId === undefined) {
         return {};
       }
-      return { value: adapter.getData(context.id, context.settings.adapterSettings?.[context.settings.adapterId]) };
+      const settings = context.settings.adapterSettings?.[context.settings.adapterId];
+      if (settings === undefined) {
+        return {};
+      }
+      return { value: adapter.getData(context.id, settings) };
     },
     outputDriver: () => {},
     initialPersistence: undefined,

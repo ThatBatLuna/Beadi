@@ -14,6 +14,10 @@ function makeDisconnectedState(set: Setter, get: Getter, error?: string): Publis
       console.log("Updating value ", valueId, " to ", value, " on disconnected socket");
       useIOValueStore.getState().setValue(valueId, value);
     },
+    emitSignal: (valueId, data) => {
+      console.log("Emitting Signal at ", valueId, " with ", data, " on disconnected socket");
+      useIOValueStore.getState().emitSignal(valueId, data);
+    },
     publish: () => {
       publish(set, get);
     },
@@ -29,6 +33,10 @@ function makeConnectingState(socket: WebSocket): PublishConnectionState & { stat
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on connecting socket");
       useIOValueStore.getState().setValue(valueId, value);
+    },
+    emitSignal: (valueId, data) => {
+      console.log("Emitting Signal at ", valueId, " with ", data, " on connecting socket");
+      useIOValueStore.getState().emitSignal(valueId, data);
     },
   };
 }
@@ -79,6 +87,15 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
         },
       });
     },
+    emitSignal: (valueId, data) => {
+      console.log("(TODO) Publishing sigal emssion at ", valueId, ": ", data);
+      sendMessage(socket, {
+        EmitSignal: {
+          endpoint: valueId,
+          value: data,
+        },
+      });
+    },
   };
 }
 
@@ -87,6 +104,7 @@ type PublishConnectionState =
       state: "disconnected";
       error?: string;
       updateValue: (valueId: string, value: any) => void;
+      emitSignal: (valueId: string, data: any) => void;
       publish: () => void;
     }
   | {
@@ -94,6 +112,7 @@ type PublishConnectionState =
       socket: WebSocket;
       close: () => void;
       updateValue: (valueId: string, value: any) => void;
+      emitSignal: (valueId: string, data: any) => void;
     }
   | {
       state: "connected";
@@ -101,6 +120,7 @@ type PublishConnectionState =
       id: string;
       close: () => void;
       updateValue: (valueId: string, value: any) => void;
+      emitSignal: (valueId: string, data: any) => void;
     };
 type PublishStateStore = {
   state: PublishConnectionState;

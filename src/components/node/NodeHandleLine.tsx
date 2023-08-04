@@ -7,12 +7,12 @@ import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeDefs } from "../../registries";
 import { nodeHandleValuePreviews } from "./NodeHandleValuePreview";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
-import { getNodeOutputs } from "../../engine/node";
+import { HandleType, getNodeOutputs } from "../../engine/node";
 
 type NodeHandleLineProps = {
   input?: ReactNode;
   kind: "input" | "output";
-  type: string;
+  type: HandleType;
   label: string;
   connected?: boolean;
   handleId: string;
