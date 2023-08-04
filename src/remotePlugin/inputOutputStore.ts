@@ -6,11 +6,12 @@ import { InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
 import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
 import { devtools } from "zustand/middleware";
 import { diffByKeys } from "../utils/diffBy";
+import { HandleType } from "../engine/node";
 
-type IOValueState<T> = {
+export type IOValueState<T> = {
   valueId: string;
   value: T;
-  type: string;
+  type: HandleType;
   name: string;
   //And additional metadata
 };

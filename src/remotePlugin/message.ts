@@ -1,3 +1,4 @@
+import { HandleType } from "../engine/node";
 import { Interface } from "./interface/stores";
 
 type RemoteControlWidget = {
@@ -12,7 +13,7 @@ export type RemoteControlInterface = {
 };
 export type RemoteControlEndpoint = {
   id: string;
-  type: string;
+  type: HandleType;
   value: number;
 };
 

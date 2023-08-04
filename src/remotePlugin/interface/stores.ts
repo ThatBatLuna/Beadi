@@ -8,6 +8,7 @@ import { usePublishStateStore } from "../publish/store";
 import { useIOValueStore } from "../inputOutputStore";
 import { RemoteStateStore, useRemoteStateStore } from "../remote/store";
 import { sendMessage } from "../message";
+import { HandleType, TypeOfHandleType } from "../../engine/node";
 
 type RemoteBrokerSettings = {
   remoteId: string;
@@ -86,6 +87,7 @@ export const useInterfaceFileStore = create<InterfaceFileStore>()(
 type InterfaceDisplayValueState = {
   valueId: string;
   value: any;
+  type: HandleType;
 };
 type InterfaceDisplayState = {
   // interfaceId: string;
@@ -294,12 +296,16 @@ type WidgetValueHandle<T> =
       setValue: (n: T) => void;
       error: string;
     };
-export function useWidgetValueHandle<T>(valueId: string, interfaceId: string): WidgetValueHandle<T> {
+export function useWidgetValueHandle<T extends HandleType>(
+  valueId: string,
+  interfaceId: string,
+  type: T
+): WidgetValueHandle<TypeOfHandleType<T>> {
   const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
 
   const updateValue = iface.updateValue;
   const setValue = useCallback(
-    (v: T) => {
+    (v: TypeOfHandleType<T>) => {
       updateValue(valueId, v);
     },
     [valueId, updateValue]
@@ -321,8 +327,17 @@ export function useWidgetValueHandle<T>(valueId: string, interfaceId: string): W
     };
   }
 
+  const value = iface.values[valueId];
+  if (value.type !== type) {
+    return {
+      value: null,
+      setValue: () => NULL_SET_VALUE,
+      error: `Value ${valueId} in Interface ${interfaceId} has wrong type: ${value.type} (${type} was expected)`,
+    };
+  }
+
   return {
-    value: iface.values[valueId].value,
+    value: value.value,
     setValue,
     error: undefined,
   };

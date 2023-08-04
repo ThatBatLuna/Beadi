@@ -9,7 +9,7 @@ type SliderWidgetSettings = {
 };
 
 export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWidgetSettings>> = ({ settings, interfaceId }) => {
-  const handle = useWidgetValueHandle<number>(settings.valueId, interfaceId);
+  const handle = useWidgetValueHandle(settings.valueId, interfaceId, "number");
   const [interactiveValue, setInteractiveValue] = useState<number>(handle.value ?? 0.0);
   const [focused, setFocused] = useState(false);
 
@@ -55,7 +55,11 @@ export const SliderWidgetSettingsEditor: FunctionComponent<RemoteWidgetSettingsP
   interfaceId,
   widgetId,
 }) => {
-  const values = useIOValueStore((store) => Object.keys(store.values));
+  const values = useIOValueStore((store) =>
+    Object.entries(store.values)
+      .filter(([_, value]) => value.type === "number")
+      .map(([key, _]) => key)
+  );
   // const values = useInterfaceStore((it) => Object.keys(it.interfaces[interfaceId].values).map((valueId) => valueId));
   const save = useInterfaceFileStore((it) => it.updateInterface);
 

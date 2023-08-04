@@ -6,6 +6,8 @@ import { immer } from "zustand/middleware/immer";
 import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { Interface } from "../interface/stores";
+import { HandleType } from "reactflow";
+import { IOValueState } from "../inputOutputStore";
 
 type RemoteConnection = {
   remoteConnectionId: string;
@@ -47,10 +49,12 @@ export const useRemoteStore = create(
   )
 );
 
-type RemoteConnectionValue = {
-  valueId: string;
-  value: any;
-};
+type RemoteConnectionValue = IOValueState<any>;
+// type RemoteConnectionValue = {
+//   valueId: string;
+//   value: any;
+//   type: HandleType
+// };
 type RemoteConnectionState =
   | {
       state: "disconnected";
@@ -128,6 +132,8 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
               [it.id]: {
                 value: it.value,
                 valueId: it.id,
+                type: it.type,
+                name: "TODO Name",
               } satisfies RemoteConnectionValue,
             }))
           ),
@@ -142,6 +148,8 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
                 [it.id]: {
                   value: it.value,
                   valueId: it.id,
+                  type: it.type,
+                  name: "TODO Name",
                 } satisfies RemoteConnectionValue,
               }))
             );
