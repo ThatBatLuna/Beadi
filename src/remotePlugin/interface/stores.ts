@@ -158,7 +158,16 @@ function createRemoteBrokeredInterface(
       }
     },
     emitSignal: (valueId, data) => {
-      console.log("TODO Remotely emitting signal (not yet implemented)", valueId, data);
+      console.log("Remotely emitting signal", valueId, data);
+      const state = useRemoteStateStore.getState().remotes[def.brokerSettings.remoteId].state;
+      if (state.state === "connected") {
+        sendMessage(state.socket, {
+          EmitSignal: {
+            endpoint: valueId,
+            value: data ?? null,
+          },
+        });
+      }
     },
     closeBroker: () => {
       unsubscribeIO();

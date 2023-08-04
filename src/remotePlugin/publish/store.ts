@@ -92,7 +92,7 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
       sendMessage(socket, {
         EmitSignal: {
           endpoint: valueId,
-          value: data,
+          value: data ?? null,
         },
       });
     },
@@ -190,6 +190,10 @@ function publish(set: Setter, get: Getter): void {
         console.log("ValueChanged request got to Set ", endpoint, " to ", value);
 
         useIOValueStore.getState().setValue(endpoint, value);
+      },
+      EmitSignal: ({ endpoint, value }) => {
+        console.log("EmitSignal request got to ", endpoint, " with ", value);
+        useIOValueStore.getState().emitSignal(endpoint, value);
       },
     });
   });
