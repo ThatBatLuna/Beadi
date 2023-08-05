@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from "react";
-import { useRemoteStateStore, useRemoteStore } from "./store";
+import { useRemoteStateStore, useRemoteStore } from "./remoteStore";
 import { TextInput } from "../../components/input/TextInput";
 import { Button } from "../../components/input/Button";
 import { MdDelete, MdWifi, MdWifiOff } from "react-icons/md";

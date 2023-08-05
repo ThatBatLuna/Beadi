@@ -2,14 +2,17 @@ import create from "zustand";
 import { FileStore, useFileStore } from "../engine/store";
 import produce from "immer";
 import _ from "lodash";
-import { INPUT_ADAPTER_NODE_ID, InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
-import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
 import { devtools } from "zustand/middleware";
 import { diffByKeys } from "../utils/diffBy";
 import { HandleType } from "../engine/node";
 import { SignalEmissions } from "../engine/signal";
+import { INPUT_ADAPTER_NODE_ID, InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
+import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
 import { OUTPUT_ADAPTER_NODE_ID, OutputAdapterNodeSettings } from "../nodes/OutputAdapterNode";
-import { REMOTE_OUTPUT_ADAPTER_ID, RemoteOutputAdapterSettings } from "./outputAdapter";
+// import { REMOTE_OUTPUT_ADAPTER_ID, RemoteOutputAdapterSettings } from "./outputAdapter";
+
+type RemoteOutputAdapterSettings = any;
+const REMOTE_OUTPUT_ADAPTER_ID = "remoteOutput";
 
 export type IOValueDef<T> = {
   valueId: string;
@@ -27,7 +30,7 @@ type IOValueStore = {
   values: Record<string, IOValueState<any>>;
 
   /** Set value in IOValueStore*/
-  setValue: (valueId: string, value: any) => void;
+  setValue: (valueId: string, value: any, writeUnwriteable?: boolean) => void;
 
   /** Will collect all signal emissions between two runs */
   signalBuffer: Record<string, SignalEmissions<any>>;
@@ -41,7 +44,12 @@ export const useIOValueStore = create(
   devtools<IOValueStore>(
     (set, get) => ({
       values: {},
-      setValue: (id, value) => {
+      setValue: (id, value, writeUnwriteable = false) => {
+        if (!writeUnwriteable) {
+          if (!get().values[id]?.writeable) {
+            return;
+          }
+        }
         set((s) =>
           produce(s, (draft) => {
             draft.values[id].value = value;

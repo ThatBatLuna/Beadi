@@ -1,9 +1,9 @@
 import produce, { Draft } from "immer";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
-import { BeadiMessage, handleMessage, sendMessage } from "../message";
+import { BeadiMessage, RemoteControlEndpoint, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
-import { useInterfaceFileStore } from "../interface/stores";
+import { useInterfaceFileStore } from "../interface/interfaceStores";
 import _ from "lodash";
 
 function makeDisconnectedState(set: Setter, get: Getter, error?: string): PublishConnectionState & { state: "disconnected" } {
@@ -12,7 +12,7 @@ function makeDisconnectedState(set: Setter, get: Getter, error?: string): Publis
     state: "disconnected",
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on disconnected socket");
-      useIOValueStore.getState().setValue(valueId, value);
+      useIOValueStore.getState().setValue(valueId, value, true);
     },
     emitSignal: (valueId, data) => {
       console.log("Emitting Signal at ", valueId, " with ", data, " on disconnected socket");
@@ -32,7 +32,7 @@ function makeConnectingState(socket: WebSocket): PublishConnectionState & { stat
     socket,
     updateValue: (valueId, value) => {
       console.log("Updating value ", valueId, " to ", value, " on connecting socket");
-      useIOValueStore.getState().setValue(valueId, value);
+      useIOValueStore.getState().setValue(valueId, value, true);
     },
     emitSignal: (valueId, data) => {
       console.log("Emitting Signal at ", valueId, " with ", data, " on connecting socket");
@@ -59,13 +59,18 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
       lastPublishedEndpointDefs = endpointDefs;
       sendMessage(socket, {
         PublishEndpoints: {
-          endpoints: Object.values(state.values).map((v) => ({
-            id: v.valueId,
-            type: v.type,
-            value: v.value,
-            name: v.name,
-            writeable: v.writeable,
-          })),
+          endpoints: Object.values(state.values).map(
+            (v) =>
+              ({
+                def: {
+                  valueId: v.valueId,
+                  type: v.type,
+                  name: v.name,
+                  writeable: v.writeable,
+                },
+                value: v.value,
+              } satisfies RemoteControlEndpoint)
+          ),
         },
       });
     }
@@ -80,8 +85,11 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
     },
     id,
     socket,
-    updateValue: (valueId, value) => {
+    updateValue: (valueId, value, immediateWriteLocal = false) => {
       console.log("Updating value ", valueId, " to ", value, " on connected socket");
+      if (immediateWriteLocal) {
+        useIOValueStore.getState().setValue(valueId, value, true);
+      }
       sendMessage(socket, {
         ValueChanged: {
           endpoint: valueId,
@@ -105,7 +113,7 @@ type PublishConnectionState =
   | {
       state: "disconnected";
       error?: string;
-      updateValue: (valueId: string, value: any) => void;
+      updateValue: (valueId: string, value: any, immediateWriteLocal?: boolean) => void;
       emitSignal: (valueId: string, data: any) => void;
       publish: () => void;
     }
@@ -113,7 +121,7 @@ type PublishConnectionState =
       state: "connecting";
       socket: WebSocket;
       close: () => void;
-      updateValue: (valueId: string, value: any) => void;
+      updateValue: (valueId: string, value: any, immediateWriteLocal?: boolean) => void;
       emitSignal: (valueId: string, data: any) => void;
     }
   | {
@@ -121,7 +129,7 @@ type PublishConnectionState =
       socket: WebSocket;
       id: string;
       close: () => void;
-      updateValue: (valueId: string, value: any) => void;
+      updateValue: (valueId: string, value: any, immediateWriteLocal?: boolean) => void;
       emitSignal: (valueId: string, data: any) => void;
     };
 type PublishStateStore = {
@@ -157,7 +165,7 @@ function publish(set: Setter, get: Getter): void {
     }
   });
   socket.addEventListener("message", (event) => {
-    console.log("WebSocket message: ", event);
+    // console.log("WebSocket message: ", event);
     let data: BeadiMessage;
     try {
       data = JSON.parse(event.data);
@@ -172,13 +180,18 @@ function publish(set: Setter, get: Getter): void {
         });
         sendMessage(socket, {
           PublishEndpoints: {
-            endpoints: Object.values(useIOValueStore.getState().values).map((v) => ({
-              id: v.valueId,
-              type: v.type,
-              value: v.value,
-              name: v.name,
-              writeable: v.writeable,
-            })),
+            endpoints: Object.values(useIOValueStore.getState().values).map(
+              (v) =>
+                ({
+                  def: {
+                    valueId: v.valueId,
+                    type: v.type,
+                    name: v.name,
+                    writeable: v.writeable,
+                  },
+                  value: v.value,
+                } satisfies RemoteControlEndpoint)
+            ),
           },
         });
         sendMessage(socket, {

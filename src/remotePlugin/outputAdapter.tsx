@@ -1,8 +1,8 @@
 import { FunctionComponent } from "react";
-import { InputAdapterDef, OutputAdapterDef } from "../engine/adapter";
+import { OutputAdapterDef } from "../engine/adapter";
 import { HandleType, asHandleType } from "../engine/node";
 import { Select } from "../components/input/Select";
-import { useIOValueStore } from "./inputOutputStore";
+import { usePublishStateStore } from "./publish/publishStore";
 
 export type RemoteOutputAdapterSettings = {
   type: HandleType;
@@ -43,7 +43,7 @@ export const remoteOutputAdapter: OutputAdapterDef<number, RemoteOutputAdapterSe
     }
     const safeValue = asHandleType(settings.type, data);
     if (safeValue !== undefined) {
-      useIOValueStore.getState().setValue(nodeId, safeValue);
+      usePublishStateStore.getState().state.updateValue(nodeId, safeValue, true);
     }
   },
   label: "Remote",

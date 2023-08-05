@@ -1,5 +1,5 @@
 import { HandleType } from "../engine/node";
-import { Interface } from "./interface/stores";
+import { Interface } from "./interface/interfaceStores";
 
 type RemoteControlWidget = {
   widgetId: string;
@@ -11,12 +11,15 @@ export type RemoteControlInterface = {
   interfaceId: string;
   layout: RemoteControlWidget[];
 };
-export type RemoteControlEndpoint = {
-  id: string;
+export type RemoteControlEndpointDef = {
+  valueId: string;
   type: HandleType;
-  value: number;
-  writeable: boolean;
   name: string;
+  writeable: boolean;
+};
+export type RemoteControlEndpoint = {
+  value: number;
+  def: RemoteControlEndpointDef;
 };
 
 export type BeadiMessage = {
@@ -63,7 +66,7 @@ export function handleMessage(message: BeadiMessage, handlers: BeadiMessageHandl
 export function sendMessage(socket: WebSocket, message: BeadiMessage) {
   Object.entries(message).forEach(([key, payload]) => {
     const data = JSON.stringify({ [key]: payload });
-    console.log("Sending ", socket, data);
+    // console.log("Sending ", socket, data);
     socket.send(data);
   });
 }

@@ -1,8 +1,8 @@
-import { ChangeEventHandler, FunctionComponent, useCallback, useState } from "react";
+import { FunctionComponent } from "react";
 import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps } from "../interface/widget";
 import { Select } from "../../components/input/Select";
 import { useIOValueStore } from "../inputOutputStore";
-import { useInterfaceFileStore, useWidgetSignalHandle, useWidgetValueHandle } from "../interface/stores";
+import { useInterfaceFileStore, useWidgetSignalHandle } from "../interface/interfaceStores";
 import { Button } from "../../components/input/Button";
 
 type ButtonWidgetSettings = {

@@ -5,8 +5,7 @@ import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
 import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
-import { Interface } from "../interface/stores";
-import { HandleType } from "reactflow";
+import { Interface } from "../interface/interfaceStores";
 import { IOValueState } from "../inputOutputStore";
 
 type RemoteConnection = {
@@ -111,7 +110,7 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
     set((s) => ({ state: "disconnected" }));
   });
   socket.addEventListener("message", (event) => {
-    console.log("WebSocket message: ", event);
+    // console.log("WebSocket message: ", event);
     let data: BeadiMessage;
     try {
       data = JSON.parse(event.data);
@@ -129,12 +128,9 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
           values: Object.assign(
             {},
             ...payload.endpoints.map((it) => ({
-              [it.id]: {
+              [it.def.valueId]: {
                 value: it.value,
-                valueId: it.id,
-                type: it.type,
-                writeable: it.writeable,
-                name: it.name,
+                ...it.def,
               } satisfies RemoteConnectionValue,
             }))
           ),
@@ -146,12 +142,9 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
             draft.values = Object.assign(
               {},
               ...payload.endpoints.map((it) => ({
-                [it.id]: {
+                [it.def.valueId]: {
                   value: it.value,
-                  valueId: it.id,
-                  type: it.type,
-                  writeable: it.writeable,
-                  name: it.name,
+                  ...it.def,
                 } satisfies RemoteConnectionValue,
               }))
             );

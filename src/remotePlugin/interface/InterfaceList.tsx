@@ -1,5 +1,5 @@
 import { FunctionComponent, useState } from "react";
-import { useInterfaceDisplayStateStore, useInterfaceFileStore } from "./stores";
+import { useInterfaceDisplayStateStore, useInterfaceFileStore } from "./interfaceStores";
 import { Interface } from "./Interface";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";

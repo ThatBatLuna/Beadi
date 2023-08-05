@@ -1,8 +1,8 @@
-import { ChangeEventHandler, FunctionComponent, useCallback, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps } from "../interface/widget";
 import { Select } from "../../components/input/Select";
 import { useIOValueStore } from "../inputOutputStore";
-import { useInterfaceFileStore, useWidgetValueHandle } from "../interface/stores";
+import { useInterfaceFileStore, useWidgetValueHandle } from "../interface/interfaceStores";
 import { Graph } from "../../components/graph/Graph";
 import produce from "immer";
 

@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { Widget, useInterfaceFileStore } from "./stores";
+import { Widget, useInterfaceFileStore } from "./interfaceStores";
 import { Button } from "../../components/input/Button";
 import { SliderWidget, SliderWidgetSettingsEditor } from "../widgets/SliderWidget";
 import { MdRemove } from "react-icons/md";

@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { Widget, useInterfaceDisplayStateStore } from "./stores";
+import { Widget, useInterfaceDisplayStateStore } from "./interfaceStores";
 import { SliderWidget } from "../widgets/SliderWidget";
 import { remoteWidgetDefs } from "../registry";
 

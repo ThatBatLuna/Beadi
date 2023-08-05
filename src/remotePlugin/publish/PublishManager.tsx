@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { usePublishStateStore } from "./store";
+import { usePublishStateStore } from "./publishStore";
 import { Button } from "../../components/input/Button";
 
 type PublishManagerProps = {};

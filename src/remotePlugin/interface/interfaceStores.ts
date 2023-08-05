@@ -4,9 +4,9 @@ import { devtools, persist } from "zustand/middleware";
 import { diffByKeys } from "../../utils/diffBy";
 import _ from "lodash";
 import { useCallback } from "react";
-import { usePublishStateStore } from "../publish/store";
+import { usePublishStateStore } from "../publish/publishStore";
 import { useIOValueStore } from "../inputOutputStore";
-import { RemoteStateStore, useRemoteStateStore } from "../remote/store";
+import { RemoteStateStore, useRemoteStateStore } from "../remote/remoteStore";
 import { sendMessage } from "../message";
 import { HandleType, TypeOfHandleType } from "../../engine/node";
 
