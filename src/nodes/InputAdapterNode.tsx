@@ -44,10 +44,11 @@ const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapter
   );
 };
 
+export const INPUT_ADAPTER_NODE_ID = "inputAdapter";
 export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
   label: "Input",
   category: categories["inout"],
-  type: "inputAdapter",
+  type: INPUT_ADAPTER_NODE_ID,
   header: InputAdapterNodeHeader,
   outputs: (s) => {
     if (s.adapterId === null) {

@@ -181,7 +181,7 @@ export type NodeDef<
   header?: ComponentType<THeaderProps>;
   /** Overrides the how the entire node is rendered. Default to the node-shell */
   nodeComponent?: ComponentType<NodeProps>;
-  inputs: TInputHandleDefs;
+  inputs: TInputHandleDefs | ((settins: TSettings) => TInputHandleDefs);
   outputs: TOutputHandleDefs | ((settings: TSettings) => TOutputHandleDefs);
   executor: NodeExecutorDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>;
 };
@@ -192,5 +192,14 @@ export function getNodeOutputs<TSettings>(nodeType: UnknownBeadiNode["type"], se
     return outputs(settings);
   } else {
     return outputs;
+  }
+}
+
+export function getNodeInputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): InputHandleDefs {
+  const inputs = nodeDefs[nodeType]?.inputs;
+  if (typeof inputs === "function") {
+    return inputs(settings);
+  } else {
+    return inputs;
   }
 }

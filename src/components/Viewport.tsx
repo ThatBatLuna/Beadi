@@ -19,7 +19,7 @@ import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
 import { nodeDefs } from "../registries";
-import { InputHandleDef, OutputHandleDef, getNodeOutputs } from "../engine/node";
+import { InputHandleDef, OutputHandleDef, getNodeInputs, getNodeOutputs } from "../engine/node";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -105,7 +105,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
       ];
       if (handleType === undefined) {
         fromOutput = false;
-        handleType = nodeDefs[sourceNodeType].inputs[data.sourceHandle];
+        handleType = getNodeInputs(nodes[data.source].type, nodes[data.source].data.settings)[data.sourceHandle];
       }
 
       return Object.values(nodeDefs)

@@ -133,7 +133,8 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
                 value: it.value,
                 valueId: it.id,
                 type: it.type,
-                name: "TODO Name",
+                writeable: it.writeable,
+                name: it.name,
               } satisfies RemoteConnectionValue,
             }))
           ),
@@ -149,7 +150,8 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
                   value: it.value,
                   valueId: it.id,
                   type: it.type,
-                  name: "TODO Name",
+                  writeable: it.writeable,
+                  name: it.name,
                 } satisfies RemoteConnectionValue,
               }))
             );

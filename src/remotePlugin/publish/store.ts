@@ -63,6 +63,8 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
             id: v.valueId,
             type: v.type,
             value: v.value,
+            name: v.name,
+            writeable: v.writeable,
           })),
         },
       });
@@ -174,6 +176,8 @@ function publish(set: Setter, get: Getter): void {
               id: v.valueId,
               type: v.type,
               value: v.value,
+              name: v.name,
+              writeable: v.writeable,
             })),
           },
         });

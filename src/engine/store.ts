@@ -6,6 +6,7 @@ import { immer } from "zustand/middleware/immer";
 import { nodeDefs } from "../registries";
 import _ from "lodash";
 import { useCallback } from "react";
+import { getNodeInputs } from "./node";
 
 export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, unknown>>;
 export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = Node<
@@ -63,7 +64,7 @@ export const useFileStore = create<FileStore>()(
 
         addNode: (type, pos) => {
           const id = "" + Date.now();
-          const nodeType = nodeDefs[type];
+          const nodeDef = nodeDefs[type];
           set((draft) => {
             draft.data.nodes[id] = {
               id: id,
@@ -71,7 +72,7 @@ export const useFileStore = create<FileStore>()(
               type: type,
               data: {
                 displaySettings: {},
-                handles: _.mapValues(nodeType.inputs, (handle) => handle.default),
+                handles: _.mapValues(getNodeInputs(nodeDef.type, {}), (handle) => handle.default),
                 settings: {},
               },
             };

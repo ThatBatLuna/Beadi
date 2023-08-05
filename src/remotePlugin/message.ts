@@ -15,6 +15,8 @@ export type RemoteControlEndpoint = {
   id: string;
   type: HandleType;
   value: number;
+  writeable: boolean;
+  name: string;
 };
 
 export type BeadiMessage = {

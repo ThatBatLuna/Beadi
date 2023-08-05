@@ -1,21 +1,26 @@
 import create from "zustand";
-import { BeadiNode, FileStore, useFileStore } from "../engine/store";
+import { FileStore, useFileStore } from "../engine/store";
 import produce from "immer";
 import _ from "lodash";
-import { InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
+import { INPUT_ADAPTER_NODE_ID, InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
 import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
 import { devtools } from "zustand/middleware";
 import { diffByKeys } from "../utils/diffBy";
 import { HandleType } from "../engine/node";
 import { SignalEmissions } from "../engine/signal";
+import { OUTPUT_ADAPTER_NODE_ID, OutputAdapterNodeSettings } from "../nodes/OutputAdapterNode";
+import { REMOTE_OUTPUT_ADAPTER_ID, RemoteOutputAdapterSettings } from "./outputAdapter";
 
-export type IOValueState<T> = {
+export type IOValueDef<T> = {
   valueId: string;
-  value: T;
   type: HandleType;
   name: string;
+  writeable: boolean;
   //And additional metadata
 };
+export type IOValueState<T> = {
+  value: T;
+} & IOValueDef<T>;
 
 type IOValueStore = {
   //   values: Record<string, RemoteValueState<any>>;
@@ -69,6 +74,7 @@ export function tempPopSignalBuffer() {
           name: "Todo name",
           type: "impulse",
           value: draft.signalBuffer[valueId],
+          writeable: draft.values[valueId].writeable ?? true,
         };
         draft.signalBuffer[valueId] = [];
       }
@@ -78,9 +84,9 @@ export function tempPopSignalBuffer() {
 
 export function tempSyncIOValueStore() {
   const func = (state: FileStore) => {
-    const inputAdapterNodes = _.mapValues(
+    const adapterNodes: Record<string, IOValueDef<any>> = _.mapValues(
       _.pickBy(state.data.nodes, (it) => {
-        if (it.type === "inputAdapter") {
+        if (it.type === INPUT_ADAPTER_NODE_ID) {
           const settings = it.data.settings as InputAdapterNodeSettings | undefined;
           if (settings?.adapterId === REMOTE_INPUT_ADAPTER_ID) {
             const adapterSettings = settings.adapterSettings?.[REMOTE_INPUT_ADAPTER_ID] as RemoteInputAdapterSettings | undefined;
@@ -89,21 +95,42 @@ export function tempSyncIOValueStore() {
           // }else if(it.type === "outputAdapter") {
           //     const settings = it.data.settings as OutputAdapterNodeSettings;
           //     return settings.adapterId === "remoteOutput";
+        } else if (it.type === OUTPUT_ADAPTER_NODE_ID) {
+          const settings = it.data.settings as OutputAdapterNodeSettings | undefined;
+          if (settings?.adapterId === REMOTE_OUTPUT_ADAPTER_ID) {
+            const adapterSettings = settings.adapterSettings?.[REMOTE_OUTPUT_ADAPTER_ID] as RemoteInputAdapterSettings | undefined;
+            return adapterSettings != null;
+          }
         }
         return false;
       }),
       (node) => {
-        const adapterSettings = (node.data.settings as InputAdapterNodeSettings).adapterSettings[
-          REMOTE_INPUT_ADAPTER_ID
-        ] as RemoteInputAdapterSettings;
-        return {
-          type: adapterSettings.type,
-          valueId: node.id,
-          name: node.data.name ?? node.id,
-        };
+        if (node.type === INPUT_ADAPTER_NODE_ID) {
+          const adapterSettings = (node.data.settings as InputAdapterNodeSettings).adapterSettings[
+            REMOTE_INPUT_ADAPTER_ID
+          ] as RemoteInputAdapterSettings;
+          return {
+            type: adapterSettings.type,
+            valueId: node.id,
+            name: node.data.name ?? node.id,
+            writeable: true,
+          } satisfies IOValueDef<any>;
+        } else if (node.type === OUTPUT_ADAPTER_NODE_ID) {
+          const adapterSettings = (node.data.settings as OutputAdapterNodeSettings).adapterSettings[
+            REMOTE_OUTPUT_ADAPTER_ID
+          ] as RemoteOutputAdapterSettings;
+          return {
+            type: adapterSettings.type,
+            valueId: node.id,
+            name: node.data.name ?? node.id,
+            writeable: false,
+          } satisfies IOValueDef<any>;
+        } else {
+          throw new Error("Unknown nodeType was exposed to the ioStore");
+        }
       }
     );
-    console.log("inputAdapterNodes: ", inputAdapterNodes);
+    console.log("adapterNodes: ", adapterNodes);
 
     useIOValueStore.setState((state) => {
       const localValues = Object.values(state.values);
@@ -111,7 +138,7 @@ export function tempSyncIOValueStore() {
       // const missingValues = _.differenceWith(inputAdapterNodes, localValues, (node, value) => node.id === value.valueId);
       // const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
 
-      const { extra, missing, changed } = diffByKeys(state.values, inputAdapterNodes, (a, b) => a.type === b.type && a.name === b.name);
+      const { extra, missing, changed } = diffByKeys(state.values, adapterNodes, (a, b) => a.type === b.type && a.name === b.name);
       console.log("useIOValueStore setState: ", localValues, "+", missing, " -", extra);
 
       return produce(state, (draft) => {
@@ -120,19 +147,15 @@ export function tempSyncIOValueStore() {
         }
         for (const missingKey in missing) {
           draft.values[missingKey] = {
-            type: missing[missingKey].type,
             value: 0.0,
-            valueId: missingKey,
-            name: missing[missingKey].name,
+            ...missing[missingKey],
           };
         }
         console.log("CCC: ", changed);
         for (const changedKey in changed) {
           draft.values[changedKey] = {
-            type: changed[changedKey][1].type,
-            name: changed[changedKey][1].name,
             value: 0.0,
-            valueId: changedKey,
+            ...changed[changedKey][1],
           };
         }
       });

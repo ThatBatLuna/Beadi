@@ -1,6 +1,6 @@
 import _ from "lodash";
 import create from "zustand";
-import { getNodeOutputs } from "./node";
+import { getNodeInputs, getNodeOutputs } from "./node";
 import { nodeDefs } from "../registries";
 import { getConversionFunction } from "./handles";
 
@@ -88,7 +88,7 @@ export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
       type: node.type,
       nodeId: node.id,
       settings: node.settings,
-      dependencies: _.mapValues(nodeDefs[node.type].inputs, (inputDef, handleId) => {
+      dependencies: _.mapValues(getNodeInputs(node.type, node.settings), (inputDef, handleId) => {
         if (handleId in node.originalIncomingEdges) {
           const sourceNode = nodes[node.originalIncomingEdges[handleId].source];
           const sourceNodeOutputs = getNodeOutputs(sourceNode.type, sourceNode.settings);

@@ -38,33 +38,13 @@ export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ inter
   const iface = useInterfaceFileStore((s) => s.interfaces[interfaceId]);
   const updateInterface = useInterfaceFileStore((s) => s.updateInterface);
 
-  const addSlider = () => {
+  const addWidget = (type: string) => {
     const id = `${new Date().getTime()}`;
     updateInterface(interfaceId, (draft) => {
       draft.layout.push({
         settings: {},
         widgetId: id,
-        widgetType: "slider",
-      });
-    });
-  };
-  const addSwitch = () => {
-    const id = `${new Date().getTime()}`;
-    updateInterface(interfaceId, (draft) => {
-      draft.layout.push({
-        settings: {},
-        widgetId: id,
-        widgetType: "switch",
-      });
-    });
-  };
-  const addButton = () => {
-    const id = `${new Date().getTime()}`;
-    updateInterface(interfaceId, (draft) => {
-      draft.layout.push({
-        settings: {},
-        widgetId: id,
-        widgetType: "button",
+        widgetType: type,
       });
     });
   };
@@ -78,9 +58,11 @@ export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ inter
           </li>
         ))}
       </ul>
-      <Button onClick={addSlider}>Add slider</Button>
-      <Button onClick={addSwitch}>Add switch</Button>
-      <Button onClick={addButton}>Add button</Button>
+      {Object.values(remoteWidgetDefs).map((value, index) => (
+        <Button onClick={() => addWidget(value.id)} key={value.id}>
+          Add {value.id}
+        </Button>
+      ))}
     </div>
   );
 };

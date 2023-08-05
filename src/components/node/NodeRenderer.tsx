@@ -3,7 +3,7 @@ import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
-import { AnyNodeDef, InputHandleDef, NodeDef, getNodeOutputs } from "../../engine/node";
+import { AnyNodeDef, InputHandleDef, NodeDef, getNodeInputs, getNodeOutputs } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 import { UnknownBeadiNodeData } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
@@ -28,7 +28,6 @@ function getHandleInput({ type, input, nodeId, handleId }: HandleInputCProps) {
 
 export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<UnknownBeadiNodeData>> {
   const HeaderComponent = def.header;
-  const inputs = Object.entries(def.inputs).filter(([inputId, it]) => it.hidden !== true);
 
   if (def.nodeComponent) {
     return def.nodeComponent;
@@ -38,9 +37,11 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
     const edges = useEdges();
     const errors = useModelState((s) => s.model?.errors?.[id]);
 
+    const nodeInputs = getNodeInputs(def.type, data.settings);
+    const inputs = Object.entries(nodeInputs).filter(([inputId, it]) => it.hidden !== true);
     const connections = useMemo(() => {
       return inputs.map(([inputId, input]) => edges.findIndex((it) => it.target === id && it.targetHandle === inputId) >= 0);
-    }, [edges, id]);
+    }, [edges, id, inputs]);
 
     const nodeOutputs = getNodeOutputs(def.type, data.settings);
 

@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Model } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
-import { NodeContext, getNodeOutputs } from "./node";
+import { NodeContext, getNodeInputs, getNodeOutputs } from "./node";
 import { nodeDefs } from "../registries";
 import { usePreviewStore } from "./preview";
 import { tempPopSignalBuffer } from "../remotePlugin/inputOutputStore";
@@ -58,7 +58,7 @@ function runEngineLoop(model: Model) {
       const nodeType = nodeDefs[step.type];
       // const inputs = step.dependencies.map((it) => (it.convert ? it.convert(data[it.id]) : data[it.id]));
       const inputs = _.mapValues(step.dependencies, (dependency, handleId) => {
-        if (nodeType.inputs[handleId].type === "impulse") {
+        if (getNodeInputs(step.type, step.settings)[handleId].type === "impulse") {
           if (dependency !== null) {
             return signals[dependency.nodeId]?.[dependency.handleId] || [];
           } else {

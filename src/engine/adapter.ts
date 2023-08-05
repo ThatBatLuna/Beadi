@@ -15,6 +15,6 @@ export type OutputAdapterDef<TData, TSettings> = {
   id: string;
   label: string;
   getType: (settings: TSettings) => HandleType;
-  pushData: (nodeId: string, data: TData) => void;
-  settingsEditor?: FunctionComponent<{}>;
+  pushData: (nodeId: string, data: TData, settings: TSettings) => void;
+  settingsEditor?: FunctionComponent<{ nodeId: string; settings: TSettings; updateSettings: (s: TSettings) => void }>;
 };

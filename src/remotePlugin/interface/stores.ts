@@ -180,6 +180,7 @@ function createLocalBrokeredInterface(
 ): InterfaceDisplayState & { brokerType: "local" } {
   const unsubscribeIO = useIOValueStore.subscribe((s) => {
     set((draft) => {
+      //TODO sometimes draft is undefined (i think after deleting some nodes)...
       draft.values = s.values;
     });
   });
@@ -302,15 +303,21 @@ setupInterfaceListeners();
 const NULL_SET_VALUE = (value: any) => {
   console.log("Tried to setValue on an invalid widget");
 };
+const NULL_GET_VALUE = () => {
+  console.log("Tried to getValue on an invalid widget");
+  return null;
+};
 type WidgetValueHandle<T> =
   | {
       value: T;
       setValue: (n: T) => void;
+      getValue: () => T;
       error: undefined;
     }
   | {
       value: null;
       setValue: (n: T) => void;
+      getValue: () => null;
       error: string;
     };
 export function useWidgetValueHandle<T extends HandleType>(
@@ -319,6 +326,18 @@ export function useWidgetValueHandle<T extends HandleType>(
   type: T
 ): WidgetValueHandle<TypeOfHandleType<T>> {
   const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
+
+  const getValue = useCallback(() => {
+    const iface = useInterfaceDisplayStateStore.getState().interfaces[interfaceId];
+    if (iface === undefined) {
+      return null;
+    }
+    const value = iface.values[valueId];
+    if (value?.type !== type) {
+      return null;
+    }
+    return value.value;
+  }, [interfaceId, valueId, type]);
 
   const updateValue = iface.updateValue;
   const setValue = useCallback(
@@ -331,7 +350,8 @@ export function useWidgetValueHandle<T extends HandleType>(
   if (iface === undefined) {
     return {
       value: null,
-      setValue: () => NULL_SET_VALUE,
+      getValue: NULL_GET_VALUE,
+      setValue: NULL_SET_VALUE,
       error: `Invalid Interface ${interfaceId}`,
     };
   }
@@ -340,6 +360,7 @@ export function useWidgetValueHandle<T extends HandleType>(
     return {
       value: null,
       setValue: () => NULL_SET_VALUE,
+      getValue: NULL_GET_VALUE,
       error: `Value ${valueId} does not exist in Interface ${interfaceId}`,
     };
   }
@@ -349,12 +370,14 @@ export function useWidgetValueHandle<T extends HandleType>(
     return {
       value: null,
       setValue: () => NULL_SET_VALUE,
+      getValue: NULL_GET_VALUE,
       error: `Value ${valueId} in Interface ${interfaceId} has wrong type: ${value.type} (${type} was expected)`,
     };
   }
 
   return {
     value: value.value,
+    getValue,
     setValue,
     error: undefined,
   };
