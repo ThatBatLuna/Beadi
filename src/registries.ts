@@ -20,6 +20,7 @@ import { addNodeDef, divideNodeDef, multiplyNodeDef, subtractNodeDef } from "./n
 import { Tab, fileTab as fileTabDef } from "./components/Settings";
 import { remoteSettingsTab as remoteSettingsTabDef } from "./remotePlugin/RemoteDrawerPage";
 import { switchNodeDef } from "./nodes/SwitchNode";
+import { positiveWaveNodeDef } from "./nodes/WaveNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
@@ -41,6 +42,7 @@ const nodeDefList: AnyNodeDef[] = [
   inputAdapterNode as any,
   outputAdapterNode as any,
   switchNodeDef as any,
+  positiveWaveNodeDef as any,
   // clampNodeDef,
   // curveNodeDef,
   // delayNodeDef,

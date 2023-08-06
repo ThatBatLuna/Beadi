@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import { Widget, useInterfaceDisplayStateStore } from "./interfaceStores";
 import { SliderWidget } from "../widgets/SliderWidget";
 import { remoteWidgetDefs } from "../registry";
+import _ from "lodash";
 
 type InterfaceEntryProps = {
   widget: Widget;
@@ -19,12 +20,12 @@ type InterfaceProps = {
   interfaceId: string;
 };
 export const Interface: FunctionComponent<InterfaceProps> = ({ interfaceId }) => {
-  const interfaceState = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
+  const interfaceStateDefLayout = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId].def.layout, _.isEqual);
 
   return (
     <div>
       <ul>
-        {interfaceState.def.layout.map((it) => (
+        {interfaceStateDefLayout.map((it) => (
           <li key={it.widgetId}>
             <InterfaceEntry widget={it} interfaceId={interfaceId}></InterfaceEntry>
           </li>

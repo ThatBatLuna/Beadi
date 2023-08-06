@@ -6,6 +6,7 @@ import { Button } from "../../components/input/Button";
 import { MdDelete, MdDeviceHub, MdEdit, MdEditOff, MdExpandLess, MdExpandMore } from "react-icons/md";
 import { CollapsibleCard } from "../../components/CollapsibleCard";
 import { TextInput } from "../../components/input/TextInput";
+import _ from "lodash";
 
 type InterfaceListEntryProps = {
   interfaceId: string;
@@ -16,7 +17,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
   const deleteLocalInterface = useInterfaceFileStore((s) => s.deleteInterface);
   // const deleteRemoteInterface = useInterfaceDisplayStore((s) => s.removeRemoteInterface);
   const isLocal = brokerType === "local";
-  const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
+  const ifaceDef = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId].def, _.isEqual);
   const updateInterface = useInterfaceFileStore((s) => s.updateInterface);
 
   if (editing && isLocal) {
@@ -28,7 +29,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
             {isLocal && <span className="w-4 mx-2">L</span>}
             <div className="grow">
               <TextInput
-                value={iface.def.name}
+                value={ifaceDef.name}
                 onChange={(e) =>
                   updateInterface(interfaceId, (d) => {
                     d.name = e;
@@ -52,7 +53,7 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
           <>
             {!isLocal && <MdDeviceHub className="w-4 h-4 m-2"></MdDeviceHub>}
             {isLocal && <span className="w-4 mx-2">L</span>}
-            <span>{iface.def.name}</span>
+            <span>{ifaceDef.name}</span>
             <div className="grow"></div>
             {/* <Button onClick={() => deleteRemoteInterface(interfaceId)} icon={<MdDelete />}></Button> */}
             {isLocal && <Button onClick={() => setEditing(true)} icon={<MdEdit />}></Button>}
@@ -67,12 +68,16 @@ export const InterfaceListEntry: FunctionComponent<InterfaceListEntryProps> = ({
 
 type InterfaceListProps = {};
 export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
-  const interfaces = useInterfaceDisplayStateStore((s) =>
-    Object.entries(s.interfaces).map(([interfaceId, iface]) => ({
-      interfaceId,
-      brokerType: iface.brokerType,
-    }))
+  const interfaces = useInterfaceDisplayStateStore(
+    (s) =>
+      Object.entries(s.interfaces).map(([interfaceId, iface]) => ({
+        interfaceId,
+        brokerType: iface.brokerType,
+      })),
+    _.isEqual
   );
+
+  console.log(interfaces);
 
   return (
     <ul>
