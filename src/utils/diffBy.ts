@@ -18,7 +18,7 @@ type DiffByResult<TKey> = {
  * @returns
  */
 export function diffBy<TKey>(baseKeys: TKey[], changedKeys: TKey[]): DiffByResult<TKey> {
-  console.log("Diffing: Base ", baseKeys, " Changed ", changedKeys);
+  // console.log("Diffing: Base ", baseKeys, " Changed ", changedKeys);
   const inBaseNotInChanged = _.difference(baseKeys, changedKeys);
   const inChangedNotInBase = _.difference(changedKeys, baseKeys);
   return {
@@ -37,7 +37,7 @@ export function diffByKeys<TKey extends string, TA, TB>(
   changed: Record<TKey, TB>,
   isEqual?: (a: TA, b: TB) => boolean
 ): DiffByKeysResult<TKey, TA, TB> {
-  console.log("Diffing: Base ", base, " Changed ", changed);
+  // console.log("Diffing: Base ", base, " Changed ", changed);
   const { extra, missing } = diffBy(Object.keys(base), Object.keys(changed));
   const changedEntries =
     isEqual === undefined

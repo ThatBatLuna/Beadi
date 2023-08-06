@@ -200,11 +200,11 @@ function createLocalBrokeredInterface(
     def: _.cloneDeep(useInterfaceFileStore.getState().interfaces[def.interfaceId]),
     values: useIOValueStore.getState().values,
     updateValue: (valueId, value) => {
-      console.log("Locally udpating ", valueId, " to ", value);
+      // console.log("Locally udpating ", valueId, " to ", value);
       usePublishStateStore.getState().state.updateValue(valueId, value);
     },
     emitSignal: (valueId, data) => {
-      console.log("Locally emitting signal", valueId, data);
+      // console.log("Locally emitting signal", valueId, data);
       usePublishStateStore.getState().state.emitSignal(valueId, data);
     },
     closeBroker: () => {
@@ -246,7 +246,7 @@ export function setupInterfaceListeners() {
   syncLocalInterfacesFromFileStore(useInterfaceFileStore.getState());
 
   const syncRemoteInterfacesFromRemoteStore = (state: RemoteStateStore) => {
-    console.log("SSS", state);
+    // console.log("SSS", state);
     const existingLocalInterfaces = _.pickBy(useInterfaceDisplayStateStore.getState().interfaces, (s) => s.brokerType === "remote");
     const allRemoteInterfaces: Record<string, { interface: Interface; remoteId: string }> = Object.assign(
       {},
@@ -263,7 +263,7 @@ export function setupInterfaceListeners() {
 
     useInterfaceDisplayStateStore.setState((s) =>
       produce(s, (draft) => {
-        console.log("Extra: ", extra, "Missing: ", missing, "Changed: ", changed);
+        // console.log("Extra: ", extra, "Missing: ", missing, "Changed: ", changed);
         for (const extraKey in extra) {
           delete draft.interfaces[extraKey];
         }

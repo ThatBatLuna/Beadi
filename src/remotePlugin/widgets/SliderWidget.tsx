@@ -27,7 +27,7 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
         type="range"
         min="0"
         max="1"
-        step="0.01"
+        step="0.001"
         value={displayValue}
         onFocus={() => {
           setFocused(true);
@@ -41,7 +41,7 @@ export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWid
         type="range"
         min="0"
         max="1"
-        step="0.01"
+        step="0.001"
         value={handle.value ?? 0.0}
         disabled={true}
       />

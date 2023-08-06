@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import { NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
 import { useInputHandleData } from "../engine/store";
 import { categories } from "./category";
+import _ from "lodash";
 
 const PositiveWaveNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
   const [positive, setPositive] = useInputHandleData<boolean>(id, "positive");

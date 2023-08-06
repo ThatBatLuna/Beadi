@@ -76,7 +76,7 @@ function runEngineLoop(model: Model) {
       const persistent = persistentData[step.nodeId];
       const driverInputs = nodeType.executor.inputDriver?.(nodeContext);
       // const committedData =
-      const outputs = nodeType.executor.executor(inputs, persistent, driverInputs ?? {});
+      const outputs = nodeType.executor.executor(inputs, _.cloneDeep(persistent), driverInputs ?? {});
 
       const nodeTypeOutputs = getNodeOutputs(step.type, step.settings);
       for (const outputId in nodeTypeOutputs) {

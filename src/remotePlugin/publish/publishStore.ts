@@ -11,7 +11,7 @@ function makeDisconnectedState(set: Setter, get: Getter, error?: string): Publis
     error,
     state: "disconnected",
     updateValue: (valueId, value) => {
-      console.log("Updating value ", valueId, " to ", value, " on disconnected socket");
+      // console.log("Updating value ", valueId, " to ", value, " on disconnected socket");
       useIOValueStore.getState().setValue(valueId, value, true);
     },
     emitSignal: (valueId, data) => {
@@ -31,7 +31,7 @@ function makeConnectingState(socket: WebSocket): PublishConnectionState & { stat
     },
     socket,
     updateValue: (valueId, value) => {
-      console.log("Updating value ", valueId, " to ", value, " on connecting socket");
+      // console.log("Updating value ", valueId, " to ", value, " on connecting socket");
       useIOValueStore.getState().setValue(valueId, value, true);
     },
     emitSignal: (valueId, data) => {
@@ -86,7 +86,7 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
     id,
     socket,
     updateValue: (valueId, value, immediateWriteLocal = false) => {
-      console.log("Updating value ", valueId, " to ", value, " on connected socket");
+      // console.log("Updating value ", valueId, " to ", value, " on connected socket");
       if (immediateWriteLocal) {
         useIOValueStore.getState().setValue(valueId, value, true);
       }
@@ -204,7 +204,7 @@ function publish(set: Setter, get: Getter): void {
         console.log("TODO Compare payload endpoints to actually published endpoints and warn if they diverge");
       },
       ValueChanged: ({ endpoint, value }) => {
-        console.log("ValueChanged request got to Set ", endpoint, " to ", value);
+        // console.log("ValueChanged request got to Set ", endpoint, " to ", value);
 
         useIOValueStore.getState().setValue(endpoint, value);
       },
