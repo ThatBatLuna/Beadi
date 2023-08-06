@@ -9,8 +9,8 @@ type ButtonWidgetSettings = {
   valueId: string;
 };
 
-export const ButtonWidget: FunctionComponent<RemoteWidgetProps<number, ButtonWidgetSettings>> = ({ settings, interfaceId }) => {
-  const handle = useWidgetSignalHandle(settings.valueId, interfaceId);
+export const ButtonWidget: FunctionComponent<RemoteWidgetProps<number, ButtonWidgetSettings>> = ({ settings, interfaceHandle }) => {
+  const handle = useWidgetSignalHandle(interfaceHandle, settings.valueId);
 
   return (
     <div className="w-full relative my-2 rounded-md">

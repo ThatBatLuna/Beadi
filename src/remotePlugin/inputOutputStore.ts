@@ -25,7 +25,7 @@ export type IOValueState<T> = {
   value: T;
 } & IOValueDef<T>;
 
-type IOValueStore = {
+export type IOValueStore = {
   //   values: Record<string, RemoteValueState<any>>;
   values: Record<string, IOValueState<any>>;
 

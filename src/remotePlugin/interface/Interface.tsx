@@ -1,33 +1,32 @@
 import { FunctionComponent } from "react";
-import { Widget, useInterfaceDisplayStateStore } from "./interfaceStores";
+import { InterfaceDef, Widget } from "./interfaceStores";
 import { SliderWidget } from "../widgets/SliderWidget";
 import { remoteWidgetDefs } from "../registry";
 import _ from "lodash";
+import { InterfaceHandle } from "./InterfaceList";
 
 type InterfaceEntryProps = {
   widget: Widget;
-  interfaceId: string;
+  interfaceHandle: InterfaceHandle<any>;
 };
-export const InterfaceEntry: FunctionComponent<InterfaceEntryProps> = ({ widget, interfaceId }) => {
+export const InterfaceEntry: FunctionComponent<InterfaceEntryProps> = ({ widget, interfaceHandle }) => {
   const WidgetComponent = remoteWidgetDefs[widget.widgetType].display;
   if (WidgetComponent === undefined) {
     return <p>Invalid widget {widget.widgetType}</p>;
   }
-  return <WidgetComponent settings={widget.settings} interfaceId={interfaceId} widgetId={widget.widgetId}></WidgetComponent>;
+  return <WidgetComponent settings={widget.settings} interfaceHandle={interfaceHandle} widgetId={widget.widgetId}></WidgetComponent>;
 };
 
 type InterfaceProps = {
-  interfaceId: string;
+  interfaceHandle: InterfaceHandle<any>;
 };
-export const Interface: FunctionComponent<InterfaceProps> = ({ interfaceId }) => {
-  const interfaceStateDefLayout = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId].def.layout, _.isEqual);
-
+export const Interface: FunctionComponent<InterfaceProps> = ({ interfaceHandle }) => {
   return (
     <div>
       <ul>
-        {interfaceStateDefLayout.map((it) => (
+        {interfaceHandle.interfaceDef.layout.map((it) => (
           <li key={it.widgetId}>
-            <InterfaceEntry widget={it} interfaceId={interfaceId}></InterfaceEntry>
+            <InterfaceEntry widget={it} interfaceHandle={interfaceHandle}></InterfaceEntry>
           </li>
         ))}
       </ul>

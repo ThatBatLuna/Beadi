@@ -1,5 +1,5 @@
 import { HandleType } from "../engine/node";
-import { Interface } from "./interface/interfaceStores";
+import { InterfaceDef } from "./interface/interfaceStores";
 
 type RemoteControlWidget = {
   widgetId: string;
@@ -30,11 +30,11 @@ export type BeadiMessage = {
     endpoints: RemoteControlEndpoint[];
   };
   PublishInterfaces?: {
-    interfaces: Interface[];
+    interfaces: InterfaceDef[];
   };
   WelcomeController?: {
     endpoints: RemoteControlEndpoint[];
-    interfaces: Interface[];
+    interfaces: InterfaceDef[];
     id: string;
   };
   ValueChanged?: {

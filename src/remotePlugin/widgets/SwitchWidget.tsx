@@ -8,8 +8,8 @@ type SwitchWidgetSettings = {
   valueId: string;
 };
 
-export const SwitchWidget: FunctionComponent<RemoteWidgetProps<number, SwitchWidgetSettings>> = ({ settings, interfaceId }) => {
-  const handle = useWidgetValueHandle(settings.valueId, interfaceId, "boolean");
+export const SwitchWidget: FunctionComponent<RemoteWidgetProps<number, SwitchWidgetSettings>> = ({ settings, interfaceHandle }) => {
+  const handle = useWidgetValueHandle(interfaceHandle, settings.valueId, "boolean");
   const [interactiveValue, setInteractiveValue] = useState<boolean>(handle.value ?? false);
   const [focused, setFocused] = useState(false);
 

@@ -8,8 +8,8 @@ type SliderWidgetSettings = {
   valueId: string;
 };
 
-export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWidgetSettings>> = ({ settings, interfaceId }) => {
-  const handle = useWidgetValueHandle(settings.valueId, interfaceId, "number");
+export const SliderWidget: FunctionComponent<RemoteWidgetProps<number, SliderWidgetSettings>> = ({ settings, interfaceHandle }) => {
+  const handle = useWidgetValueHandle(interfaceHandle, settings.valueId, "number");
   const [interactiveValue, setInteractiveValue] = useState<number>(handle.value ?? 0.0);
   const [focused, setFocused] = useState(false);
 

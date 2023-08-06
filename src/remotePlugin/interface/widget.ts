@@ -1,8 +1,9 @@
 import { ComponentType, FunctionComponent, useCallback } from "react";
+import { InterfaceHandle } from "./InterfaceList";
 
 export type RemoteWidgetProps<T, TSettings> = {
   settings: TSettings;
-  interfaceId: string;
+  interfaceHandle: InterfaceHandle<any>;
   widgetId: string;
 };
 export type RemoteWidgetSettingsProps<TSettings> = {

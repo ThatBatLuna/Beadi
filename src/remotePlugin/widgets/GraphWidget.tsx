@@ -14,8 +14,8 @@ const HISTORY_LENGTH = 3 * 60;
 const HEIGHT = 100;
 const MIN_HEIGHT = 1.0;
 const SAMPLE_RATE = 60;
-export const GraphWidget: FunctionComponent<RemoteWidgetProps<number, GraphWidgetSettings>> = ({ settings, interfaceId }) => {
-  const handle = useWidgetValueHandle(settings.valueId, interfaceId, "number");
+export const GraphWidget: FunctionComponent<RemoteWidgetProps<number, GraphWidgetSettings>> = ({ settings, interfaceHandle }) => {
+  const handle = useWidgetValueHandle(interfaceHandle, settings.valueId, "number");
 
   const [preview, setPreview] = useState({ index: 0, history: new Array(HISTORY_LENGTH).fill(0) });
 

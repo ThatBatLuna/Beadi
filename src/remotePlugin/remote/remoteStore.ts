@@ -5,7 +5,7 @@ import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
 import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
-import { Interface } from "../interface/interfaceStores";
+import { InterfaceDef } from "../interface/interfaceStores";
 import { IOValueState } from "../inputOutputStore";
 
 type RemoteConnection = {
@@ -68,14 +68,14 @@ type RemoteConnectionState =
       socket: WebSocket;
       id: string;
       values: Record<string, RemoteConnectionValue>;
-      interfaces: Record<string, Interface>;
+      interfaces: Record<string, InterfaceDef>;
     }
   | {
       state: "closing";
       socket: WebSocket;
       id: string;
       values: Record<string, RemoteConnectionValue>;
-      interfaces: Record<string, Interface>;
+      interfaces: Record<string, InterfaceDef>;
     };
 export type RemoteConnectionHandle = {
   state: RemoteConnectionState;

@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { Widget, useInterfaceFileStore } from "./interfaceStores";
+import { InterfaceDef, Widget, useInterfaceFileStore } from "./interfaceStores";
 import { Button } from "../../components/input/Button";
 import { SliderWidget, SliderWidgetSettingsEditor } from "../widgets/SliderWidget";
 import { MdRemove } from "react-icons/md";
@@ -31,16 +31,16 @@ export const InterfaceEditorEntry: FunctionComponent<InterfaceEditorEntryProps> 
 };
 
 type InterfaceEditorProps = {
-  interfaceId: string;
+  interfaceDef: InterfaceDef;
 };
 
-export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ interfaceId }) => {
-  const iface = useInterfaceFileStore((s) => s.interfaces[interfaceId]);
+export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ interfaceDef }) => {
+  const iface = useInterfaceFileStore((s) => s.interfaces[interfaceDef.interfaceId]);
   const updateInterface = useInterfaceFileStore((s) => s.updateInterface);
 
   const addWidget = (type: string) => {
     const id = `${new Date().getTime()}`;
-    updateInterface(interfaceId, (draft) => {
+    updateInterface(interfaceDef.interfaceId, (draft) => {
       draft.layout.push({
         settings: {},
         widgetId: id,
@@ -54,7 +54,7 @@ export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ inter
       <ul className="flex flex-col my-2">
         {iface.layout.map((it) => (
           <li key={it.widgetId} className="block bg-primary-800 p-2 mt-2 rounded-md">
-            <InterfaceEditorEntry widget={it} interfaceId={interfaceId}></InterfaceEditorEntry>
+            <InterfaceEditorEntry widget={it} interfaceId={interfaceDef.interfaceId}></InterfaceEditorEntry>
           </li>
         ))}
       </ul>
