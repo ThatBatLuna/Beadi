@@ -19,6 +19,7 @@ import { constantValueNodeDef } from "./nodes/ConstantValueNode";
 import { curveNodeDef } from "./nodes/CurveNode";
 import { hysteresisNodeDef } from "./nodes/HysteresisNode";
 import { commentNodeDef } from "./nodes/CommentNode";
+import { edgeDetectorNodeDef } from "./nodes/EdgeDetector";
 
 const nodeDefList: AnyNodeDef[] = [
   constantValueNodeDef as any,
@@ -35,7 +36,7 @@ const nodeDefList: AnyNodeDef[] = [
   curveNodeDef as any,
   delayNodeDef as any,
   commentNodeDef as any,
-  // edgeDetectorNodeDef,
+  edgeDetectorNodeDef as any,
 ];
 
 export const nodeDefs: Record<string, AnyNodeDef> = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
