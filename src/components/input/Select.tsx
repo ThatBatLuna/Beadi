@@ -11,7 +11,6 @@ type SelectProps<T> = {
   onSelect?: (value: T | null) => void;
 };
 export function Select<T>({ options, selected, onSelect, renderOption, allowUnselect }: SelectProps<T>) {
-  console.log("Select: ", options, selected);
   const optionMap = useMemo(() => {
     return _.chain(options)
       .map((it, index) => [index, it])

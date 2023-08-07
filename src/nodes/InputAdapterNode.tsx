@@ -58,10 +58,7 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
     if (inputAdatperDef === undefined) {
       return {} as OutputHandleDefs;
     }
-    if (s.adapterSettings?.[s.adapterId] === undefined) {
-      return {} as OutputHandleDefs;
-    }
-    const type = inputAdatperDef.getType(s.adapterSettings[s.adapterId]);
+    const type = inputAdatperDef.getType(s.adapterSettings?.[s.adapterId]);
     if (type === undefined) {
       return {} as OutputHandleDefs;
     }
@@ -83,9 +80,6 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
         return {};
       }
       const settings = context.settings.adapterSettings?.[context.settings.adapterId];
-      if (settings === undefined) {
-        return {};
-      }
       return { value: adapter.getData(context.id, settings) };
     },
     outputDriver: () => {},

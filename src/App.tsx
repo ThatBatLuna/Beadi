@@ -14,7 +14,7 @@ type GlobalSettings = {
 };
 export const useGlobalSettings = create(
   immer<GlobalSettings>((set, get) => ({
-    mobileView: window.innerWidth < 1000,
+    mobileView: window.innerWidth < 768,
     setMobileView: (mobile) => {
       set((state) => {
         state.mobileView = mobile;

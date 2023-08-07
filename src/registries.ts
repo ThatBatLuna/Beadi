@@ -11,8 +11,8 @@ import { timerNodeDef } from "./nodes/TimerNode";
 import { inputAdapterNode } from "./nodes/InputAdapterNode";
 import { toggleNodeDef } from "./nodes/ToggleNode";
 import { AnyInputAdapterDef, AnyOutputAdapterDef } from "./engine/adapter";
-import { remoteInputAdapter, remoteInputFromOutputAdapter, testRemoteInputAdapter } from "./remotePlugin/inputAdapter";
-import { remoteOutputAdapter, remoteOutputToInputAdapter, testRemoteOutputAdapter } from "./remotePlugin/outputAdapter";
+import { remoteInputAdapter, remoteInputFromOutputAdapter } from "./remotePlugin/inputAdapter";
+import { remoteOutputAdapter, remoteOutputToInputAdapter } from "./remotePlugin/outputAdapter";
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";
 import { randomNodeDef } from "./nodes/RandomNode";
 import { memoryNodeDef } from "./nodes/MemoryNode";
@@ -55,14 +55,14 @@ const nodeDefList: AnyNodeDef[] = [
 
 export const nodeDefs: Record<string, AnyNodeDef> = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
 
-const inputAdapterDefList: AnyInputAdapterDef[] = [remoteInputAdapter, remoteInputFromOutputAdapter, testRemoteInputAdapter];
+const inputAdapterDefList: AnyInputAdapterDef[] = [remoteInputAdapter, remoteInputFromOutputAdapter];
 
 export const inputAdapterDefs: Record<string, AnyInputAdapterDef> = Object.assign(
   {},
   ...inputAdapterDefList.map((it) => ({ [it.id]: it }))
 );
 
-const outputAdapterDefList: AnyOutputAdapterDef[] = [remoteOutputAdapter, remoteOutputToInputAdapter, testRemoteOutputAdapter];
+const outputAdapterDefList: AnyOutputAdapterDef[] = [remoteOutputAdapter, remoteOutputToInputAdapter];
 
 export const outputAdapterDefs: Record<string, AnyOutputAdapterDef> = Object.assign(
   {},

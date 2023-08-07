@@ -1,5 +1,5 @@
 import { set } from "lodash";
-import { InputAdapterDef } from "../engine/adapter";
+import { InputAdapterDef, InputAdapterSettingsEditorProps } from "../engine/adapter";
 import { HandleDef, HandleType, TypeOfHandleType, asHandleType } from "../engine/node";
 import { useIOValueStore } from "./inputOutputStore";
 import { Select } from "../components/input/Select";
@@ -11,11 +11,10 @@ export type RemoteInputAdapterSettings = {
   type: HandleType;
 };
 
-type RemoteInputSettingsEditorProps = {
-  settings: RemoteInputAdapterSettings;
-  updateSettings: (s: RemoteInputAdapterSettings) => void;
-};
-export const RemoteInputSettingsEditor: FunctionComponent<RemoteInputSettingsEditorProps> = ({ settings, updateSettings }) => {
+export const RemoteInputSettingsEditor: FunctionComponent<InputAdapterSettingsEditorProps<RemoteInputAdapterSettings>> = ({
+  settings,
+  updateSettings,
+}) => {
   const updateType = (type: HandleType | null) => {
     updateSettings({
       ...settings,
@@ -39,8 +38,11 @@ export const RemoteInputSettingsEditor: FunctionComponent<RemoteInputSettingsEdi
 export const REMOTE_INPUT_ADAPTER_ID = "remoteInput";
 export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, RemoteInputAdapterSettings> = {
   id: REMOTE_INPUT_ADAPTER_ID,
-  getType: (settings) => settings.type,
+  getType: (settings) => settings?.type,
   getData: (nodeId: string, settings) => {
+    if (settings === undefined) {
+      return 0.0;
+    }
     if (settings.type === "impulse") {
       const value = useIOValueStore.getState().values[nodeId]?.value;
       const safeValue = asHandleType(settings.type, value);
@@ -56,7 +58,7 @@ export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, R
 
 export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputAdapterSettings> = {
   id: "remoteInputFromOutput",
-  getType: (settings) => settings.type,
+  getType: (settings) => settings?.type,
   getData: (nodeId) => {
     // console.log("RemoteOutputToRemoteInput", data);
     return 0.0;
@@ -66,7 +68,7 @@ export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputAd
 
 export const testRemoteInputAdapter: InputAdapterDef<number, RemoteInputAdapterSettings> = {
   id: "remoteInput2",
-  getType: (settings) => settings.type,
+  getType: (settings) => settings?.type,
   getData: (nodeId: string) => {
     return 83;
   },

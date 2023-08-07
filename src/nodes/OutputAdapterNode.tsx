@@ -57,10 +57,7 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
     if (outputAdatperDef === undefined) {
       return {} as InputHandleDefs;
     }
-    if (s.adapterSettings?.[s.adapterId] === undefined) {
-      return {} as InputHandleDefs;
-    }
-    const type = outputAdatperDef.getType(s.adapterSettings[s.adapterId]);
+    const type = outputAdatperDef.getType(s.adapterSettings?.[s.adapterId]);
     if (type === undefined) {
       return {} as InputHandleDefs;
     }
