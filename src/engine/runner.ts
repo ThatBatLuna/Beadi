@@ -96,6 +96,7 @@ function runEngineLoop(model: Model) {
     }
 
     usePreviewStore.setState({ outputHandlePreviews: handleValues });
+    usePreviewStore.getState().pushSignals(signals);
     timeout = setTimeout(update, timestep) as any;
   }
   timeout = setTimeout(update, timestep) as any;
