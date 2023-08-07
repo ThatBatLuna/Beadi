@@ -31,7 +31,7 @@ const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapter
     <div className="w-full p-2">
       <Select
         options={Object.values(inputAdapterDefs)}
-        selected={adapterId === null ? null : inputAdapterDefs[adapterId]}
+        selected={adapterId == null ? null : inputAdapterDefs[adapterId]}
         onSelect={(def) => updateNode(id, (draft) => ((draft.data.settings as InputAdapterNodeSettings)["adapterId"] = def?.id ?? null))}
         renderOption={(s) => s.label}
       ></Select>

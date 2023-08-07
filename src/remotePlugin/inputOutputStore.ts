@@ -138,7 +138,6 @@ export function tempSyncIOValueStore() {
         }
       }
     );
-    console.log("adapterNodes: ", adapterNodes);
 
     useIOValueStore.setState((state) => {
       const localValues = Object.values(state.values);
@@ -147,7 +146,6 @@ export function tempSyncIOValueStore() {
       // const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
 
       const { extra, missing, changed } = diffByKeys(state.values, adapterNodes, (a, b) => a.type === b.type && a.name === b.name);
-      console.log("useIOValueStore setState: ", localValues, "+", missing, " -", extra);
 
       return produce(state, (draft) => {
         for (const extraKey in extra) {
@@ -159,7 +157,6 @@ export function tempSyncIOValueStore() {
             ...missing[missingKey],
           };
         }
-        console.log("CCC: ", changed);
         for (const changedKey in changed) {
           draft.values[changedKey] = {
             value: 0.0,

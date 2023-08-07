@@ -30,7 +30,7 @@ const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, OutputAdapt
     <div className="w-full p-2">
       <Select
         options={Object.values(outputAdapterDefs)}
-        selected={adapterId === null ? null : outputAdapterDefs[adapterId]}
+        selected={adapterId == null ? null : outputAdapterDefs[adapterId]}
         onSelect={(def) => updateNode(id, (draft) => ((draft.data.settings as OutputAdapterNodeSettings)["adapterId"] = def?.id ?? null))}
         renderOption={(s) => s.label}
       ></Select>

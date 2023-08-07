@@ -83,7 +83,6 @@ const useDatabaseStore = create<DatabaseStore>()((set, get) => ({
       }));
     } else {
       db.getAll("saves").then((it) => {
-        console.log("REFRESHING", it);
         set(() => ({
           files: it.map((it) => ({ fileName: it.fileName })),
         }));

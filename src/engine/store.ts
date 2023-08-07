@@ -41,8 +41,6 @@ export type FileStore = {
   updateNode: (nodeId: string, recipe: (node: Draft<UnknownBeadiNode>) => void) => void;
   overwrite: (file: BeadiFileData) => void;
 
-  //TODO Change this to a immer recipe instead of merging
-  //   mergeNodeData: (nodeId: string, data: Partial<NodeData>) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;

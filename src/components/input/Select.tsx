@@ -1,6 +1,8 @@
 import _ from "lodash";
 import { ChangeEventHandler, ReactNode, useCallback, useMemo } from "react";
 
+const NULL_TEXT = "unselect";
+
 type SelectProps<T> = {
   options: T[];
   selected: T | null;
@@ -9,6 +11,7 @@ type SelectProps<T> = {
   onSelect?: (value: T | null) => void;
 };
 export function Select<T>({ options, selected, onSelect, renderOption, allowUnselect }: SelectProps<T>) {
+  console.log("Select: ", options, selected);
   const optionMap = useMemo(() => {
     return _.chain(options)
       .map((it, index) => [index, it])
@@ -18,7 +21,11 @@ export function Select<T>({ options, selected, onSelect, renderOption, allowUnse
 
   const onChange: ChangeEventHandler<HTMLSelectElement> = useCallback(
     (e) => {
-      onSelect?.(optionMap[e.target.value]);
+      if (e.target.value === NULL_TEXT) {
+        onSelect?.(null);
+      } else {
+        onSelect?.(optionMap[e.target.value]);
+      }
     },
     [onSelect, optionMap]
   );
@@ -40,8 +47,8 @@ export function Select<T>({ options, selected, onSelect, renderOption, allowUnse
   }, [optionMap, selected]);
 
   return (
-    <select onChange={onChange} className="h-6 px-4 text-white rounded-md bg-primary-1100 w-full" value={selectedKey}>
-      {(isSelected(null) || allowUnselect === true) && <option key="none"></option>}
+    <select onChange={onChange} className="h-6 px-4 text-white rounded-md bg-primary-1100 w-full" value={selectedKey ?? NULL_TEXT}>
+      {(isSelected(null) || allowUnselect === true) && <option key="none" value={NULL_TEXT}></option>}
       {Object.entries(optionMap).map(([key, value]) => (
         <option key={key} value={key}>
           {renderOption(value)}

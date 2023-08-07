@@ -27,7 +27,7 @@ export const EditableNodeTitle: FunctionComponent<EditableNodeTitleProps> = ({ t
       ) : (
         <div className="px-4 flex flex-row items-center">
           <span>{title ?? emptyLabel}</span>
-          <MdDriveFileRenameOutline className="opacity-0 group-hover:opacity-100" />
+          <MdDriveFileRenameOutline className="opacity-0 group-hover:opacity-100 cursor-text" />
         </div>
       )}
     </h1>
