@@ -44,7 +44,8 @@ export const CommentNode: FunctionComponent<NodeProps<BeadiNodeData<{}, CommentN
     }
   });
 
-  const className = "bg-transparent p-2 w-full h-full whitespace-pre-wrap border-none font-mono box-border block rounded-md";
+  const className =
+    "bg-transparent p-2 w-full h-full whitespace-pre-wrap border-none font-mono box-border block rounded-md overflow-y-scroll";
   return (
     <div
       className="bg-black/50 w-[200px] min-h-[4em] rounded-md border-primary-700 border-2"
