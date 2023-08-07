@@ -98,7 +98,6 @@ function makeConnectedState(socket: WebSocket, id: string): PublishConnectionSta
       });
     },
     emitSignal: (valueId, data) => {
-      console.log("(TODO) Publishing sigal emssion at ", valueId, ": ", data);
       sendMessage(socket, {
         EmitSignal: {
           endpoint: valueId,

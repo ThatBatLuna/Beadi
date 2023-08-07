@@ -27,7 +27,7 @@ export const GraphNodeValuePreview: FunctionComponent<NodeHandleValuePreviewProp
     };
   }, [props.nodeId, props.handleId]);
   return (
-    <div>
+    <div className="flex flex-row justify-center bg-primary-1000">
       <Graph history={preview.history} index={preview.index} fixed={false} height={HEIGHT} minHeight={MIN_HEIGHT} />
     </div>
   );
