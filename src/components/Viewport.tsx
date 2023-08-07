@@ -73,16 +73,6 @@ const nodeTypes: NodeTypes = {
   welcome: WelcomeNode,
 };
 
-const selector = (state: FileStore) => ({
-  nodes: Object.values(state.data.nodes),
-  edges: Object.values(state.data.edges),
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  onConnect: state.onConnect,
-  addNode: state.addNode,
-  addEdge: state.addEdge,
-});
-
 type NodeDropdownData = {
   source: string;
   sourceHandle: string;
@@ -187,10 +177,23 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
   );
 };
 
+const selector = (state: FileStore) => ({
+  nodes: Object.values(state.data.nodes).map((node) => ({
+    ...node,
+    data: _.omit(node.data, "handles"),
+  })),
+  edges: Object.values(state.data.edges),
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  addNode: state.addNode,
+  addEdge: state.addEdge,
+});
+
 const Viewport: FunctionComponent<{
   wrapper: RefObject<HTMLDivElement | null>;
 }> = ({ wrapper }) => {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, shallow);
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, _.isEqual);
   const { project } = useReactFlow();
 
   const connectingNode = useRef<OnConnectStartParams | null>(null);

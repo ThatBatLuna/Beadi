@@ -20,36 +20,27 @@ type NodeHandleLineProps = {
 };
 
 const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, type, label, handleId, connected, nodeId }) => {
-  const nodes = useFileStore((store) => store.data.nodes);
-
   const [open, setOpen] = useState(false);
 
-  const isValidConnection = useCallback(
-    (connection: Connection) => {
-      if (
-        connection.source === null ||
-        connection.target === null ||
-        connection.sourceHandle === null ||
-        connection.targetHandle === null
-      ) {
-        return false;
-      }
-      const targetType = nodes[connection.target].type;
-      const sourceType = nodes[connection.source].type;
-      console.log(connection, targetType, sourceType, nodes);
-      if (targetType !== undefined && sourceType !== undefined) {
-        return (
-          connection.source !== connection.target &&
-          handlesCompatible(
-            getNodeOutputs(nodes[connection.source].type, nodes[connection.source].data.settings)[connection.sourceHandle].type,
-            getNodeInputs(nodes[connection.target].type, nodes[connection.target].data.settings)[connection.targetHandle].type
-          )
-        );
-      }
+  const isValidConnection = useCallback((connection: Connection) => {
+    if (connection.source === null || connection.target === null || connection.sourceHandle === null || connection.targetHandle === null) {
       return false;
-    },
-    [nodes]
-  );
+    }
+    const nodes = useFileStore.getState().data.nodes;
+    const targetType = nodes[connection.target].type;
+    const sourceType = nodes[connection.source].type;
+    console.log(connection, targetType, sourceType, nodes);
+    if (targetType !== undefined && sourceType !== undefined) {
+      return (
+        connection.source !== connection.target &&
+        handlesCompatible(
+          getNodeOutputs(nodes[connection.source].type, nodes[connection.source].data.settings)[connection.sourceHandle].type,
+          getNodeInputs(nodes[connection.target].type, nodes[connection.target].data.settings)[connection.targetHandle].type
+        )
+      );
+    }
+    return false;
+  }, []);
 
   const NodeHandleValuePreview = nodeHandleValuePreviews[type];
 
@@ -86,7 +77,9 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, t
             </span>
           )}
           {kind === "output" && NodeHandleValuePreview !== undefined && (
-            <button onClick={() => setOpen(!open)}>{open ? <MdExpandLess></MdExpandLess> : <MdExpandMore></MdExpandMore>}</button>
+            <button onMouseDownCapture={(e) => e.stopPropagation()} onClick={() => setOpen(!open)}>
+              {open ? <MdExpandLess></MdExpandLess> : <MdExpandMore></MdExpandMore>}
+            </button>
           )}
         </div>
 
