@@ -10,7 +10,7 @@ type SwitchWidgetSettings = {
 
 export const SwitchWidget: FunctionComponent<RemoteWidgetProps<number, SwitchWidgetSettings>> = ({ settings, interfaceHandle }) => {
   const handle = useWidgetValueHandle(interfaceHandle, settings.valueId, "boolean");
-  const [interactiveValue, setInteractiveValue] = useState<boolean>(handle.value ?? false);
+  const [interactiveValue, setInteractiveValue] = useState<boolean>(handle.value?.value ?? false);
   const [focused, setFocused] = useState(false);
 
   const setValue = (e: boolean) => {
@@ -18,7 +18,7 @@ export const SwitchWidget: FunctionComponent<RemoteWidgetProps<number, SwitchWid
     setInteractiveValue(e);
   };
 
-  const displayValue = focused ? interactiveValue : handle.value ?? false;
+  const displayValue = focused ? interactiveValue : handle.value?.value ?? false;
 
   return (
     <div className="w-full relative my-2 rounded-md">
@@ -28,12 +28,17 @@ export const SwitchWidget: FunctionComponent<RemoteWidgetProps<number, SwitchWid
         checked={displayValue}
         onFocus={() => {
           setFocused(true);
-          setInteractiveValue(handle.value ?? false);
+          setInteractiveValue(handle.value?.value ?? false);
         }}
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(e.target.checked)}
       />
-      <input className="w-full absolute top-2 left-0 pointer-events-none" type="checkbox" checked={handle.value ?? false} disabled={true} />
+      <input
+        className="w-full absolute top-2 left-0 pointer-events-none"
+        type="checkbox"
+        checked={handle.value?.value ?? false}
+        disabled={true}
+      />
       {handle.error !== undefined && <div className="absolute inset-0 bg-red-600 opacity-80 rounded-md">{handle.error}</div>}
     </div>
   );

@@ -6,6 +6,7 @@ import { useCallback } from "react";
 import { HandleType, TypeOfHandleType } from "../../engine/node";
 import { useDynamicStore } from "../../hooks/useDynamicStore";
 import { InterfaceHandle } from "./InterfaceList";
+import { IOValueState } from "../inputOutputStore";
 
 export type Widget = {
   widgetId: string;
@@ -75,7 +76,7 @@ const NULL_GET_VALUE = () => {
 };
 type WidgetValueHandle<T> =
   | {
-      value: T;
+      value: IOValueState<T>;
       setValue: (n: T) => void;
       getValue: () => T;
       error: undefined;
@@ -144,7 +145,7 @@ export function useWidgetValueHandle<T extends HandleType>(
   }
 
   return {
-    value: value.value,
+    value: value,
     getValue,
     setValue,
     error: undefined,

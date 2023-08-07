@@ -5,8 +5,9 @@ import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
 import { AnyNodeDef, InputHandleDef, NodeDef, getNodeInputs, getNodeOutputs } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
-import { UnknownBeadiNodeData } from "../../engine/store";
+import { UnknownBeadiNodeData, useFileStore } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
+import { EditableNodeTitle } from "./EditableNodeTitle";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
@@ -45,8 +46,26 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
 
     const nodeOutputs = getNodeOutputs(def.type, data.settings);
 
+    const updateNode = useFileStore((s) => s.updateNode);
+    const setNodeName = (s: string) => {
+      let name = s.trim();
+      if (name.length === 0) {
+        updateNode(id, (n) => {
+          n.data.name = undefined;
+        });
+      } else {
+        updateNode(id, (n) => {
+          n.data.name = s;
+        });
+      }
+    };
+
     return (
-      <NodeShell title={def.label} color={def.category.color} errors={errors}>
+      <NodeShell
+        title={<EditableNodeTitle title={data.name} emptyLabel={def.label} onChange={setNodeName}></EditableNodeTitle>}
+        color={def.category.color}
+        errors={errors}
+      >
         {HeaderComponent && <HeaderComponent id={id} data={data}></HeaderComponent>}
         {inputs.map(([inputId, input], index) => (
           <NodeHandleLine

@@ -3,7 +3,7 @@ import { CSSProperties, FunctionComponent, ReactNode } from "react";
 
 type NodeShellProps = {
   children?: ReactNode;
-  title: string;
+  title: ReactNode;
   color: string;
   style?: CSSProperties;
   headerIcons?: ReactNode;
@@ -13,8 +13,9 @@ type NodeShellProps = {
 const NodeShell: FunctionComponent<NodeShellProps> = ({ children, title, style, color, headerIcons, errors }) => {
   return (
     <div className={clsx("flex flex-col text-black w-[200px] rounded-md", { "shadow-error": errors !== undefined })} style={style}>
-      <div className={clsx("flex flex-row px-2 text-black bg-red-800 rounded-t-md")} style={{ backgroundColor: color }}>
-        <h1 className="px-1">{title}</h1>
+      <div className={clsx("flex flex-row text-black bg-red-800 rounded-t-md")} style={{ backgroundColor: color }}>
+        {/* <h1 className="px-1">{title}</h1> */}
+        {title}
         <div className="grow"></div>
         {headerIcons}
       </div>
