@@ -22,15 +22,13 @@ import { remoteSettingsTab as remoteSettingsTabDef } from "./remotePlugin/Remote
 import { switchNodeDef } from "./nodes/SwitchNode";
 import { positiveWaveNodeDef } from "./nodes/WaveNode";
 import { delayNodeDef } from "./nodes/DelayNode";
+import { mathNodeDef } from "./nodes/MathNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
   // constantValueNodeDef,
   // positiveWaveNodeDef,
-  addNodeDef,
-  subtractNodeDef,
-  divideNodeDef,
-  multiplyNodeDef,
+  mathNodeDef as any,
   // buttplugNodeDef,
   // mixNodeDef,
   // hysteresisNodeDef,

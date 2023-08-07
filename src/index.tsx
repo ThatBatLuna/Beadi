@@ -36,8 +36,6 @@ root.render(
 
 watchForChanges();
 
-useFileStore.subscribe((it) => console.log(it.data));
-
 // const bpscript = document.createElement("script");
 // bpscript.src =
 //   "https://cdn.jsdelivr.net/npm/buttplug@1.0.1/dist/web/buttplug.min.js";

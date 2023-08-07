@@ -140,7 +140,6 @@ export const FileSettings: FunctionComponent<{}> = () => {
   const load = useCallback(
     async (name: string) => {
       const it = await loadFromDb(name);
-      console.log(it);
       importJson(it);
       setName(it.fileName);
     },

@@ -27,7 +27,6 @@ export const UploadToLitterbox: FunctionComponent<{}> = () => {
     })
       .then((r) => r.text())
       .then((response) => {
-        console.log(response);
         setLink(response);
         setCode(response.replace(LITTERBOX_URL, ""));
       });
@@ -56,7 +55,6 @@ export const ImportFromLitterbox: FunctionComponent<{}> = () => {
     fetch(`${LITTERBOX_URL}${text}`)
       .then((result) => result.json())
       .then((result) => {
-        console.log(result);
         overwriteStoreData(result);
         setText("");
         //TODO VALIDATE THE RESULT

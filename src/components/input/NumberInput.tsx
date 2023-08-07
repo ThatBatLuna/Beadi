@@ -35,23 +35,12 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({ id, name, onChange, 
   const [textEdit, setTextEdit] = useState(false);
 
   const setValue = useCallback(
-    (v: number | ((v: number) => number)) => {
-      if (typeof v === "function") {
-        setValueState((s) => {
-          const nextVal = v(s);
-          onChange?.({
-            intermediate: true,
-            value: nextVal,
-          });
-          return nextVal;
-        });
-      } else {
-        setValueState(v);
-        onChange?.({
-          intermediate: true,
-          value: v,
-        });
-      }
+    (v: number) => {
+      setValueState(v);
+      onChange?.({
+        intermediate: true,
+        value: v,
+      });
     },
     [onChange, setValueState]
   );
@@ -117,8 +106,8 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({ id, name, onChange, 
 
         e.stopPropagation();
 
-        setValue((old) => {
-          let num = old + e.movementX * multiplier;
+        {
+          let num = value + e.movementX * multiplier;
 
           if (min !== undefined) {
             num = Math.max(num, min);
@@ -127,11 +116,11 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({ id, name, onChange, 
             num = Math.min(num, max);
           }
 
-          return Number(num.toFixed(3));
-        });
+          setValue(Number(num.toFixed(3)));
+        }
       }
     },
-    [setValue, sliding, textEdit, min, max]
+    [setValue, sliding, textEdit, value, min, max]
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = (e) => {

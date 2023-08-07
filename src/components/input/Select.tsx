@@ -4,7 +4,7 @@ import { ChangeEventHandler, ReactNode, useCallback, useMemo } from "react";
 const NULL_TEXT = "unselect";
 
 type SelectProps<T> = {
-  options: T[];
+  readonly options: readonly T[];
   selected: T | null;
   allowUnselect?: boolean;
   renderOption: (value: T) => ReactNode;
