@@ -16,18 +16,18 @@ import { remoteOutputAdapter, remoteOutputToInputAdapter } from "./remotePlugin/
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";
 import { randomNodeDef } from "./nodes/RandomNode";
 import { memoryNodeDef } from "./nodes/MemoryNode";
-import { addNodeDef, divideNodeDef, multiplyNodeDef, subtractNodeDef } from "./nodes/AddNode";
 import { Tab, fileTab as fileTabDef } from "./components/Settings";
 import { remoteSettingsTab as remoteSettingsTabDef } from "./remotePlugin/RemoteDrawerPage";
 import { switchNodeDef } from "./nodes/SwitchNode";
 import { positiveWaveNodeDef } from "./nodes/WaveNode";
 import { delayNodeDef } from "./nodes/DelayNode";
 import { mathNodeDef } from "./nodes/MathNode";
+import { constantValueNodeDef } from "./nodes/ConstantValueNode";
+import { curveNodeDef } from "./nodes/CurveNode";
 
 const nodeDefList: AnyNodeDef[] = [
   // displayNodeDef,
-  // constantValueNodeDef,
-  // positiveWaveNodeDef,
+  constantValueNodeDef as any,
   mathNodeDef as any,
   // buttplugNodeDef,
   // mixNodeDef,
@@ -42,8 +42,7 @@ const nodeDefList: AnyNodeDef[] = [
   outputAdapterNode as any,
   switchNodeDef as any,
   positiveWaveNodeDef as any,
-  // clampNodeDef,
-  // curveNodeDef,
+  curveNodeDef as any,
   delayNodeDef as any,
   // commentNodeDef,
   // sensorNodeDef,

@@ -22,8 +22,8 @@ export const delayNodeDef = nodeDef()({
   type: "delay",
   header: DelayNode,
   outputs: {
-    signal: {
-      id: "signal",
+    elapsed: {
+      id: "elapsed",
       label: "Elapsed",
       type: "impulse",
     },
@@ -86,7 +86,7 @@ export const delayNodeDef = nodeDef()({
             outputs: {
               progress: 1.0,
               running: true,
-              signal: emitImpulse(1),
+              elapsed: emitImpulse(1),
             },
             persistentData: {
               delay: null,
@@ -101,7 +101,7 @@ export const delayNodeDef = nodeDef()({
             outputs: {
               progress,
               running,
-              signal: emitImpulse(0),
+              elapsed: emitImpulse(0),
             },
             persistentData: {
               delay,
@@ -114,7 +114,7 @@ export const delayNodeDef = nodeDef()({
           outputs: {
             progress: 0.0,
             running: false,
-            signal: emitImpulse(0),
+            elapsed: emitImpulse(0),
           },
           persistentData: {
             delay,
