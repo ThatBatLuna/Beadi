@@ -15,6 +15,7 @@ import {
 
 export type ChangeEvent = {
   value: number;
+  intermediate: boolean;
 };
 
 type NumberInputProps = {
@@ -27,25 +28,39 @@ type NumberInputProps = {
   max?: number;
 };
 
-const NumberInput: FunctionComponent<NumberInputProps> = ({
-  id,
-  name,
-  onChange,
-  value: officialValue,
-  label,
-  min,
-  max,
-}) => {
-  const [value, setValue] = useState(officialValue || 0);
+const NumberInput: FunctionComponent<NumberInputProps> = ({ id, name, onChange, value: officialValue, label, min, max }) => {
+  const [value, setValueState] = useState(officialValue || 0);
   const [sliding, setSliding] = useState(false);
   const [startX, setStartX] = useState<number | null>(null);
   const [textEdit, setTextEdit] = useState(false);
 
-  useEffect(() => {
-    if (officialValue !== undefined) {
-      setValue(officialValue);
-    }
-  }, [setValue, officialValue]);
+  const setValue = useCallback(
+    (v: number | ((v: number) => number)) => {
+      if (typeof v === "function") {
+        setValueState((s) => {
+          const nextVal = v(s);
+          onChange?.({
+            intermediate: true,
+            value: nextVal,
+          });
+          return nextVal;
+        });
+      } else {
+        setValueState(v);
+        onChange?.({
+          intermediate: true,
+          value: v,
+        });
+      }
+    },
+    [onChange, setValueState]
+  );
+
+  // useEffect(() => {
+  //   if (officialValue !== undefined) {
+  //     setValue(officialValue);
+  //   }
+  // }, [setValue, officialValue]);
 
   const inputElement = useRef<HTMLInputElement>(null);
 
@@ -57,7 +72,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
       }
 
       setValue(value);
-      onChange?.({ value: value });
+      onChange?.({ value: value, intermediate: false });
     },
     [setValue, onChange]
   );
@@ -79,7 +94,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
       if (!textEdit) {
         (e.target as HTMLElement).releasePointerCapture(e.pointerId);
         setSliding(false);
-        onChange?.({ value: value });
+        onChange?.({ value: value, intermediate: false });
         if (startX === e.pageX) {
           setTextEdit(true);
         }
@@ -171,12 +186,7 @@ const NumberInput: FunctionComponent<NumberInputProps> = ({
             }
           )}
         >
-          {sliderWidth !== null && (
-            <div
-              className="absolute top-0 left-0 z-0 h-full bg-blue-900"
-              style={{ width: sliderWidth }}
-            ></div>
-          )}
+          {sliderWidth !== null && <div className="absolute top-0 left-0 z-0 h-full bg-blue-900" style={{ width: sliderWidth }}></div>}
           {label && <span className="z-10 grow">{label}</span>}
           <span className="z-10">{value}</span>
         </div>

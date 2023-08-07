@@ -51,7 +51,7 @@ export const remoteOutputAdapter: OutputAdapterDef<number, RemoteOutputAdapterSe
       usePublishStateStore.getState().state.updateValue(nodeId, safeValue, true);
     }
   },
-  label: "Remote",
+  label: "Remote Display",
   settingsEditor: RemoteOutputSettingsEditor,
 };
 

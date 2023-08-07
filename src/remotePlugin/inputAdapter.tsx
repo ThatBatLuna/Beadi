@@ -54,7 +54,7 @@ export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, R
     const safeValue = asHandleType(settings.type, value);
     return safeValue ?? 0.0;
   },
-  label: "Remote",
+  label: "Remote Control",
   settingsEditor: RemoteInputSettingsEditor,
 };
 

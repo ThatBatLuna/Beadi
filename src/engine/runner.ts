@@ -62,7 +62,8 @@ function runEngineLoop(model: Model) {
           if (dependency !== null) {
             return signals[dependency.nodeId]?.[dependency.handleId] || [];
           } else {
-            return [];
+            //There can be signals fired directly to handle inputs (e.g through the ImpulseHandleInput)
+            return signals[step.nodeId]?.[handleId] || [];
           }
         } else {
           if (dependency !== null) {
