@@ -1,12 +1,5 @@
 import { AnyNodeDef } from "./engine/node";
 
-// import {
-//   addNodeDef,
-//   divideNodeDef,
-//   multiplyNodeDef,
-//   subtractNodeDef,
-// } from "../nodes/AddNode";
-import { buttonNodeDef } from "./nodes/ButtonNode";
 import { timerNodeDef } from "./nodes/TimerNode";
 import { inputAdapterNode } from "./nodes/InputAdapterNode";
 import { toggleNodeDef } from "./nodes/ToggleNode";
@@ -33,7 +26,6 @@ const nodeDefList: AnyNodeDef[] = [
   memoryNodeDef as any,
   randomNodeDef as any,
   timerNodeDef as any,
-  buttonNodeDef as any,
   toggleNodeDef as any,
   inputAdapterNode as any,
   outputAdapterNode as any,
