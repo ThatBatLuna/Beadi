@@ -163,30 +163,38 @@ type WidgetSignalHandle<T> =
 export function useWidgetSignalHandle<T>(interfaceHandle: InterfaceHandle<any>, valueId: string): WidgetSignalHandle<T> {
   // const iface = useInterfaceDisplayStateStore((s) => s.interfaces[interfaceId]);
 
-  // const ifaceEmitSignal = iface.emitSignal;
-  // const emitSignal = useCallback(
-  //   (v: T) => {
-  //     ifaceEmitSignal(valueId, v);
-  //   },
-  //   [valueId, ifaceEmitSignal]
-  // );
+  const ifaceEmitSignal = interfaceHandle.emitSignal;
+  const emitSignal = useCallback(
+    (v: T) => {
+      ifaceEmitSignal(valueId, v);
+    },
+    [valueId, ifaceEmitSignal]
+  );
 
-  // if (iface === undefined) {
+  const values = useDynamicStore(interfaceHandle.valueStoreHandle, (s) => s);
+  if (values === null) {
+    return {
+      emitSignal: () => NULL_SET_VALUE,
+      error: `Invalid store for interface ${interfaceHandle.interfaceDef.interfaceId}`,
+    };
+  }
+  if (values[valueId] === undefined) {
+    return {
+      emitSignal: () => NULL_SET_VALUE,
+      error: `Value ${valueId} does not exist in Interface ${interfaceHandle.interfaceDef.interfaceId}`,
+    };
+  }
+
+  const value = values[valueId];
+  if (value.type !== "impulse") {
+    return {
+      emitSignal: () => NULL_SET_VALUE,
+      error: `Value ${valueId} in Interface ${interfaceHandle.interfaceDef.interfaceId} has wrong type: ${value.type} ('impulse' was expected)`,
+    };
+  }
+
   return {
-    emitSignal: () => NULL_SET_VALUE,
-    error: `Invalid Interface ${interfaceHandle.interfaceDef.interfaceId}`,
+    emitSignal,
+    error: undefined,
   };
-  // }
-
-  // if (iface.values[valueId] === undefined) {
-  //   return {
-  //     emitSignal: () => NULL_SET_VALUE,
-  //     error: `Value ${valueId} does not exist in Interface ${interfaceId}`,
-  //   };
-  // }
-
-  // return {
-  //   emitSignal,
-  //   error: undefined,
-  // };
 }
