@@ -18,6 +18,7 @@ const CurveNode: FunctionComponent<NodeHeaderProps<{}, CurveNodeSettings, any>> 
   const updateNode = useFileStore((s) => s.updateNode);
   const editor = useRef<SVGSVGElement | null>(null);
   // const value = usePreviewStore(s => s.outputHandlePreviews[id][""])
+  // TODO Reimplement some way to view the current progress of the curvenode
   const value = 0.0; //TODO Value
   const points = data.settings.points;
 
