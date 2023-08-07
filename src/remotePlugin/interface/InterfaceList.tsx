@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { InterfaceDef, useInterfaceFileStore } from "./interfaceStores";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { Button } from "../../components/input/Button";
@@ -80,11 +80,19 @@ export type InterfaceHandle<TValueStore> = {
 
 type InterfaceListProps = {};
 export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
-  const localInterfaces = useInterfaceFileStore((s) =>
-    Object.values(s.interfaces).map(
+  const localInterfaces = useInterfaceFileStore(
+    (s) =>
+      Object.values(s.interfaces).map((it) => ({
+        interfaceDef: it,
+      })),
+    _.isEqual
+  );
+
+  const localInterfaceHandles = useMemo(() => {
+    return localInterfaces.map(
       (it) =>
         ({
-          interfaceDef: it,
+          interfaceDef: it.interfaceDef,
           brokerType: "local",
           valueStoreHandle: {
             getState: () => useIOValueStore.getState(),
@@ -100,81 +108,80 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
             usePublishStateStore.getState().state.emitSignal(valueId, data);
           },
         } satisfies InterfaceHandle<IOValueStore>)
-    )
-  );
-  const remoteInterfaces = useRemoteStateStore((s) =>
-    Object.values(s.remotes)
-      .flatMap((remote) => {
-        if (remote.state.state === "connected") {
-          return Object.values(remote.state.interfaces).map(
-            (it) =>
-              ({
-                interfaceDef: it,
-                brokerType: "remote",
-                valueStoreHandle: {
-                  getState: () => useRemoteStateStore.getState(),
-                  subscribe: (listener) => useRemoteStateStore.subscribe(listener),
-                  selectData: (store) => {
-                    const r = store.remotes[remote.definition.remoteConnectionId];
-                    if (r.state.state === "connected") {
-                      return r.state.values;
-                    } else {
-                      return null;
-                    }
-                  },
-                },
-                updateValue: (valueId, value) => {
-                  // console.log("Remote Update Value: ", valueId, value);
-                  const r = useRemoteStateStore.getState().remotes[remote.definition.remoteConnectionId];
-                  if (r.state.state === "connected") {
-                    sendMessage(r.state.socket, {
-                      ValueChanged: {
-                        endpoint: valueId,
-                        value: value,
-                      },
-                    });
-                  }
-                },
-                emitSignal: (valueId, data) => {
-                  console.log("Remote Emit Signal: ", valueId, data);
-                  const r = useRemoteStateStore.getState().remotes[remote.definition.remoteConnectionId];
-                  if (r.state.state === "connected") {
-                    sendMessage(r.state.socket, {
-                      EmitSignal: {
-                        endpoint: valueId,
-                        value: data ?? null,
-                      },
-                    });
-                  }
-                },
-              } satisfies InterfaceHandle<RemoteStateStore>)
-          );
-        } else {
-          return null;
-        }
-      })
-      .filter(notNull)
+    );
+  }, [localInterfaces]);
+
+  const remoteInterfaces = useRemoteStateStore(
+    (s) =>
+      Object.values(s.remotes)
+        .flatMap((remote) => {
+          if (remote.state.state === "connected") {
+            return Object.values(remote.state.interfaces).map((it) => ({
+              interfaceDef: it,
+              remoteId: remote.definition.remoteConnectionId,
+            }));
+          } else {
+            return null;
+          }
+        })
+        .filter(notNull),
+    _.isEqual
   );
 
-  // const interfaces = useInterfaceDisplayStateStore(
-  //   (s) =>
-  //     Object.entries(s.interfaces).map(([interfaceId, iface]) => ({
-  //       interfaceId,
-  //       brokerType: iface.brokerType,
-  //     })),
-  //   _.isEqual
-  // );
-
-  // console.log(interfaces);
+  const remoteInterfaceHandles = useMemo(() => {
+    return remoteInterfaces.map(
+      (it) =>
+        ({
+          interfaceDef: it.interfaceDef,
+          brokerType: "remote",
+          valueStoreHandle: {
+            getState: () => useRemoteStateStore.getState(),
+            subscribe: (listener) => useRemoteStateStore.subscribe(listener),
+            selectData: (store) => {
+              const r = store.remotes[it.remoteId];
+              if (r.state.state === "connected") {
+                return r.state.values;
+              } else {
+                return null;
+              }
+            },
+          },
+          updateValue: (valueId, value) => {
+            // console.log("Remote Update Value: ", valueId, value);
+            const r = useRemoteStateStore.getState().remotes[it.remoteId];
+            if (r.state.state === "connected") {
+              sendMessage(r.state.socket, {
+                ValueChanged: {
+                  endpoint: valueId,
+                  value: value,
+                },
+              });
+            }
+          },
+          emitSignal: (valueId, data) => {
+            console.log("Remote Emit Signal: ", valueId, data);
+            const r = useRemoteStateStore.getState().remotes[it.remoteId];
+            if (r.state.state === "connected") {
+              sendMessage(r.state.socket, {
+                EmitSignal: {
+                  endpoint: valueId,
+                  value: data ?? null,
+                },
+              });
+            }
+          },
+        } satisfies InterfaceHandle<RemoteStateStore>)
+    );
+  }, [remoteInterfaces]);
 
   return (
     <ul>
-      {localInterfaces.map((handle) => (
+      {localInterfaceHandles.map((handle) => (
         <li key={handle.interfaceDef.interfaceId} className="my-2">
           <InterfaceListEntry interfaceHandle={handle}></InterfaceListEntry>
         </li>
       ))}
-      {remoteInterfaces.map((handle) => (
+      {remoteInterfaceHandles.map((handle) => (
         <li key={handle.interfaceDef.interfaceId} className="my-2">
           <InterfaceListEntry interfaceHandle={handle}></InterfaceListEntry>
         </li>
