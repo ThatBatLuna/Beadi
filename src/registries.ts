@@ -24,19 +24,16 @@ import { delayNodeDef } from "./nodes/DelayNode";
 import { mathNodeDef } from "./nodes/MathNode";
 import { constantValueNodeDef } from "./nodes/ConstantValueNode";
 import { curveNodeDef } from "./nodes/CurveNode";
+import { hysteresisNodeDef } from "./nodes/HysteresisNode";
 
 const nodeDefList: AnyNodeDef[] = [
-  // displayNodeDef,
   constantValueNodeDef as any,
   mathNodeDef as any,
-  // buttplugNodeDef,
-  // mixNodeDef,
-  // hysteresisNodeDef,
+  hysteresisNodeDef as any,
   memoryNodeDef as any,
   randomNodeDef as any,
   timerNodeDef as any,
   buttonNodeDef as any,
-  // sliderNodeDef,
   toggleNodeDef as any,
   inputAdapterNode as any,
   outputAdapterNode as any,
@@ -45,8 +42,6 @@ const nodeDefList: AnyNodeDef[] = [
   curveNodeDef as any,
   delayNodeDef as any,
   // commentNodeDef,
-  // sensorNodeDef,
-  // mediaFurryNodeDef,
   // edgeDetectorNodeDef,
 ];
 
