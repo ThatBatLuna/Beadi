@@ -76,7 +76,6 @@ export const positiveWaveNodeDef = nodeDef<PositiveWaveNodeSettings>()({
       };
     },
     executor: ({ amplitude, frequency, phase: phaseShift }, persistent, { positive }) => {
-      console.log(positive);
       const seconds = Date.now() / 1000;
       const committedFreq = persistent.frequency;
       let offset = persistent.offset;
@@ -95,8 +94,6 @@ export const positiveWaveNodeDef = nodeDef<PositiveWaveNodeSettings>()({
 
         persistent.offset = newOffset;
         persistent.frequency = frequency;
-        // commit("offset", newOffset);
-        // commit("frequency", frequency);
         offset = newOffset;
       }
 

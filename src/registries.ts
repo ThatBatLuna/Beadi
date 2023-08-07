@@ -18,6 +18,7 @@ import { mathNodeDef } from "./nodes/MathNode";
 import { constantValueNodeDef } from "./nodes/ConstantValueNode";
 import { curveNodeDef } from "./nodes/CurveNode";
 import { hysteresisNodeDef } from "./nodes/HysteresisNode";
+import { commentNodeDef } from "./nodes/CommentNode";
 
 const nodeDefList: AnyNodeDef[] = [
   constantValueNodeDef as any,
@@ -33,7 +34,7 @@ const nodeDefList: AnyNodeDef[] = [
   positiveWaveNodeDef as any,
   curveNodeDef as any,
   delayNodeDef as any,
-  // commentNodeDef,
+  commentNodeDef as any,
   // edgeDetectorNodeDef,
 ];
 
