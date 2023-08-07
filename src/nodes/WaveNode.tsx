@@ -1,23 +1,34 @@
 import { FunctionComponent } from "react";
 import { NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
-import { useInputHandleData } from "../engine/store";
+import { useFileStore, useInputHandleData } from "../engine/store";
 import { categories } from "./category";
 import _ from "lodash";
 
-const PositiveWaveNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
-  const [positive, setPositive] = useInputHandleData<boolean>(id, "positive");
+type PositiveWaveNodeSettings = {
+  positiveOnly: boolean;
+};
+
+const PositiveWaveNode: FunctionComponent<NodeHeaderProps<{}, PositiveWaveNodeSettings, any>> = ({ id, data }) => {
+  // const [positive, setPositive] = useInputHandleData<boolean>(id, "positive");
+  const updateNode = useFileStore((s) => s.updateNode);
+
+  const setPositive = (p: boolean) => {
+    updateNode(id, (r) => {
+      (r.data.settings as PositiveWaveNodeSettings).positiveOnly = p;
+    });
+  };
 
   return (
     <div className="px-2">
       <label>
-        <input type="checkbox" checked={positive} onChange={(e) => setPositive(e.target.checked)} />
+        <input type="checkbox" checked={data.settings.positiveOnly ?? true} onChange={(e) => setPositive(e.target.checked)} />
         <span className="pl-2">Positive Only</span>
       </label>
     </div>
   );
 };
 
-export const positiveWaveNodeDef = nodeDef()({
+export const positiveWaveNodeDef = nodeDef<PositiveWaveNodeSettings>()({
   label: "Wave Generator",
   category: categories["generators"],
   type: "wave",
@@ -30,13 +41,6 @@ export const positiveWaveNodeDef = nodeDef()({
     },
   },
   inputs: {
-    positive: {
-      id: "positive",
-      label: "Positive",
-      type: "boolean",
-      default: true,
-      hidden: true,
-    },
     amplitude: {
       id: "amplitude",
       label: "Height",
@@ -66,7 +70,13 @@ export const positiveWaveNodeDef = nodeDef()({
       frequency: 0.0,
       offset: 0.0,
     },
-    executor: ({ positive, amplitude, frequency, phase: phaseShift }, persistent) => {
+    inputDriver: (context) => {
+      return {
+        positive: context.settings.positiveOnly ?? true,
+      };
+    },
+    executor: ({ amplitude, frequency, phase: phaseShift }, persistent, { positive }) => {
+      console.log(positive);
       const seconds = Date.now() / 1000;
       const committedFreq = persistent.frequency;
       let offset = persistent.offset;
@@ -103,7 +113,7 @@ export const positiveWaveNodeDef = nodeDef()({
       } else {
         return {
           outputs: {
-            value: sine / 2.0 + amplitude / 2.0,
+            value: sine,
           },
           driverOutputs: {},
           persistentData: persistent,
