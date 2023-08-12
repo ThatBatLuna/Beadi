@@ -2,10 +2,9 @@ import _ from "lodash";
 import { Model } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
-import { NodeContext, getNodeInputs, getNodeOutputs } from "./node";
-import { nodeDefs } from "../registries";
+import { NodeContext } from "./node";
 import { usePreviewStore } from "./preview";
-import { runHooks } from "../plugin";
+import { BeadiContext } from "../context";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -16,12 +15,12 @@ const timestep = 1000 / 60;
 
 let timeout: number | null = null;
 
-function runEngineLoop(model: Model) {
+function runEngineLoop(model: Model, beadi: BeadiContext) {
   // let last = Date.now();
 
   const persistentData: NodePersistData = Object.assign(
     {},
-    ...model.executionPlan.map((it) => ({ [it.nodeId]: nodeDefs[it.type].executor.initialPersistence }))
+    ...model.executionPlan.map((it) => ({ [it.nodeId]: beadi.nodeDefs[it.type].executor.initialPersistence }))
   );
 
   function update() {
@@ -32,7 +31,7 @@ function runEngineLoop(model: Model) {
       console.log("Signals: ", signals);
     }
     // tempPopSignalBuffer();
-    runHooks("postPrepareSignals");
+    beadi.runHooks("postPrepareSignals");
 
     // const delta = Date.now() - last;
     // last = Date.now();
@@ -42,7 +41,7 @@ function runEngineLoop(model: Model) {
     //Exeucte all independent outputs before the executionPlan commences
 
     for (const step of model.preprocessIndependent) {
-      const nodeType = nodeDefs[step.type];
+      const nodeType = beadi.nodeDefs[step.type];
       if (nodeType.executor.independentExecutor !== undefined) {
         const persistent = persistentData[step.nodeId];
         const outputs = nodeType.executor.independentExecutor(persistent);
@@ -56,10 +55,10 @@ function runEngineLoop(model: Model) {
         settings: step.settings,
       };
 
-      const nodeType = nodeDefs[step.type];
+      const nodeType = beadi.nodeDefs[step.type];
       // const inputs = step.dependencies.map((it) => (it.convert ? it.convert(data[it.id]) : data[it.id]));
       const inputs = _.mapValues(step.dependencies, (dependency, handleId) => {
-        if (getNodeInputs(step.type, step.settings)[handleId].type === "impulse") {
+        if (beadi.getNodeInputs(step.type, step.settings)[handleId].type === "impulse") {
           if (dependency !== null) {
             return signals[dependency.nodeId]?.[dependency.handleId] || [];
           } else {
@@ -76,11 +75,11 @@ function runEngineLoop(model: Model) {
       });
 
       const persistent = persistentData[step.nodeId];
-      const driverInputs = nodeType.executor.inputDriver?.(nodeContext);
+      const driverInputs = nodeType.executor.inputDriver?.(nodeContext, beadi);
       // const committedData =
       const outputs = nodeType.executor.executor(inputs, _.cloneDeep(persistent), driverInputs ?? {});
 
-      const nodeTypeOutputs = getNodeOutputs(step.type, step.settings);
+      const nodeTypeOutputs = beadi.getNodeOutputs(step.type, step.settings);
       for (const outputId in nodeTypeOutputs) {
         if (nodeTypeOutputs[outputId].type === "impulse") {
           for (let i = 0; i < (outputs.outputs[outputId] as number); i++) {
@@ -93,7 +92,7 @@ function runEngineLoop(model: Model) {
       //Merge new outputs into old outputs to preserve the independently evalutated outputs
       handleValues[step.nodeId] = _.merge({}, handleValues[step.nodeId], outputs.outputs);
       persistentData[step.nodeId] = outputs.persistentData;
-      nodeType.executor.outputDriver?.(outputs.driverOutputs, nodeContext);
+      nodeType.executor.outputDriver?.(outputs.driverOutputs, nodeContext, beadi);
     }
 
     usePreviewStore.setState({ outputHandlePreviews: handleValues });
@@ -103,12 +102,12 @@ function runEngineLoop(model: Model) {
   timeout = setTimeout(update, timestep) as any;
 }
 
-export function restartLoopWithModel(model: Model | null) {
+export function restartLoopWithModel(model: Model | null, beadi: BeadiContext) {
   if (timeout !== null) {
     console.log("Stopping old Engine Loop");
     clearTimeout(timeout);
   }
   if (model !== null) {
-    runEngineLoop(model);
+    runEngineLoop(model, beadi);
   }
 }

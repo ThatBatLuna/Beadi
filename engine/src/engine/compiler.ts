@@ -1,8 +1,7 @@
 import _ from "lodash";
 import create from "zustand";
-import { getNodeInputs, getNodeOutputs } from "./node";
-import { nodeDefs } from "../registries";
 import { getConversionFunction } from "./handles";
+import { BeadiContext } from "../context";
 
 export type RecipeDependency = {
   nodeId: string;
@@ -29,8 +28,8 @@ type EdgedNode = ModelNode & {
   outgoingEdges: ModelEdge[];
 };
 
-export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
-  const nodes = _.omitBy(rawNodes, (node) => !(node.type in nodeDefs));
+export function buildModel({ nodes: rawNodes, edges }: ModelSources, beadi: BeadiContext): Model {
+  const nodes = _.omitBy(rawNodes, (node) => !(node.type in beadi.nodeDefs));
 
   //Find all terminating handles
   console.log("Rebuilding Model");
@@ -52,7 +51,7 @@ export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
       console.error("Could not find node source node of edge", e.id, " (", e.source, " => ", e.target, ")");
       continue;
     }
-    const sourceNodeOutputs = getNodeOutputs(nodes[e.source].type, nodes[e.source].settings);
+    const sourceNodeOutputs = beadi.getNodeOutputs(nodes[e.source].type, nodes[e.source].settings);
     const sourceHandleDef = sourceNodeOutputs?.[e.sourceHandle];
     if (sourceHandleDef === undefined) {
       //If this edge invalid, log an error and ignore it
@@ -88,10 +87,10 @@ export function buildModel({ nodes: rawNodes, edges }: ModelSources): Model {
       type: node.type,
       nodeId: node.id,
       settings: node.settings,
-      dependencies: _.mapValues(getNodeInputs(node.type, node.settings), (inputDef, handleId) => {
+      dependencies: _.mapValues(beadi.getNodeInputs(node.type, node.settings), (inputDef, handleId) => {
         if (handleId in node.originalIncomingEdges) {
           const sourceNode = nodes[node.originalIncomingEdges[handleId].source];
-          const sourceNodeOutputs = getNodeOutputs(sourceNode.type, sourceNode.settings);
+          const sourceNodeOutputs = beadi.getNodeOutputs(sourceNode.type, sourceNode.settings);
           return {
             nodeId: node.originalIncomingEdges[handleId].source,
             handleId: node.originalIncomingEdges[handleId].sourceHandle,

@@ -1,9 +1,9 @@
 import { FunctionComponent } from "react";
 import { InputHandleDefs, NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
-import { inputAdapterDefs, outputAdapterDefs } from "../registries";
 import { useFileStore } from "../engine/store";
 import { Select } from "../components/input/Select";
+import { useBeadi } from "../context";
 
 export type OutputAdapterNodeSettings = {
   adapterId: string | null;
@@ -11,10 +11,11 @@ export type OutputAdapterNodeSettings = {
 };
 
 const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, OutputAdapterNodeSettings, any>> = ({ id, data }) => {
+  const beadi = useBeadi();
   const updateNode = useFileStore((s) => s.updateNode);
   const adapterId = data.settings.adapterId;
   const adapterSettings = data.settings.adapterId == null ? undefined : data.settings.adapterSettings?.[data.settings.adapterId];
-  const AdapterSettingsEditor = adapterId != null ? outputAdapterDefs[adapterId]?.settingsEditor : undefined;
+  const AdapterSettingsEditor = adapterId != null ? beadi.outputAdapterDefs[adapterId]?.settingsEditor : undefined;
 
   const updateNodeSettings = (s: any) => {
     if (adapterId !== null) {
@@ -29,8 +30,8 @@ const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, OutputAdapt
   return (
     <div className="w-full p-2">
       <Select
-        options={Object.values(outputAdapterDefs)}
-        selected={adapterId == null ? null : outputAdapterDefs[adapterId]}
+        options={Object.values(beadi.outputAdapterDefs)}
+        selected={adapterId == null ? null : beadi.outputAdapterDefs[adapterId]}
         onSelect={(def) => updateNode(id, (draft) => ((draft.data.settings as OutputAdapterNodeSettings)["adapterId"] = def?.id ?? null))}
         renderOption={(s) => s.label}
       ></Select>
@@ -49,11 +50,11 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
   category: categories["inout"],
   type: OUTPUT_ADAPTER_NODE_ID,
   header: OutputAdapterNodeHeader,
-  inputs: (s) => {
+  inputs: (s, beadi) => {
     if (s.adapterId === null) {
       return {} as InputHandleDefs;
     }
-    const outputAdatperDef = outputAdapterDefs[s.adapterId];
+    const outputAdatperDef = beadi.outputAdapterDefs[s.adapterId];
     if (outputAdatperDef === undefined) {
       return {} as InputHandleDefs;
     }
@@ -72,11 +73,11 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
   outputs: {},
   executor: {
     inputDriver: undefined,
-    outputDriver: ({ value }, context) => {
+    outputDriver: ({ value }, context, beadi) => {
       if (context.settings.adapterId === null) {
         return {};
       }
-      const adapter = outputAdapterDefs[context.settings.adapterId];
+      const adapter = beadi.outputAdapterDefs[context.settings.adapterId];
       if (context.settings.adapterId === undefined) {
         return {};
       }

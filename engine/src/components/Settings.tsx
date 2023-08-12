@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { FunctionComponent, ReactNode } from "react";
 import { FileSettings } from "./settings/FileSettings";
-import { settingsTabs } from "../registries";
 import { MdChevronRight, MdInsertDriveFile } from "react-icons/md";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useBeadi } from "../context";
 
 export type Tab = {
   id: string;
@@ -20,13 +20,14 @@ export const fileTab: Tab = {
 };
 
 export const Settings: FunctionComponent<{}> = () => {
+  const beadi = useBeadi();
   const isRoot = useLocation();
   const expanded = isRoot.pathname !== "/";
 
   return (
     <div className="flex flex-row shadow-sm bg-primary-1100">
       <ul className="flex flex-col gap-1 text-white">
-        {Object.entries(settingsTabs).map(([key, value]) => (
+        {Object.entries(beadi.settingsTabs).map(([key, value]) => (
           <NavLink
             key={key}
             to={value.id}

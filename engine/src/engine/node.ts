@@ -2,8 +2,7 @@ import { ComponentType } from "react";
 import { NodeProps } from "reactflow";
 import { ImpulseEmissions } from "./signal";
 import { BeadiNodeData } from "./store";
-import { UnknownBeadiNode } from "./store";
-import { nodeDefs } from "../registries";
+import { BeadiContext } from "../context";
 
 export type Category = {
   label: string;
@@ -89,8 +88,12 @@ export type NodeContext<TSettings> = {
 export type DriverProps = {
   nodePersistence: Record<string, any>;
 };
-export type InputDriver<TDriverInputs, TSettings> = (context: NodeContext<TSettings>) => TDriverInputs;
-export type OutputDriver<TDriverOutputs, TSettings> = (outputs: TDriverOutputs, context: NodeContext<TSettings>) => void;
+export type InputDriver<TDriverInputs, TSettings> = (context: NodeContext<TSettings>, beadi: BeadiContext) => TDriverInputs;
+export type OutputDriver<TDriverOutputs, TSettings> = (
+  outputs: TDriverOutputs,
+  context: NodeContext<TSettings>,
+  beadi: BeadiContext
+) => void;
 
 export type InputTypeOf<THandleDef extends HandleDef> = TypeOfHandleType<THandleDef["type"]>;
 export type OutputTypeOf<THandleDef extends HandleDef> = THandleDef extends { type: "impulse" } ? number : InputTypeOf<THandleDef>;
@@ -181,25 +184,7 @@ export type NodeDef<
   header?: ComponentType<THeaderProps>;
   /** Overrides the how the entire node is rendered. Default to the node-shell */
   nodeComponent?: ComponentType<NodeProps>;
-  inputs: TInputHandleDefs | ((settins: TSettings) => TInputHandleDefs);
-  outputs: TOutputHandleDefs | ((settings: TSettings) => TOutputHandleDefs);
+  inputs: TInputHandleDefs | ((settings: TSettings, beadi: BeadiContext) => TInputHandleDefs);
+  outputs: TOutputHandleDefs | ((settings: TSettings, beadi: BeadiContext) => TOutputHandleDefs);
   executor: NodeExecutorDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>;
 };
-
-export function getNodeOutputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): OutputHandleDefs {
-  const outputs = nodeDefs[nodeType]?.outputs;
-  if (typeof outputs === "function") {
-    return outputs(settings);
-  } else {
-    return outputs;
-  }
-}
-
-export function getNodeInputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): InputHandleDefs {
-  const inputs = nodeDefs[nodeType]?.inputs;
-  if (typeof inputs === "function") {
-    return inputs(settings);
-  } else {
-    return inputs;
-  }
-}

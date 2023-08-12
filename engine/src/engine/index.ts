@@ -1,13 +1,10 @@
-import { Node, Edge } from "reactflow";
-import { nodeDefs } from "../registries";
-import { getConversionFunction } from "./handles";
-import { NodeExecutor } from "./node";
 import { useFileStore } from "./store";
 import _ from "lodash";
 import { ModelSources, buildModel, useModelState } from "./compiler";
 import { restartLoopWithModel } from "./runner";
+import { BeadiContext } from "../context";
 
-export function watchForChanges() {
+export function watchForChanges(beadi: BeadiContext) {
   useFileStore.subscribe((store) => {
     const newNodes = _.mapValues(store.data.nodes, (it) => ({
       id: it.id,
@@ -31,13 +28,13 @@ export function watchForChanges() {
     if (!_.isEqual(newState, useModelState.getState().sources)) {
       useModelState.setState({
         sources: newState,
-        model: buildModel(newState),
+        model: buildModel(newState, beadi),
       });
     }
   });
 
   useModelState.subscribe((state) => {
-    restartLoopWithModel(state.model);
+    restartLoopWithModel(state.model, beadi);
   });
 }
 

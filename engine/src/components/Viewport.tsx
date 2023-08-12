@@ -18,8 +18,8 @@ import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
-import { nodeDefs } from "../registries";
-import { InputHandleDef, OutputHandleDef, getNodeInputs, getNodeOutputs } from "../engine/node";
+import { InputHandleDef, OutputHandleDef } from "../engine/node";
+import { useBeadi } from "../context";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -68,11 +68,6 @@ const ViewportDropTarget: FunctionComponent<ViewportDropTargetDrop> = ({ childre
   );
 };
 
-const nodeTypes: NodeTypes = {
-  ..._.mapValues(nodeDefs, (it) => makeNodeRenderer(it)),
-  welcome: WelcomeNode,
-};
-
 type NodeDropdownData = {
   source: string;
   sourceHandle: string;
@@ -84,21 +79,23 @@ type NewNodeDropDownProps = {
   onClose: () => void;
 };
 const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClose }) => {
+  const beadi = useBeadi();
+
   const { addNode, addEdge, nodes } = useFileStore((s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.data.nodes }), shallow);
 
   const handles = useMemo(() => {
     const sourceNodeType = nodes[data.source].type;
     if (sourceNodeType !== undefined) {
       let fromOutput = true;
-      let handleType: OutputHandleDef | InputHandleDef = getNodeOutputs(sourceNodeType, nodes[data.source].data.settings)[
+      let handleType: OutputHandleDef | InputHandleDef = beadi.getNodeOutputs(sourceNodeType, nodes[data.source].data.settings)[
         data.sourceHandle
       ];
       if (handleType === undefined) {
         fromOutput = false;
-        handleType = getNodeInputs(nodes[data.source].type, nodes[data.source].data.settings)[data.sourceHandle];
+        handleType = beadi.getNodeInputs(nodes[data.source].type, nodes[data.source].data.settings)[data.sourceHandle];
       }
 
-      return Object.values(nodeDefs)
+      return Object.values(beadi.nodeDefs)
         .flatMap((def) =>
           Object.entries(
             fromOutput ? (typeof def.inputs !== "function" ? def.inputs : []) : typeof def.outputs !== "function" ? def.outputs : []
@@ -117,11 +114,11 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
     } else {
       return [];
     }
-  }, [data.source, data.sourceHandle, nodes]);
+  }, [data.source, data.sourceHandle, nodes, beadi]);
 
   const complete = useCallback(
     (type: string, handle: string, toOutput: boolean) => {
-      const newId = addNode(type, data.pos);
+      const newId = addNode(type, data.pos, beadi);
 
       const fromTo = toOutput
         ? {
@@ -151,7 +148,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
         targetHandle: fromTo.target.handle,
       });
     },
-    [addNode, addEdge, data]
+    [addNode, addEdge, data, beadi]
   );
 
   return (
@@ -193,6 +190,14 @@ const selector = (state: FileStore) => ({
 const Viewport: FunctionComponent<{
   wrapper: RefObject<HTMLDivElement | null>;
 }> = ({ wrapper }) => {
+  const beadi = useBeadi();
+  const nodeTypes: NodeTypes = useMemo(
+    () => ({
+      ..._.mapValues(beadi.nodeDefs, (it) => makeNodeRenderer(it)),
+      welcome: WelcomeNode,
+    }),
+    [beadi.nodeDefs]
+  );
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, _.isEqual);
   const { project } = useReactFlow();
 
@@ -266,11 +271,12 @@ const Viewport: FunctionComponent<{
 const ViewportWrapper: FunctionComponent<{}> = (props) => {
   const addNode = useFileStore((s) => s.addNode, shallow);
   const wrapper = useRef<HTMLDivElement | null>(null);
+  const beadi = useBeadi();
 
   return (
     <div className="relative grow" ref={wrapper}>
       <ReactFlowProvider>
-        <ViewportDropTarget onNodeDrop={(pos, type) => addNode(type, pos)} wrapper={wrapper}>
+        <ViewportDropTarget onNodeDrop={(pos, type) => addNode(type, pos, beadi)} wrapper={wrapper}>
           <Viewport wrapper={wrapper}></Viewport>
         </ViewportDropTarget>
       </ReactFlowProvider>

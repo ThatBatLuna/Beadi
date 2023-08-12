@@ -3,11 +3,12 @@ import { NodeProps, useEdges } from "reactflow";
 import NumberInput from "../input/NumberInput";
 import NodeHandleLine from "./NodeHandleLine";
 import NodeShell from "./NodeShell";
-import { AnyNodeDef, InputHandleDef, NodeDef, getNodeInputs, getNodeOutputs } from "../../engine/node";
+import { AnyNodeDef, InputHandleDef, NodeDef } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 import { UnknownBeadiNodeData, useFileStore } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
 import { EditableNodeTitle } from "./EditableNodeTitle";
+import { useBeadi } from "../../context";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
@@ -36,15 +37,16 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
 
   return ({ id, data }) => {
     const edges = useEdges();
+    const beadi = useBeadi();
     const errors = useModelState((s) => s.model?.errors?.[id]);
 
-    const nodeInputs = getNodeInputs(def.type, data.settings);
+    const nodeInputs = beadi.getNodeInputs(def.type, data.settings);
     const inputs = Object.entries(nodeInputs).filter(([inputId, it]) => it.hidden !== true);
     const connections = useMemo(() => {
       return inputs.map(([inputId, input]) => edges.findIndex((it) => it.target === id && it.targetHandle === inputId) >= 0);
     }, [edges, id, inputs]);
 
-    const nodeOutputs = getNodeOutputs(def.type, data.settings);
+    const nodeOutputs = beadi.getNodeOutputs(def.type, data.settings);
 
     const updateNode = useFileStore((s) => s.updateNode);
     const setNodeName = (s: string) => {

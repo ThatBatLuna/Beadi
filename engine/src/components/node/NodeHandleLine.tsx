@@ -4,10 +4,10 @@ import clsx from "clsx";
 import { useFileStore } from "../../engine/store";
 import { handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
-import { nodeDefs } from "../../registries";
 import { nodeHandleValuePreviews } from "./NodeHandleValuePreview";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
-import { HandleType, getNodeInputs, getNodeOutputs } from "../../engine/node";
+import { HandleType } from "../../engine/node";
+import { useBeadi } from "../../context";
 
 type NodeHandleLineProps = {
   input?: ReactNode;
@@ -21,26 +21,35 @@ type NodeHandleLineProps = {
 
 const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, type, label, handleId, connected, nodeId }) => {
   const [open, setOpen] = useState(false);
+  const beadi = useBeadi();
 
-  const isValidConnection = useCallback((connection: Connection) => {
-    if (connection.source === null || connection.target === null || connection.sourceHandle === null || connection.targetHandle === null) {
+  const isValidConnection = useCallback(
+    (connection: Connection) => {
+      if (
+        connection.source === null ||
+        connection.target === null ||
+        connection.sourceHandle === null ||
+        connection.targetHandle === null
+      ) {
+        return false;
+      }
+      const nodes = useFileStore.getState().data.nodes;
+      const targetType = nodes[connection.target].type;
+      const sourceType = nodes[connection.source].type;
+      console.log(connection, targetType, sourceType, nodes);
+      if (targetType !== undefined && sourceType !== undefined) {
+        return (
+          connection.source !== connection.target &&
+          handlesCompatible(
+            beadi.getNodeOutputs(nodes[connection.source].type, nodes[connection.source].data.settings)[connection.sourceHandle].type,
+            beadi.getNodeInputs(nodes[connection.target].type, nodes[connection.target].data.settings)[connection.targetHandle].type
+          )
+        );
+      }
       return false;
-    }
-    const nodes = useFileStore.getState().data.nodes;
-    const targetType = nodes[connection.target].type;
-    const sourceType = nodes[connection.source].type;
-    console.log(connection, targetType, sourceType, nodes);
-    if (targetType !== undefined && sourceType !== undefined) {
-      return (
-        connection.source !== connection.target &&
-        handlesCompatible(
-          getNodeOutputs(nodes[connection.source].type, nodes[connection.source].data.settings)[connection.sourceHandle].type,
-          getNodeInputs(nodes[connection.target].type, nodes[connection.target].data.settings)[connection.targetHandle].type
-        )
-      );
-    }
-    return false;
-  }, []);
+    },
+    [beadi]
+  );
 
   const NodeHandleValuePreview = nodeHandleValuePreviews[type];
 

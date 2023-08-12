@@ -1,12 +1,14 @@
 import _ from "lodash";
 import { FunctionComponent, useMemo } from "react";
-import { nodeDefs } from "../registries";
 import { Entry } from "./drawer/Entry";
 import Logo from "./Logo";
+import { useBeadi } from "../context";
 
 const Drawer: FunctionComponent<{}> = (a) => {
+  const beadi = useBeadi();
+
   const nodes = useMemo(() => {
-    return _.chain(Object.values(nodeDefs))
+    return _.chain(Object.values(beadi.nodeDefs))
       .groupBy((it) => it.category.label)
       .map((value, key) => ({
         name: key,
@@ -14,7 +16,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
         items: value,
       }))
       .value();
-  }, []);
+  }, [beadi.nodeDefs]);
 
   return (
     <div className="bg-primary-900 w-60 overflow-y-scroll min-h-full flex flex-col">

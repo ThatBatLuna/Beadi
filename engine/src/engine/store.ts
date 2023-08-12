@@ -3,10 +3,9 @@ import { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition, applyE
 import create from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { nodeDefs } from "../registries";
 import _ from "lodash";
 import { useCallback } from "react";
-import { getNodeInputs } from "./node";
+import { BeadiContext } from "../context";
 
 export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, unknown>>;
 export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = Node<
@@ -45,7 +44,7 @@ export type FileStore = {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addEdge: (edge: Omit<BeadiEdge, "id">) => string;
-  addNode: (type: string, pos: XYPosition) => string;
+  addNode: (type: string, pos: XYPosition, tempBeadi: BeadiContext) => string;
 
   exportJson: () => any;
   importJson: (data: any) => void;
@@ -60,9 +59,10 @@ export const useFileStore = create<FileStore>()(
           edges: {} as BeadiFileData["edges"],
         },
 
-        addNode: (type, pos) => {
+        addNode: (type, pos, tempBeadi: BeadiContext) => {
+          //TODO tempBeadi should not be in here, rather this store should be somewhere where it has access to getNodeInputs
           const id = "" + Date.now();
-          const nodeDef = nodeDefs[type];
+          const nodeDef = tempBeadi.nodeDefs[type];
           set((draft) => {
             draft.data.nodes[id] = {
               id: id,
@@ -70,7 +70,7 @@ export const useFileStore = create<FileStore>()(
               type: type,
               data: {
                 displaySettings: {},
-                handles: _.mapValues(getNodeInputs(nodeDef.type, {}), (handle) => handle.default),
+                handles: _.mapValues(tempBeadi.getNodeInputs(nodeDef.type, {}), (handle) => handle.default),
                 settings: {},
               },
             };

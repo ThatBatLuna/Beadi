@@ -6,8 +6,8 @@ import App from "./App";
 import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
-import { settingsTabs } from "./registries";
 import { Plugin } from "./plugin";
+import { BeadiContext, BeadiContextProvider } from "./context";
 
 export type BeadiOptions = {
   rootElement: string;
@@ -16,12 +16,14 @@ export type BeadiOptions = {
 export function startBeadi(options: BeadiOptions) {
   enableAllPlugins();
 
+  const context = new BeadiContext({ plugins: options.plugins });
+
   const router = createBrowserRouter([
     {
       path: "/",
       element: <App />,
       children: [
-        ...Object.values(settingsTabs).map((it) => ({
+        ...Object.values(context.settingsTabs).map((it) => ({
           path: it.id,
           element: it.tab,
         })),
@@ -32,9 +34,11 @@ export function startBeadi(options: BeadiOptions) {
   const root = ReactDOM.createRoot(document.getElementById(options.rootElement) as HTMLElement);
   root.render(
     <React.StrictMode>
-      <RouterProvider router={router}></RouterProvider>
+      <BeadiContextProvider context={context}>
+        <RouterProvider router={router}></RouterProvider>
+      </BeadiContextProvider>
     </React.StrictMode>
   );
 
-  watchForChanges();
+  watchForChanges(context);
 }
