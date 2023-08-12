@@ -171,3 +171,5 @@ export function tempSyncIOValueStore() {
 
   func(useFileStore.getState());
 }
+
+tempSyncIOValueStore();

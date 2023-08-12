@@ -1,0 +1,39 @@
+{
+  "name": "@beadi/plugin-remote",
+  "version": "0.0.3",
+  "private": true,
+  "dependencies": {
+    "immer": "^9.0.19",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "zustand": "^4.1.4"
+  },
+  "homepage": "https://beadi.onrender.com/",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "vite": "^4.4.9"
+  }
+}

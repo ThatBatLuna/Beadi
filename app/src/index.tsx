@@ -8,8 +8,8 @@ import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
 import { useFileStore } from "./engine/store";
-import { tempSyncIOValueStore } from "./remotePlugin/inputOutputStore";
 import { settingsTabs } from "./registries";
+import { finalizePlugins } from "./plugin";
 // import { setButtplugInstance } from "./adapters/store";
 //
 enableAllPlugins();
@@ -53,7 +53,6 @@ watchForChanges();
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-tempSyncIOValueStore();
 
 /* ===== Debug timeouts and intevals ==== */
 // const oldSetTimeout = window.setTimeout;

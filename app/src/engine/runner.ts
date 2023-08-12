@@ -5,7 +5,7 @@ import { useSignalBus } from "./signal";
 import { NodeContext, getNodeInputs, getNodeOutputs } from "./node";
 import { nodeDefs } from "../registries";
 import { usePreviewStore } from "./preview";
-import { tempPopSignalBuffer } from "../remotePlugin/inputOutputStore";
+import { runHooks } from "../plugin";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -31,7 +31,8 @@ function runEngineLoop(model: Model) {
     if (!_.isEmpty(signals)) {
       console.log("Signals: ", signals);
     }
-    tempPopSignalBuffer();
+    // tempPopSignalBuffer();
+    runHooks("postPrepareSignals");
 
     // const delta = Date.now() - last;
     // last = Date.now();
