@@ -1,11 +1,13 @@
-import { enableAllPlugins } from "immer";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./index.css";
+import "reactflow/dist/style.css";
 import App from "./App";
+import { enableAllPlugins } from "immer";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
-import { Plugin } from "./plugin";
 import { settingsTabs } from "./registries";
+import { Plugin } from "./plugin";
 
 export type BeadiOptions = {
   rootElement: string;
