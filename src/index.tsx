@@ -54,3 +54,57 @@ watchForChanges();
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 tempSyncIOValueStore();
+
+/* ===== Debug timeouts and intevals ==== */
+// const oldSetTimeout = window.setTimeout;
+// const oldClearTimeout = window.clearTimeout;
+
+// const timeouts: Record<number, any> = {};
+
+// type TimeoutParams = Parameters<typeof window.setTimeout>;
+// (window.setTimeout as any) = (func: TimeoutParams[0], timeout: TimeoutParams[1]) => {
+//   let to = oldSetTimeout(() => {
+//     func();
+//     delete timeouts[to];
+//   }, timeout);
+//   const stack = new Error().stack;
+//   timeouts[to] = stack;
+//   const len = Object.keys(timeouts).length;
+//   console.log("Timeouts: ", len);
+//   if (len > 100) {
+//     console.log(timeouts);
+//     debugger;
+//   }
+
+//   // console.trace("Timeouts: ", timeouts.size);
+//   return to;
+// };
+// (window.clearTimeout as any) = (a: any) => {
+//   delete timeouts[a];
+//   return oldClearTimeout(a);
+// };
+
+// const oldSetInterval = window.setInterval;
+// const oldClearInterval = window.clearInterval;
+
+// const intervals: Record<number, any> = {};
+
+// type IntervalParams = Parameters<typeof window.setInterval>;
+// (window.setInterval as any) = (func: IntervalParams[0], interval: IntervalParams[1]) => {
+//   let to = oldSetInterval(func, interval);
+//   const stack = new Error().stack;
+//   intervals[to] = stack;
+//   const len = Object.keys(intervals).length;
+//   console.log("Intervals: ", len);
+//   if (len > 100) {
+//     console.log(intervals);
+//     debugger;
+//   }
+
+//   // console.trace("Intervals: ", intervals.size);
+//   return to;
+// };
+// (window.clearInterval as any) = (a: any) => {
+//   delete intervals[a];
+//   return oldClearInterval(a);
+// };

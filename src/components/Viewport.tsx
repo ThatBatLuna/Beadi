@@ -237,7 +237,7 @@ const Viewport: FunctionComponent<{
     [project, wrapper, connectingNode, setNodeDropdownData]
   );
 
-  console.log("Viewport rerendered: ", nodes);
+  // console.log("Viewport rerendered: ", nodes);
   return (
     <>
       <ReactFlow

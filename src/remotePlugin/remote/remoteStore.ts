@@ -194,7 +194,7 @@ function startSyncRemoteStateStore() {
   const syncRemoteStateStore = (state: RemoteStore) => {
     const oldRemotes = useRemoteStateStore.getState().remotes;
     const { missing, extra } = diffByKeys(oldRemotes, state.remotes, (a, b) => _.isEqual(a.definition, b));
-    console.log("syncRemoteStateStore: ", missing, extra);
+    // console.log("syncRemoteStateStore: ", missing, extra);
 
     for (const extraKey in extra) {
       console.log("Closing Remote: ", extraKey);
