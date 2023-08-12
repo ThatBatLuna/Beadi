@@ -1,0 +1,16 @@
+html,
+body,
+#root {
+  height: 100vh;
+  width: 100vw;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .markdown h1 {
+    @apply text-xl mt-2 mb-1;
+  }
+}
