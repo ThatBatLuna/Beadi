@@ -37,6 +37,7 @@
         # add things you want in your shell here
         buildInputs = with pkgs; [
           nodejs
+          nodePackages.pnpm
         ];
       };
     });

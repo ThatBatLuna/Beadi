@@ -24,7 +24,7 @@ const examples: Record<string, any> = {};
 function importAll(r: any) {
   r.keys().forEach((key: any) => (examples[key] = r(key)));
 }
-importAll((require as any).context("../../examples", false, /\.json$/));
+importAll((require as any).context("../../../examples", false, /\.json$/));
 
 export const ExampleList: FunctionComponent<{}> = () => {
   const overwriteStore = useFileStore((it) => it.overwrite);

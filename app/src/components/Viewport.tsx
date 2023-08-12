@@ -212,6 +212,11 @@ const Viewport: FunctionComponent<{
     (event) => {
       const targetIsPane = (event.target as any).classList.contains("react-flow__pane");
       if (targetIsPane) {
+        if (!("clientX" in event)) {
+          //TODO Handle if event is TouchEvent
+          console.warn("Touch Events aren't yet properly handled for onConnectEnd");
+          return;
+        }
         const rect = wrapper.current?.getBoundingClientRect();
 
         const pos = project({
