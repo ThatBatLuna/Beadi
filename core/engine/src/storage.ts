@@ -78,7 +78,6 @@ export function createStorageShard<T extends StorageShard>(shard: StorageShardDe
       const useHook: StorageShardHookFn<any> = (selector) => {
         const storage = useBeadi().getStorage();
         const shardDef = storage.shards[shard.name];
-        console.log(storage, shard);
         return useStore(shardDef.shard[key], selector as any);
       };
       (useHook as StorageShardHook<any>).subscribeWith = (beadi, subscriber) => {
