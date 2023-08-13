@@ -12,14 +12,12 @@ import ReactFlow, {
 } from "reactflow";
 import _ from "lodash";
 import { FileStore } from "../engine/store";
-import { makeNodeRenderer } from "./node/NodeRenderer";
 import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
-import { WelcomeNode } from "../nodes/WelcomeNode";
 import { InputHandleDef, OutputHandleDef } from "../engine/node";
 import { useBeadi } from "../context";
-import { useFileStore } from "../storage";
+import { useFileStore, useFileStoreEqualityFn } from "../storage";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -191,16 +189,8 @@ const Viewport: FunctionComponent<{
   wrapper: RefObject<HTMLDivElement | null>;
 }> = ({ wrapper }) => {
   const beadi = useBeadi();
-  const nodeTypes: NodeTypes = useMemo(
-    () => ({
-      ..._.mapValues(beadi.nodeDefs, (it) => makeNodeRenderer(it)),
-      welcome: WelcomeNode,
-    }),
-    [beadi.nodeDefs]
-  );
-  //TODO Implement analog to useStoreWithEqualityFn
-  // const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, _.isEqual);
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector);
+  const nodeTypes: NodeTypes = beadi.nodeRenderers;
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStoreEqualityFn(selector, _.isEqual);
   const { project } = useReactFlow();
 
   const connectingNode = useRef<OnConnectStartParams | null>(null);

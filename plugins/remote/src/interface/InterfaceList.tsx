@@ -10,7 +10,14 @@ import { IOValueState, IOValueStore } from "../inputOutputStore";
 import { sendMessage } from "../message";
 import { CollapsibleCard, TextInput, Button } from "@beadi/components";
 import { StoreHandle } from "@beadi/engine";
-import { useIOValueStore, useInterfaceFileStore, usePublishStateStore, useRemoteStateStore } from "../storage";
+import {
+  useIOValueStore,
+  useInterfaceFileStore,
+  useInterfaceFileStoreEqualityFn,
+  usePublishStateStore,
+  useRemoteStateStore,
+  useRemoteStateStoreEqualityFn,
+} from "../storage";
 
 type InterfaceListEntryProps = {
   interfaceHandle: InterfaceHandle<any>;
@@ -78,18 +85,12 @@ export type InterfaceHandle<TValueStore> = {
 
 type InterfaceListProps = {};
 export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
-  //TODO EqualityFn
-  // const localInterfaces = useInterfaceFileStore(
-  //   (s) =>
-  //     Object.values(s.interfaces).map((it) => ({
-  //       interfaceDef: it,
-  //     })),
-  //   _.isEqual
-  // );
-  const localInterfaces = useInterfaceFileStore((s) =>
-    Object.values(s.interfaces).map((it) => ({
-      interfaceDef: it,
-    }))
+  const localInterfaces = useInterfaceFileStoreEqualityFn(
+    (s) =>
+      Object.values(s.interfaces).map((it) => ({
+        interfaceDef: it,
+      })),
+    _.isEqual
   );
 
   const beadi = useBeadi();
@@ -117,36 +118,21 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
     );
   }, [localInterfaces, beadi]);
 
-  //TODO EqualityFn
-  // const remoteInterfaces = useRemoteStateStore(
-  //   (s) =>
-  //     Object.values(s.remotes)
-  //       .flatMap((remote) => {
-  //         if (remote.state.state === "connected") {
-  //           return Object.values(remote.state.interfaces).map((it) => ({
-  //             interfaceDef: it,
-  //             remoteId: remote.definition.remoteConnectionId,
-  //           }));
-  //         } else {
-  //           return null;
-  //         }
-  //       })
-  //       .filter(notNull),
-  //   _.isEqual
-  // );
-  const remoteInterfaces = useRemoteStateStore((s) =>
-    Object.values(s.remotes)
-      .flatMap((remote) => {
-        if (remote.state.state === "connected") {
-          return Object.values(remote.state.interfaces).map((it) => ({
-            interfaceDef: it,
-            remoteId: remote.definition.remoteConnectionId,
-          }));
-        } else {
-          return null;
-        }
-      })
-      .filter(notNull)
+  const remoteInterfaces = useRemoteStateStoreEqualityFn(
+    (s) =>
+      Object.values(s.remotes)
+        .flatMap((remote) => {
+          if (remote.state.state === "connected") {
+            return Object.values(remote.state.interfaces).map((it) => ({
+              interfaceDef: it,
+              remoteId: remote.definition.remoteConnectionId,
+            }));
+          } else {
+            return null;
+          }
+        })
+        .filter(notNull),
+    _.isEqual
   );
 
   const remoteInterfaceHandles = useMemo(() => {

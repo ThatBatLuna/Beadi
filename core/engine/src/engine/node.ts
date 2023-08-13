@@ -1,7 +1,7 @@
 import { ComponentType } from "react";
 import { NodeProps } from "reactflow";
 import { ImpulseEmissions } from "./signal";
-import { BeadiNodeData } from "./store";
+import { BeadiNodeData, UnknownBeadiNodeData } from "./store";
 import { BeadiContext } from "../context";
 
 export type Category = {
@@ -15,6 +15,7 @@ export interface HandleDef {
   type: HandleType;
 }
 
+export type UnknownBeadiNodeProps = NodeProps<UnknownBeadiNodeData>;
 export type TypeOfHandleType<THandleDef extends HandleType> = THandleDef extends "number"
   ? number
   : THandleDef extends "boolean"

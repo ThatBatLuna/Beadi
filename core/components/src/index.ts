@@ -20,3 +20,6 @@ export { Graph } from "./graph/Graph";
 export type { GraphProps } from "./graph/Graph";
 export { Typo } from "./typo/Typo";
 export type { TypoProps } from "./typo/Typo";
+
+export { NodeShell } from "./node/NodeShell";
+export type { NodeShellProps } from "./node/NodeShell";

@@ -1,4 +1,5 @@
-import { BeadiContext, StorageShardDefBuilder } from ".";
+import { ComponentType } from "react";
+import { BeadiContext, StorageShardDefBuilder, UnknownBeadiNodeProps } from ".";
 import { Tab } from "./components/Settings";
 import { AnyInputAdapterDef, AnyOutputAdapterDef } from "./engine/adapter";
 import { AnyNodeDef } from "./engine/node";
@@ -8,6 +9,7 @@ export type { Tab };
 export type Plugin<TShard extends StorageShard, TGlobals, TId extends string> = {
   id: TId;
   nodeDefs?: AnyNodeDef[];
+  extraNodeRenderers?: Record<string, ComponentType<UnknownBeadiNodeProps>>;
   inputAdapterDefs?: AnyInputAdapterDef[];
   outputAdapterDefs?: AnyOutputAdapterDef[];
   settingsTabs?: Tab[];

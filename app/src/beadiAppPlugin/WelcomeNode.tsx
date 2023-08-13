@@ -1,10 +1,7 @@
 import { FunctionComponent, useCallback } from "react";
-import { NodeProps } from "reactflow";
-import NodeShell from "../components/node/NodeShell";
-import { BeadiFileData } from "../engine/store";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { Button, Typo } from "@beadi/components";
-import { useFileStore } from "../storage";
+import { Button, Typo, NodeShell } from "@beadi/components";
+import { BeadiFileData, UnknownBeadiNodeProps, useFileStore } from "@beadi/engine";
 
 // import SimpleWaveExample from "EXAMPLES/SimpleNodes.json";
 
@@ -19,6 +16,7 @@ import { useFileStore } from "../storage";
 //   },
 // ];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const examples: Record<string, any> = {};
 
 //TODO Fix examples
@@ -27,7 +25,7 @@ const examples: Record<string, any> = {};
 // }
 // importAll((require as any).context("../../../examples", false, /\.json$/));
 
-export const ExampleList: FunctionComponent<{}> = () => {
+export const ExampleList: FunctionComponent = () => {
   const overwriteStore = useFileStore((it) => it.overwrite);
   const loadExample = useCallback(
     (data: BeadiFileData) => {
@@ -49,7 +47,7 @@ export const ExampleList: FunctionComponent<{}> = () => {
   );
 };
 
-export const WelcomeNodeContent: FunctionComponent<{}> = () => {
+export const WelcomeNodeContent: FunctionComponent = () => {
   //TODO Reintroduce Changelog
   // const changelog = BEADI_CHANGELOG;
   const changelog = "TODO CHANGELOG";
@@ -99,7 +97,7 @@ export const WelcomeNodeContent: FunctionComponent<{}> = () => {
   );
 };
 
-export const WelcomeNode: FunctionComponent<NodeProps> = () => {
+export const WelcomeNode: FunctionComponent<UnknownBeadiNodeProps> = () => {
   return (
     <NodeShell title="Welcome to Beadi" color="#ffffff" style={{ width: 600 }}>
       <WelcomeNodeContent></WelcomeNodeContent>

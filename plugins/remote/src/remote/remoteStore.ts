@@ -104,7 +104,6 @@ export function makeRemoteStateStore() {
 type Setter = (recipe: (draft: Draft<RemoteConnectionState>) => void | RemoteConnectionState) => void;
 function openRemoteConnection(connection: RemoteConnection, set: Setter, serverUrl: string): RemoteConnectionHandle {
   console.log("Opening Remote Socket ", connection.code);
-  //TODO Resolving environment variables should be done in the app and not the engine
   const socket = new WebSocket(`${serverUrl}/control/${connection.code}`);
 
   socket.addEventListener("open", (event) => {

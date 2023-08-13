@@ -18,11 +18,13 @@ import { curveNodeDef } from "./nodes/CurveNode";
 import { hysteresisNodeDef } from "./nodes/HysteresisNode";
 import { commentNodeDef } from "./nodes/CommentNode";
 import { edgeDetectorNodeDef } from "./nodes/EdgeDetector";
-import { FunctionComponent, ReactNode, createContext, useContext } from "react";
-import { UnknownBeadiNode } from "./engine/store";
+import { ComponentType, FunctionComponent, ReactNode, createContext, useContext } from "react";
+import { UnknownBeadiNode, UnknownBeadiNodeData } from "./engine/store";
 import { Storage, beadiStorageShard } from "./storage";
 import { notNull } from ".";
 import _ from "lodash";
+import { makeNodeRenderer } from "./components/node/NodeRenderer";
+import { NodeProps } from "reactflow";
 
 type BeadiContextProps = {
   plugins: AnyPlugin[];
@@ -31,6 +33,7 @@ type BeadiContextProps = {
 export type BeadiContextOf<TPlugin extends AnyPlugin> = BeadiContext<{ [Key in TPlugin["id"]]: TPlugin["globals"] }>;
 export class BeadiContext<TGlobals extends Record<string, any> = {}> {
   nodeDefs: Record<string, AnyNodeDef>;
+  nodeRenderers: Record<string, ComponentType<NodeProps<UnknownBeadiNodeData>>>;
   inputAdapterDefs: Record<string, AnyInputAdapterDef>;
   outputAdapterDefs: Record<string, AnyOutputAdapterDef>;
   settingsTabs: Record<string, Tab>;
@@ -55,9 +58,16 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
       delayNodeDef as any,
       commentNodeDef as any,
       edgeDetectorNodeDef as any,
+      ...props.plugins.flatMap((it) => it.nodeDefs ?? []),
     ];
 
     this.nodeDefs = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
+
+    this.nodeRenderers = Object.assign(
+      {},
+      _.mapValues(this.nodeDefs, (it) => makeNodeRenderer(it)),
+      ...props.plugins.map((it) => it.extraNodeRenderers)
+    );
 
     const inputAdapterDefList: AnyInputAdapterDef[] = [...props.plugins.flatMap((it) => it.inputAdapterDefs ?? [])];
 

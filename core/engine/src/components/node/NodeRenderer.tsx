@@ -1,13 +1,13 @@
 import { ComponentType, useMemo } from "react";
 import { NodeProps, useEdges } from "reactflow";
 import NodeHandleLine from "./NodeHandleLine";
-import NodeShell from "./NodeShell";
 import { AnyNodeDef, InputHandleDef } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 import { UnknownBeadiNodeData, useFileStore } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
 import { EditableNodeTitle } from "./EditableNodeTitle";
 import { useBeadi } from "../../context";
+import { NodeShell } from "@beadi/components";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;

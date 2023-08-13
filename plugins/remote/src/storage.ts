@@ -4,7 +4,21 @@ import { makePublishStateStore } from "./publish/publishStore";
 import { makeInterfaceFileStore } from "./interface/interfaceStores";
 import { makeRemoteStateStore, makeRemoteStore } from "./remote/remoteStore";
 
-const [shard, { useIOValueStore, usePublishStateStore, useInterfaceFileStore, useRemoteStore, useRemoteStateStore }] = createStorageShard({
+const [
+  shard,
+  {
+    useIOValueStore,
+    usePublishStateStore,
+    useInterfaceFileStore,
+    useRemoteStore,
+    useRemoteStateStore,
+    useIOValueStoreEqualityFn,
+    useInterfaceFileStoreEqualityFn,
+    usePublishStateStoreEqualityFn,
+    useRemoteStateStoreEqualityFn,
+    useRemoteStoreEqualityFn,
+  },
+] = createStorageShard({
   name: "remotePlugin",
   makeShards: {
     IOValueStore: () => makeIOValueStore(),
@@ -15,4 +29,16 @@ const [shard, { useIOValueStore, usePublishStateStore, useInterfaceFileStore, us
   },
 });
 
-export { shard, useIOValueStore, usePublishStateStore, useInterfaceFileStore, useRemoteStore, useRemoteStateStore };
+export {
+  shard,
+  useIOValueStore,
+  usePublishStateStore,
+  useInterfaceFileStore,
+  useRemoteStore,
+  useRemoteStateStore,
+  useIOValueStoreEqualityFn,
+  useInterfaceFileStoreEqualityFn,
+  usePublishStateStoreEqualityFn,
+  useRemoteStateStoreEqualityFn,
+  useRemoteStoreEqualityFn,
+};

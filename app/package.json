@@ -11,10 +11,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@beadi/components": "workspace:^",
     "@beadi/engine": "workspace:^",
     "@beadi/plugin-remote": "workspace:^",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-markdown": "=8.0.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

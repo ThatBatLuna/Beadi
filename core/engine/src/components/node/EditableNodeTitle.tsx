@@ -20,7 +20,7 @@ export const EditableNodeTitle: FunctionComponent<EditableNodeTitleProps> = ({ t
           className="px-4 w-full bg-black/75 text-white rounded-t-md z-10"
           type="text"
           onChange={(e) => onChange(e.target.value)}
-          value={title}
+          value={title ?? ""}
           autoFocus={true}
           placeholder="Node Name"
         />
