@@ -1,6 +1,5 @@
 import { FunctionComponent } from "react";
-import { InterfaceDef, Widget } from "./interfaceStores";
-import { SliderWidget } from "../widgets/SliderWidget";
+import { Widget } from "./interfaceStores";
 import { remoteWidgetDefs } from "../registry";
 import _ from "lodash";
 import { InterfaceHandle } from "./InterfaceList";

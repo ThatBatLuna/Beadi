@@ -1,5 +1,4 @@
 import create from "zustand";
-import { diffByKeys } from "../../utils/diffBy";
 import produce, { Draft } from "immer";
 import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
@@ -7,6 +6,7 @@ import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { InterfaceDef } from "../interface/interfaceStores";
 import { IOValueState } from "../inputOutputStore";
+import { diffByKeys } from "@beadi/engine";
 
 type RemoteConnection = {
   remoteConnectionId: string;

@@ -2,12 +2,16 @@
   "name": "@beadi/plugin-remote",
   "version": "0.0.3",
   "private": true,
+  "main": "src/index.ts",
   "dependencies": {
+    "@beadi/components": "workspace:^",
     "@beadi/engine": "workspace:^",
+    "clsx": "=1.2.1",
     "immer": "^9.0.19",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
-    "zustand": "^4.1.4"
+    "react-icons": "=4.7.1",
+    "zustand": "=4.1.4"
   },
   "homepage": "https://beadi.onrender.com/",
   "scripts": {
@@ -34,7 +38,9 @@
     ]
   },
   "devDependencies": {
-    "typescript": "^4.9.3",
+    "@types/lodash": "^4.14.191",
+    "@types/react": "^18.2.15",
+    "typescript": "^5.0.2",
     "vite": "^4.4.9"
   }
 }

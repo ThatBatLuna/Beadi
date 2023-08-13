@@ -4,7 +4,8 @@
   "private": true,
   "homepage": "https://beadi.onrender.com/",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "start": "pnpm --filter beadi run dev"
   },
   "eslintConfig": {
     "extends": [

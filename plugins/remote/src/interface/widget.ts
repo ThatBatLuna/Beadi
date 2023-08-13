@@ -1,4 +1,4 @@
-import { ComponentType, FunctionComponent, useCallback } from "react";
+import { ComponentType } from "react";
 import { InterfaceHandle } from "./InterfaceList";
 
 export type RemoteWidgetProps<T, TSettings> = {

@@ -1,18 +1,16 @@
 import { FunctionComponent, useMemo, useState } from "react";
 import { InterfaceDef, useInterfaceFileStore } from "./interfaceStores";
 import { InterfaceEditor } from "./InterfaceEditor";
-import { Button } from "../../components/input/Button";
 import { MdDelete, MdDeviceHub, MdEdit, MdEditOff } from "react-icons/md";
-import { CollapsibleCard } from "../../components/CollapsibleCard";
-import { TextInput } from "../../components/input/TextInput";
 import _ from "lodash";
 import { RemoteStateStore, useRemoteStateStore } from "../remote/remoteStore";
-import { notNull } from "../../utils/notNull";
+import { notNull } from "@beadi/engine";
 import { Interface } from "./Interface";
-import { StoreHandle } from "../../hooks/useDynamicStore";
 import { IOValueState, IOValueStore, useIOValueStore } from "../inputOutputStore";
 import { usePublishStateStore } from "../publish/publishStore";
 import { sendMessage } from "../message";
+import { CollapsibleCard, TextInput, Button } from "@beadi/components";
+import { StoreHandle } from "@beadi/engine";
 
 type InterfaceListEntryProps = {
   interfaceHandle: InterfaceHandle<any>;

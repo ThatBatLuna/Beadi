@@ -1,13 +1,19 @@
-import { set } from "lodash";
-import { InputAdapterDef, InputAdapterSettingsEditorProps } from "../engine/adapter";
-import { HandleDef, HandleType, TypeOfHandleType, asHandleType } from "../engine/node";
-import { useIOValueStore } from "./inputOutputStore";
-import { Select } from "../components/input/Select";
-import { useFileStore } from "../engine/store";
+// import { InputAdapterDef, InputAdapterSettingsEditorProps } from "../engine/adapter";
+// import { HandleDef, HandleType, TypeOfHandleType, asHandleType } from "../engine/node";
+// import { useIOValueStore } from "./inputOutputStore";
+// import { Select } from "../components/input/Select";
+// import { useFileStore } from "../engine/store";
+import { InputAdapterSettingsEditorProps, InputAdapterDef } from "@beadi/engine";
+import { HandleType, TypeOfHandleType, asHandleType } from "@beadi/engine";
+import { emitImpulse } from "@beadi/engine";
+import { notNull } from "@beadi/engine";
 import { FunctionComponent } from "react";
-import { emitImpulse } from "../engine/signal";
-import { notNull } from "../utils/notNull";
+import { useIOValueStore } from "./inputOutputStore";
 import { useRemoteStateStore } from "./remote/remoteStore";
+import { Select } from "@beadi/components";
+// import { emitImpulse } from "../engine/signal";
+// import { notNull } from "../utils/notNull";
+// import { useRemoteStateStore } from "./remote/remoteStore";
 
 export type RemoteInputAdapterSettings = {
   type: HandleType;

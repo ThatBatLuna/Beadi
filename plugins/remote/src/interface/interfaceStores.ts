@@ -3,10 +3,10 @@ import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { useCallback } from "react";
-import { HandleType, TypeOfHandleType } from "../../engine/node";
-import { useDynamicStore } from "../../hooks/useDynamicStore";
 import { InterfaceHandle } from "./InterfaceList";
 import { IOValueState } from "../inputOutputStore";
+import { HandleType, TypeOfHandleType } from "@beadi/engine/src/engine/node";
+import { useDynamicStore } from "@beadi/engine";
 
 export type Widget = {
   widgetId: string;
@@ -28,7 +28,7 @@ type InterfaceFileStore = {
 export const useInterfaceFileStore = create<InterfaceFileStore>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({
         interfaces: {},
         addInterface: () => {
           const interfaceId = `${new Date().getTime()}`;

@@ -1,10 +1,7 @@
 import { FunctionComponent, useState } from "react";
 import { useRemoteStateStore, useRemoteStore } from "./remoteStore";
-import { TextInput } from "../../components/input/TextInput";
-import { Button } from "../../components/input/Button";
 import { MdDelete, MdWifi, MdWifiOff } from "react-icons/md";
-import { CollapsibleCard } from "../../components/CollapsibleCard";
-import { Typo } from "../../components/Typo";
+import { CollapsibleCard, Button, Typo, TextInput } from "@beadi/components";
 
 type RemoteConnectionDisplayProps = {
   remoteConnectionId: string;

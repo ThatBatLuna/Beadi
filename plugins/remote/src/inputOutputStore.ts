@@ -1,14 +1,19 @@
 import create from "zustand";
-import { FileStore, useFileStore } from "../engine/store";
 import produce from "immer";
 import _ from "lodash";
 import { devtools } from "zustand/middleware";
-import { diffByKeys } from "../utils/diffBy";
-import { HandleType } from "../engine/node";
-import { SignalEmissions } from "../engine/signal";
-import { INPUT_ADAPTER_NODE_ID, InputAdapterNodeSettings } from "../nodes/InputAdapterNode";
 import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
-import { OUTPUT_ADAPTER_NODE_ID, OutputAdapterNodeSettings } from "../nodes/OutputAdapterNode";
+import {
+  HandleType,
+  SignalEmissions,
+  FileStore,
+  INPUT_ADAPTER_NODE_ID,
+  InputAdapterNodeSettings,
+  OUTPUT_ADAPTER_NODE_ID,
+  OutputAdapterNodeSettings,
+  diffByKeys,
+  useFileStore,
+} from "@beadi/engine";
 // import { REMOTE_OUTPUT_ADAPTER_ID, RemoteOutputAdapterSettings } from "./outputAdapter";
 
 type RemoteOutputAdapterSettings = any;
@@ -140,11 +145,6 @@ export function tempSyncIOValueStore() {
     );
 
     useIOValueStore.setState((state) => {
-      const localValues = Object.values(state.values);
-
-      // const missingValues = _.differenceWith(inputAdapterNodes, localValues, (node, value) => node.id === value.valueId);
-      // const extraValues = _.differenceWith(localValues, inputAdapterNodes, (value, node) => node.id === value.valueId);
-
       const { extra, missing, changed } = diffByKeys(state.values, adapterNodes, (a, b) => a.type === b.type && a.name === b.name);
 
       return produce(state, (draft) => {
