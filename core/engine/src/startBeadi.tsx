@@ -6,12 +6,12 @@ import App from "./App";
 import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
-import { Plugin } from "./plugin";
+import { AnyPlugin, Plugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
 
 export type BeadiOptions = {
   rootElement: string;
-  plugins: Plugin<any>[];
+  plugins: AnyPlugin[];
 };
 export function startBeadi(options: BeadiOptions) {
   enableAllPlugins();

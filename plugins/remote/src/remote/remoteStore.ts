@@ -8,6 +8,7 @@ import { IOValueState } from "../inputOutputStore";
 import { BeadiContext, diffByKeys } from "@beadi/engine";
 import { createStore } from "zustand";
 import { useRemoteStateStore, useRemoteStore } from "../storage";
+import { RemotePluginSettings } from "..";
 
 type RemoteConnection = {
   remoteConnectionId: string;
@@ -102,10 +103,10 @@ export function makeRemoteStateStore() {
 }
 
 type Setter = (recipe: (draft: Draft<RemoteConnectionState>) => void | RemoteConnectionState) => void;
-function openRemoteConnection(connection: RemoteConnection, set: Setter): RemoteConnectionHandle {
+function openRemoteConnection(connection: RemoteConnection, set: Setter, serverUrl: string): RemoteConnectionHandle {
   console.log("Opening Remote Socket ", connection.code);
   //TODO Resolving environment variables should be done in the app and not the engine
-  const socket = new WebSocket(`${import.meta.env.REACT_APP_REMOTE_SERVER_URL}/control/${connection.code}`);
+  const socket = new WebSocket(`${serverUrl}/control/${connection.code}`);
 
   socket.addEventListener("open", (event) => {
     console.log("WebSocket Opened: ", event);
@@ -216,16 +217,20 @@ export function startSyncRemoteStateStore(beadi: BeadiContext) {
       produce(s, (draft) => {
         for (const missingKey in missing) {
           console.log("Missing: ", missing, missingKey);
-          draft.remotes[missingKey] = openRemoteConnection(missing[missingKey], (recipe) => {
-            useRemoteStateStore.setStateWith(beadi, (s) =>
-              produce(s, (draft) => {
-                const result = recipe(draft.remotes[missingKey].state);
-                if (result !== undefined) {
-                  draft.remotes[missingKey].state = result;
-                }
-              })
-            );
-          });
+          draft.remotes[missingKey] = openRemoteConnection(
+            missing[missingKey],
+            (recipe) => {
+              useRemoteStateStore.setStateWith(beadi, (s) =>
+                produce(s, (draft) => {
+                  const result = recipe(draft.remotes[missingKey].state);
+                  if (result !== undefined) {
+                    draft.remotes[missingKey].state = result;
+                  }
+                })
+              );
+            },
+            (beadi.globals as any).remotePlugin.remoteServerUrl
+          );
         }
       })
     );

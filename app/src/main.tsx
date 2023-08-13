@@ -1,6 +1,6 @@
 import "./index.css";
 import { startBeadi } from "@beadi/engine";
-import { RemotePlugin } from "@beadi/plugin-remote";
+import { makeRemotePlugin } from "@beadi/plugin-remote";
 
 // ReactDOM.createRoot(document.getElementById("root")!).render(
 //   <React.StrictMode>
@@ -9,6 +9,10 @@ import { RemotePlugin } from "@beadi/plugin-remote";
 // );
 
 startBeadi({
-  plugins: [RemotePlugin],
+  plugins: [
+    makeRemotePlugin({
+      remoteServerUrl: import.meta.env.VITE_APP_REMOTE_SERVER_URL,
+    }),
+  ],
   rootElement: "root",
 });

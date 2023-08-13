@@ -1,4 +1,4 @@
-import { Plugin } from "./plugin";
+import { AnyPlugin, Plugin } from "./plugin";
 import { AnyNodeDef, InputHandleDefs, OutputHandleDefs } from "./engine/node";
 
 import { timerNodeDef } from "./nodes/TimerNode";
@@ -25,19 +25,20 @@ import { notNull } from ".";
 import _ from "lodash";
 
 type BeadiContextProps = {
-  plugins: Plugin<any>[];
+  plugins: AnyPlugin[];
 };
 
-export class BeadiContext {
+export type BeadiContextOf<TPlugin extends AnyPlugin> = BeadiContext<{ [Key in TPlugin["id"]]: TPlugin["globals"] }>;
+export class BeadiContext<TGlobals extends Record<string, any> = {}> {
   nodeDefs: Record<string, AnyNodeDef>;
   inputAdapterDefs: Record<string, AnyInputAdapterDef>;
   outputAdapterDefs: Record<string, AnyOutputAdapterDef>;
   settingsTabs: Record<string, Tab>;
-  plugins: Plugin<any>[];
+  plugins: AnyPlugin[];
   storage: Storage | null;
+  globals: TGlobals;
 
   constructor(props: BeadiContextProps) {
-    console.log("BeadiContextProps");
     const nodeDefList: AnyNodeDef[] = [
       constantValueNodeDef as any,
       mathNodeDef as any,
@@ -71,6 +72,8 @@ export class BeadiContext {
     this.settingsTabs = Object.assign({}, ...settingsTabsList.map((it) => ({ [it.id]: it })));
 
     this.storage = null;
+
+    this.globals = Object.fromEntries(props.plugins.map((plugin) => [plugin.id, plugin.globals]));
 
     this.plugins = props.plugins;
   }
@@ -110,22 +113,22 @@ export class BeadiContext {
       return inputs;
     }
   }
-  runHooks(hook: keyof NonNullable<Plugin<any>["processingHooks"]>) {
+  runHooks(hook: keyof NonNullable<AnyPlugin["processingHooks"]>) {
     this.plugins.forEach((it) => it.processingHooks?.[hook]?.(this));
   }
 }
 
-const BeadiContextInstance = createContext<BeadiContext | null>(null);
+const BeadiContextInstance = createContext<BeadiContext<any> | null>(null);
 
 type BeadiContextProviderProps = {
-  context: BeadiContext;
+  context: BeadiContext<{}>;
   children?: ReactNode;
 };
 export const BeadiContextProvider: FunctionComponent<BeadiContextProviderProps> = ({ context, children }) => {
   return <BeadiContextInstance.Provider value={context}>{children}</BeadiContextInstance.Provider>;
 };
 
-export function useBeadi(): BeadiContext {
+export function useBeadi(): BeadiContext<{}> {
   const beadi = useContext(BeadiContextInstance);
   //The only way beadi === null is when no BeadiContextInstance was provided.
   if (import.meta.env.DEV) {

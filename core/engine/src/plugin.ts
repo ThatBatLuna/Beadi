@@ -5,11 +5,13 @@ import { AnyNodeDef } from "./engine/node";
 import { StorageShard } from "./storage";
 
 export type { Tab };
-export type Plugin<TShard extends StorageShard> = {
+export type Plugin<TShard extends StorageShard, TGlobals, TId extends string> = {
+  id: TId;
   nodeDefs?: AnyNodeDef[];
   inputAdapterDefs?: AnyInputAdapterDef[];
   outputAdapterDefs?: AnyOutputAdapterDef[];
   settingsTabs?: Tab[];
+  globals?: TGlobals;
   processingHooks?: {
     postPrepareSignals?: (beadi: BeadiContext) => void;
     finalizedContext?: (beadi: BeadiContext) => void;
@@ -17,6 +19,10 @@ export type Plugin<TShard extends StorageShard> = {
   storageShard?: StorageShardDefBuilder<TShard>;
 };
 
-export function plugin<TPlugin extends Plugin<any>>(plugin: TPlugin): TPlugin {
+export type AnyPlugin = Plugin<any, any, any>;
+
+export function plugin<TShard extends StorageShard, TGlobals, TId extends string>(
+  plugin: Plugin<TShard, TGlobals, TId>
+): Plugin<TShard, TGlobals, TId> {
   return plugin;
 }

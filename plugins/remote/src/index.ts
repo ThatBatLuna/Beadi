@@ -7,18 +7,30 @@ import { remoteSettingsTab } from "./RemoteDrawerPage";
 import { shard } from "./storage";
 import { startSyncRemoteStateStore } from "./remote/remoteStore";
 
-export const RemotePlugin = plugin({
-  inputAdapterDefs: [remoteInputAdapter, remoteInputFromOutputAdapter],
-  outputAdapterDefs: [remoteOutputAdapter, remoteOutputToInputAdapter],
-  processingHooks: {
-    finalizedContext: (beadi: BeadiContext) => {
-      tempSyncIOValueStore(beadi);
-      startSyncRemoteStateStore(beadi);
+export type RemotePluginSettings = {
+  remoteServerUrl: string;
+};
+
+export function makeRemotePlugin(settings: RemotePluginSettings) {
+  return plugin({
+    id: "remotePlugin" as const,
+    inputAdapterDefs: [remoteInputAdapter, remoteInputFromOutputAdapter],
+    outputAdapterDefs: [remoteOutputAdapter, remoteOutputToInputAdapter],
+    processingHooks: {
+      finalizedContext: (beadi) => {
+        tempSyncIOValueStore(beadi);
+        startSyncRemoteStateStore(beadi);
+      },
+      postPrepareSignals: (beadi) => {
+        tempPopSignalBuffer(beadi);
+      },
     },
-    postPrepareSignals: (beadi: BeadiContext) => {
-      tempPopSignalBuffer(beadi);
+    globals: {
+      remoteServerUrl: settings.remoteServerUrl,
     },
-  },
-  settingsTabs: [remoteSettingsTab],
-  storageShard: shard,
-});
+    settingsTabs: [remoteSettingsTab],
+    storageShard: shard,
+  });
+}
+
+export type RemotePlugin = ReturnType<typeof makeRemotePlugin>;

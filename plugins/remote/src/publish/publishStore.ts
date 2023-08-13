@@ -5,6 +5,7 @@ import { BeadiMessage, RemoteControlEndpoint, handleMessage, sendMessage } from 
 import _ from "lodash";
 import { useIOValueStore, useInterfaceFileStore } from "../storage";
 import { BeadiContext } from "@beadi/engine";
+import { RemotePlugin, RemotePluginSettings } from "..";
 
 type PublishConnectionState =
   | {
@@ -137,7 +138,7 @@ export function makePublishStateStore(beadi: BeadiContext) {
   }
 
   function publish(set: Setter, get: Getter): void {
-    const socket = new WebSocket(`${import.meta.env.REACT_APP_REMOTE_SERVER_URL}/publish`);
+    const socket = new WebSocket(`${(beadi.globals as any).remotePlugin.remoteServerUrl}/publish`);
 
     socket.addEventListener("open", (event) => {
       console.log("WebSocket Opened: ", event);
