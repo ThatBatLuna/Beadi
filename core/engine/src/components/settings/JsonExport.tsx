@@ -1,6 +1,6 @@
 import { FunctionComponent, useCallback, useRef } from "react";
-import { useFileStore } from "../../engine/store";
 import { Button } from "@beadi/components";
+import { useFileStore } from "../../storage";
 
 export type ImportFromJsonProps = {};
 export const ImportFromJson: FunctionComponent<ImportFromJsonProps> = () => {

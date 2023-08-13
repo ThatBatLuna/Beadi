@@ -3,7 +3,7 @@ import { NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
 import { gaussianRandom } from "./TimerNode";
 import { emitImpulse } from "../engine/signal";
-import { usePreviewStore } from "../engine/preview";
+import { usePreviewStore } from "../storage";
 
 const DelayNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
   // const progress = useCommittedData<number>(id, "progress") || 0.0;

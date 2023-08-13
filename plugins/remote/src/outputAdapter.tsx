@@ -4,9 +4,8 @@ import { OutputAdapterDef, OutputAdapterSettingsEditorProps } from "@beadi/engin
 import { HandleType, asHandleType } from "@beadi/engine";
 import { notNull } from "@beadi/engine";
 import { FunctionComponent } from "react";
-import { useRemoteStateStore } from "./remote/remoteStore";
-import { usePublishStateStore } from "./publish/publishStore";
 import { Select } from "@beadi/components";
+import { usePublishStateStore, useRemoteStateStore } from "./storage";
 
 export type RemoteOutputAdapterSettings = {
   type: HandleType;
@@ -40,7 +39,7 @@ export const REMOTE_OUTPUT_ADAPTER_ID = "remoteOutput";
 export const remoteOutputAdapter: OutputAdapterDef<number, RemoteOutputAdapterSettings> = {
   id: REMOTE_OUTPUT_ADAPTER_ID,
   getType: (settings) => settings?.type,
-  pushData: (nodeId, data, settings) => {
+  pushData: (nodeId, data, settings, beadi) => {
     if (settings === undefined) {
       return;
     }
@@ -49,7 +48,7 @@ export const remoteOutputAdapter: OutputAdapterDef<number, RemoteOutputAdapterSe
     }
     const safeValue = asHandleType(settings.type, data);
     if (safeValue !== undefined) {
-      usePublishStateStore.getState().state.updateValue(nodeId, safeValue, true);
+      usePublishStateStore.getStateWith(beadi).state.updateValue(nodeId, safeValue, true);
     }
   },
   label: "Remote Display",
@@ -121,9 +120,9 @@ export const RemoteOutputToInputSettingsEditor: FunctionComponent<OutputAdapterS
 
 export const remoteOutputToInputAdapter: OutputAdapterDef<number, RemoteOutputToInputAdapterSettings> = {
   id: "remoteOutputToInput",
-  getType: (settings) => {
+  getType: (settings, beadi) => {
     if (settings?.value != null) {
-      const remote = useRemoteStateStore.getState().remotes[settings.value.remoteId]?.state;
+      const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
           return remote.values[settings.value.valueId]?.type;
@@ -131,9 +130,9 @@ export const remoteOutputToInputAdapter: OutputAdapterDef<number, RemoteOutputTo
       }
     }
   },
-  pushData: (_nodeId, data, settings) => {
+  pushData: (_nodeId, data, settings, beadi) => {
     if (settings?.value != null) {
-      const remote = useRemoteStateStore.getState().remotes[settings.value.remoteId]?.state;
+      const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
           sendMessage(remote.socket, {

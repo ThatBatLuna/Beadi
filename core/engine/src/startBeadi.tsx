@@ -11,12 +11,13 @@ import { BeadiContext, BeadiContextProvider } from "./context";
 
 export type BeadiOptions = {
   rootElement: string;
-  plugins: Plugin[];
+  plugins: Plugin<any>[];
 };
 export function startBeadi(options: BeadiOptions) {
   enableAllPlugins();
 
   const context = new BeadiContext({ plugins: options.plugins });
+  context.finalize();
 
   const router = createBrowserRouter([
     {

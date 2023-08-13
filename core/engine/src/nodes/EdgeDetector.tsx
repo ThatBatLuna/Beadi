@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
-import { useFileStore } from "../engine/store";
+import { useFileStore } from "../storage";
 import { emitImpulse } from "../engine/signal";
 
 type EdgeDetectorNodeSettings = {

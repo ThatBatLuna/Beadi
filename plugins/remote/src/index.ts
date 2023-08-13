@@ -1,17 +1,24 @@
-import { Plugin } from "@beadi/engine";
+import { BeadiContext, plugin } from "@beadi/engine";
 import { remoteInputAdapter } from "./inputAdapter";
 import { remoteInputFromOutputAdapter } from "./inputAdapter";
 import { remoteOutputAdapter, remoteOutputToInputAdapter } from "./outputAdapter";
-import { tempPopSignalBuffer } from "./inputOutputStore";
+import { tempPopSignalBuffer, tempSyncIOValueStore } from "./inputOutputStore";
 import { remoteSettingsTab } from "./RemoteDrawerPage";
+import { shard } from "./storage";
+import { startSyncRemoteStateStore } from "./remote/remoteStore";
 
-export const RemotePlugin: Plugin = {
+export const RemotePlugin = plugin({
   inputAdapterDefs: [remoteInputAdapter, remoteInputFromOutputAdapter],
   outputAdapterDefs: [remoteOutputAdapter, remoteOutputToInputAdapter],
   processingHooks: {
-    postPrepareSignals: () => {
-      tempPopSignalBuffer();
+    finalizedContext: (beadi: BeadiContext) => {
+      tempSyncIOValueStore(beadi);
+      startSyncRemoteStateStore(beadi);
+    },
+    postPrepareSignals: (beadi: BeadiContext) => {
+      tempPopSignalBuffer(beadi);
     },
   },
   settingsTabs: [remoteSettingsTab],
-};
+  storageShard: shard,
+});

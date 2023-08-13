@@ -35,10 +35,6 @@
   },
   "homepage": "https://beadi.onrender.com/",
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "build:ci": "CI=true craco build",
-    "test": "craco test"
   },
   "eslintConfig": {
     "extends": [

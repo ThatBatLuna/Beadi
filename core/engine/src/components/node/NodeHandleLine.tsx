@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactNode, useCallback, useState } from "react";
 import { Connection, Handle, Position } from "reactflow";
 import clsx from "clsx";
-import { useFileStore } from "../../engine/store";
+import { useFileStore } from "../../storage";
 import { handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeHandleValuePreviews } from "./NodeHandleValuePreview";
@@ -33,7 +33,7 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, t
       ) {
         return false;
       }
-      const nodes = useFileStore.getState().data.nodes;
+      const nodes = useFileStore.getStateWith(beadi).data.nodes;
       const targetType = nodes[connection.target].type;
       const sourceType = nodes[connection.source].type;
       console.log(connection, targetType, sourceType, nodes);

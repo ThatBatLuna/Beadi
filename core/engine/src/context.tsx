@@ -20,9 +20,12 @@ import { commentNodeDef } from "./nodes/CommentNode";
 import { edgeDetectorNodeDef } from "./nodes/EdgeDetector";
 import { FunctionComponent, ReactNode, createContext, useContext } from "react";
 import { UnknownBeadiNode } from "./engine/store";
+import { Storage, beadiStorageShard } from "./storage";
+import { notNull } from ".";
+import _ from "lodash";
 
 type BeadiContextProps = {
-  plugins: Plugin[];
+  plugins: Plugin<any>[];
 };
 
 export class BeadiContext {
@@ -30,7 +33,8 @@ export class BeadiContext {
   inputAdapterDefs: Record<string, AnyInputAdapterDef>;
   outputAdapterDefs: Record<string, AnyOutputAdapterDef>;
   settingsTabs: Record<string, Tab>;
-  plugins: Plugin[];
+  plugins: Plugin<any>[];
+  storage: Storage | null;
 
   constructor(props: BeadiContextProps) {
     console.log("BeadiContextProps");
@@ -66,7 +70,27 @@ export class BeadiContext {
 
     this.settingsTabs = Object.assign({}, ...settingsTabsList.map((it) => ({ [it.id]: it })));
 
+    this.storage = null;
+
     this.plugins = props.plugins;
+  }
+
+  getStorage(): Storage {
+    if (this.storage === null) {
+      throw new Error("Attempted to access Storages before BeadiContext was finalized");
+    }
+    return this.storage;
+  }
+
+  finalize() {
+    this.storage = new Storage([
+      ...[beadiStorageShard, ...this.plugins.map((it) => it.storageShard ?? null).filter(notNull)].map((it) => ({
+        name: it.name,
+        shard: _.mapValues(it.makeShards, (maker) => maker(this)),
+      })),
+    ]);
+    console.log("FINALIZE === ", this.storage, this.plugins);
+    this.runHooks("finalizedContext");
   }
 
   getNodeOutputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): OutputHandleDefs {
@@ -86,8 +110,8 @@ export class BeadiContext {
       return inputs;
     }
   }
-  runHooks(hook: keyof NonNullable<Plugin["processingHooks"]>) {
-    this.plugins.forEach((it) => it.processingHooks?.[hook]?.());
+  runHooks(hook: keyof NonNullable<Plugin<any>["processingHooks"]>) {
+    this.plugins.forEach((it) => it.processingHooks?.[hook]?.(this));
   }
 }
 

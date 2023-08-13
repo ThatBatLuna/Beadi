@@ -1,7 +1,7 @@
 import { FunctionComponent, useCallback, useState } from "react";
-import { usePreviewStore } from "../../../engine/preview";
 import { NodeHandleValuePreviewProps } from "../NodeHandleValuePreview";
 import { useAnimationFrame } from "../../../hooks/useAnimationFrame";
+import { usePreviewStore } from "../../../storage";
 
 const HISTORY_LENGTH = 10.0;
 const REFRESH_RATE = 30.0;

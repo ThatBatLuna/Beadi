@@ -5,7 +5,7 @@ import { restartLoopWithModel } from "./runner";
 import { BeadiContext } from "../context";
 
 export function watchForChanges(beadi: BeadiContext) {
-  useFileStore.subscribe((store) => {
+  useFileStore.subscribeWith(beadi, (store) => {
     const newNodes = _.mapValues(store.data.nodes, (it) => ({
       id: it.id,
       type: it.type,
@@ -25,15 +25,15 @@ export function watchForChanges(beadi: BeadiContext) {
       nodes: newNodes,
       edges: newEdges,
     };
-    if (!_.isEqual(newState, useModelState.getState().sources)) {
-      useModelState.setState({
+    if (!_.isEqual(newState, useModelState.getStateWith(beadi).sources)) {
+      useModelState.setStateWith(beadi, {
         sources: newState,
         model: buildModel(newState, beadi),
       });
     }
   });
 
-  useModelState.subscribe((state) => {
+  useModelState.subscribeWith(beadi, (state) => {
     restartLoopWithModel(state.model, beadi);
   });
 }

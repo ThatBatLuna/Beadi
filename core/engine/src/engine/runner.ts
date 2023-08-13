@@ -3,8 +3,8 @@ import { Model } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
 import { NodeContext } from "./node";
-import { usePreviewStore } from "./preview";
 import { BeadiContext } from "../context";
+import { usePreviewStore } from "../storage";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -26,7 +26,7 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
   function update() {
     //Prepopulate HandleValues Dictionary with signal data
     const handleValues: HandleValues = {};
-    const signals = useSignalBus.getState().popAll();
+    const signals = useSignalBus.getStateWith(beadi).popAll();
     if (!_.isEmpty(signals)) {
       console.log("Signals: ", signals);
     }
@@ -69,7 +69,7 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
           if (dependency !== null) {
             return handleValues[dependency.nodeId][dependency.handleId];
           } else {
-            return useFileStore.getState().getHandle(step.nodeId, handleId);
+            return useFileStore.getStateWith(beadi).getHandle(step.nodeId, handleId);
           }
         }
       });
@@ -83,7 +83,7 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
       for (const outputId in nodeTypeOutputs) {
         if (nodeTypeOutputs[outputId].type === "impulse") {
           for (let i = 0; i < (outputs.outputs[outputId] as number); i++) {
-            useSignalBus.getState().emit(step.nodeId, outputId);
+            useSignalBus.getStateWith(beadi).emit(step.nodeId, outputId);
           }
           delete outputs.outputs[outputId];
         }
@@ -95,8 +95,8 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
       nodeType.executor.outputDriver?.(outputs.driverOutputs, nodeContext, beadi);
     }
 
-    usePreviewStore.setState({ outputHandlePreviews: handleValues });
-    usePreviewStore.getState().pushSignals(signals);
+    usePreviewStore.setStateWith(beadi, { outputHandlePreviews: handleValues });
+    usePreviewStore.getStateWith(beadi).pushSignals(signals);
     timeout = setTimeout(update, timestep) as any;
   }
   timeout = setTimeout(update, timestep) as any;

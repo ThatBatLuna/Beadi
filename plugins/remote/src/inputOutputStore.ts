@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand";
 import produce from "immer";
 import _ from "lodash";
 // import { devtools } from "zustand/middleware";
@@ -13,7 +13,9 @@ import {
   OutputAdapterNodeSettings,
   diffByKeys,
   useFileStore,
+  BeadiContext,
 } from "@beadi/engine";
+import { useIOValueStore } from "./storage";
 // import { REMOTE_OUTPUT_ADAPTER_ID, RemoteOutputAdapterSettings } from "./outputAdapter";
 
 type RemoteOutputAdapterSettings = any;
@@ -44,42 +46,8 @@ export type IOValueStore = {
   emitSignal: (valueId: string, data?: any) => void;
 };
 
-/** Used by all input-/outputAdapters to push/pull their values from/to */
-export const useIOValueStore = create<IOValueStore>(
-  // devtools(
-  (set, get) => ({
-    values: {},
-    setValue: (id, value, writeUnwriteable = false) => {
-      if (!writeUnwriteable) {
-        if (!get().values[id]?.writeable) {
-          return;
-        }
-      }
-      set((s) =>
-        produce(s, (draft) => {
-          draft.values[id].value = value;
-        })
-      );
-    },
-    signalBuffer: {},
-    emitSignal: (valueId, data) => {
-      set((s) =>
-        produce(s, (draft) => {
-          if (!(valueId in draft.signalBuffer)) {
-            draft.signalBuffer[valueId] = [];
-          }
-          draft.signalBuffer[valueId].push(data ?? null);
-        })
-      );
-    },
-  })
-
-  //   { name: "useIOValueStore" }
-  // )
-);
-
-export function tempPopSignalBuffer() {
-  useIOValueStore.setState((s) =>
+export function tempPopSignalBuffer(beadi: BeadiContext) {
+  useIOValueStore.setStateWith(beadi, (s) =>
     produce(s, (draft) => {
       for (const valueId in draft.signalBuffer) {
         draft.values[valueId] = {
@@ -95,7 +63,44 @@ export function tempPopSignalBuffer() {
   );
 }
 
-export function tempSyncIOValueStore() {
+export function makeIOValueStore() {
+  /** Used by all input-/outputAdapters to push/pull their values from/to */
+  const store = createStore<IOValueStore>(
+    // devtools(
+    (set, get) => ({
+      values: {},
+      setValue: (id, value, writeUnwriteable = false) => {
+        if (!writeUnwriteable) {
+          if (!get().values[id]?.writeable) {
+            return;
+          }
+        }
+        set((s) =>
+          produce(s, (draft) => {
+            draft.values[id].value = value;
+          })
+        );
+      },
+      signalBuffer: {},
+      emitSignal: (valueId, data) => {
+        set((s) =>
+          produce(s, (draft) => {
+            if (!(valueId in draft.signalBuffer)) {
+              draft.signalBuffer[valueId] = [];
+            }
+            draft.signalBuffer[valueId].push(data ?? null);
+          })
+        );
+      },
+    })
+
+    //   { name: "useIOValueStore" }
+    // )
+  );
+
+  return store;
+}
+export function tempSyncIOValueStore(beadi: BeadiContext) {
   const func = (state: FileStore) => {
     const adapterNodes: Record<string, IOValueDef<any>> = _.mapValues(
       _.pickBy(state.data.nodes, (it) => {
@@ -144,7 +149,7 @@ export function tempSyncIOValueStore() {
       }
     );
 
-    useIOValueStore.setState((state) => {
+    useIOValueStore.setStateWith(beadi, (state) => {
       const { extra, missing, changed } = diffByKeys(state.values, adapterNodes, (a, b) => a.type === b.type && a.name === b.name);
 
       return produce(state, (draft) => {
@@ -167,9 +172,7 @@ export function tempSyncIOValueStore() {
     });
   };
 
-  useFileStore.subscribe(func);
+  useFileStore.subscribeWith(beadi, func);
 
-  func(useFileStore.getState());
+  func(useFileStore.getStateWith(beadi));
 }
-
-tempSyncIOValueStore();

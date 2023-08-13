@@ -1,8 +1,8 @@
 import { FunctionComponent } from "react";
 import { InputHandleDef, InputHandleDefs, NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
-import { useFileStore } from "../engine/store";
 import { Select } from "@beadi/components";
+import { useFileStore } from "../storage";
 
 const operations = [
   "add",

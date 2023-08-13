@@ -8,9 +8,8 @@ import { HandleType, TypeOfHandleType, asHandleType } from "@beadi/engine";
 import { emitImpulse } from "@beadi/engine";
 import { notNull } from "@beadi/engine";
 import { FunctionComponent } from "react";
-import { useIOValueStore } from "./inputOutputStore";
-import { useRemoteStateStore } from "./remote/remoteStore";
 import { Select } from "@beadi/components";
+import { useIOValueStore, useRemoteStateStore } from "./storage";
 // import { emitImpulse } from "../engine/signal";
 // import { notNull } from "../utils/notNull";
 // import { useRemoteStateStore } from "./remote/remoteStore";
@@ -47,16 +46,16 @@ export const REMOTE_INPUT_ADAPTER_ID = "remoteInput";
 export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, RemoteInputAdapterSettings> = {
   id: REMOTE_INPUT_ADAPTER_ID,
   getType: (settings) => settings?.type,
-  getData: (nodeId: string, settings) => {
+  getData: (nodeId: string, settings, beadi) => {
     if (settings === undefined) {
       return 0.0;
     }
     if (settings.type === "impulse") {
-      const value = useIOValueStore.getState().values[nodeId]?.value;
+      const value = useIOValueStore.getStateWith(beadi).values[nodeId]?.value;
       const safeValue = asHandleType(settings.type, value);
       return emitImpulse(safeValue?.length ?? 0);
     }
-    const value = useIOValueStore.getState().values[nodeId]?.value;
+    const value = useIOValueStore.getStateWith(beadi).values[nodeId]?.value;
     const safeValue = asHandleType(settings.type, value);
     return safeValue ?? 0.0;
   },
@@ -127,9 +126,9 @@ export const RemoteInputFromOutputSettingsEditor: FunctionComponent<
 };
 export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputFromOutputAdapterSettings> = {
   id: "remoteInputFromOutput",
-  getType: (settings) => {
+  getType: (settings, beadi) => {
     if (settings?.value != null) {
-      const remote = useRemoteStateStore.getState().remotes[settings.value.remoteId]?.state;
+      const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
           return remote.values[settings.value.valueId]?.type;
@@ -137,9 +136,9 @@ export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputFr
       }
     }
   },
-  getData: (_nodeId, settings) => {
+  getData: (_nodeId, settings, beadi) => {
     if (settings?.value != null) {
-      const remote = useRemoteStateStore.getState().remotes[settings.value.remoteId]?.state;
+      const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
           return remote.values[settings.value.valueId].value;

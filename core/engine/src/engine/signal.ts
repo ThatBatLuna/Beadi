@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand";
 
 export type SignalEmission<T> = {
   timestamp: Date;
@@ -16,42 +16,46 @@ type SignalBus = {
   popAll: () => Record<string, Record<string, SignalEmissions<any>>>;
 };
 
-export const useSignalBus = create<SignalBus>()((set, get) => ({
-  nodeSignals: {},
-  emit: (nodeId, handleId, data) => {
-    set((signals) => ({
-      nodeSignals: {
-        ...signals.nodeSignals,
-        [nodeId]: {
-          ...signals.nodeSignals[nodeId],
-          [handleId]: [...(signals.nodeSignals[nodeId]?.[handleId] || []), data ?? null],
+export function makeSignalBus() {
+  return createStore<SignalBus>()((set, get) => ({
+    nodeSignals: {},
+    emit: (nodeId, handleId, data) => {
+      set((signals) => ({
+        nodeSignals: {
+          ...signals.nodeSignals,
+          [nodeId]: {
+            ...signals.nodeSignals[nodeId],
+            [handleId]: [...(signals.nodeSignals[nodeId]?.[handleId] || []), data ?? null],
+          },
         },
-      },
-    }));
-  },
-  popAll: () => {
-    const signals = get().nodeSignals;
-    set({
-      nodeSignals: {},
-    });
-    return signals;
-  },
-  //   pop: (nodeId, handleId) => {
-  //     const signals = get().nodeSignals[nodeId]?.[handleId];
-  //     set((signals) => ({
-  //       nodeSignals: {
-  //         ...signals.nodeSignals,
-  //         [nodeId]: {
-  //           ...signals.nodeSignals[nodeId],
-  //           [handleId]: [],
-  //         },
-  //       },
-  //     }));
-  //     return signals;
-  //   },
-}));
+      }));
+    },
+    popAll: () => {
+      const signals = get().nodeSignals;
+      set({
+        nodeSignals: {},
+      });
+      return signals;
+    },
+    //   pop: (nodeId, handleId) => {
+    //     const signals = get().nodeSignals[nodeId]?.[handleId];
+    //     set((signals) => ({
+    //       nodeSignals: {
+    //         ...signals.nodeSignals,
+    //         [nodeId]: {
+    //           ...signals.nodeSignals[nodeId],
+    //           [handleId]: [],
+    //         },
+    //       },
+    //     }));
+    //     return signals;
+    //   },
+  }));
+}
 
 /** Solely exists to make the code more readable when returning impulses from executors */
 export function emitImpulse(times?: number): number {
   return times ?? 1;
 }
+
+export { useSignalBus } from "../storage";

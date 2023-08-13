@@ -1,4 +1,3 @@
-import { create } from "zustand";
 import produce, { Draft } from "immer";
 import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
@@ -6,7 +5,9 @@ import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { InterfaceDef } from "../interface/interfaceStores";
 import { IOValueState } from "../inputOutputStore";
-import { diffByKeys } from "@beadi/engine";
+import { BeadiContext, diffByKeys } from "@beadi/engine";
+import { createStore } from "zustand";
+import { useRemoteStateStore, useRemoteStore } from "../storage";
 
 type RemoteConnection = {
   remoteConnectionId: string;
@@ -17,37 +18,38 @@ export type RemoteStore = {
   addConnection: (connection: Omit<RemoteConnection, "remoteConnectionId">) => void;
   removeConnection: (connectionId: string) => void;
 };
-export const useRemoteStore = create(
-  devtools(
-    persist(
-      immer<RemoteStore>((set) => ({
-        remotes: {},
-        addConnection: (connection) => {
-          const id = `${new Date().getTime()}`;
-          set((draft) => {
-            draft.remotes[id] = {
-              ...connection,
-              remoteConnectionId: id,
-            };
-          });
-        },
-        removeConnection: (id) => {
-          set((draft) => {
-            delete draft.remotes[id];
-          });
-        },
-      })),
+export function makeRemoteStore() {
+  return createStore(
+    devtools(
+      persist(
+        immer<RemoteStore>((set) => ({
+          remotes: {},
+          addConnection: (connection) => {
+            const id = `${new Date().getTime()}`;
+            set((draft) => {
+              draft.remotes[id] = {
+                ...connection,
+                remoteConnectionId: id,
+              };
+            });
+          },
+          removeConnection: (id) => {
+            set((draft) => {
+              delete draft.remotes[id];
+            });
+          },
+        })),
+        {
+          name: "remoteConnections",
+          getStorage: () => window.sessionStorage,
+        }
+      ),
       {
-        name: "remoteConnections",
-        getStorage: () => window.sessionStorage,
+        name: "useRemoteStore",
       }
-    ),
-    {
-      name: "useRemoteStore",
-    }
-  )
-);
-
+    )
+  );
+}
 type RemoteConnectionValue = IOValueState<any>;
 // type RemoteConnectionValue = {
 //   valueId: string;
@@ -86,16 +88,18 @@ export type RemoteConnectionHandle = {
 export type RemoteStateStore = {
   remotes: Record<string, RemoteConnectionHandle>;
 };
-export const useRemoteStateStore = create(
-  devtools<RemoteStateStore>(
-    () => ({
-      remotes: {},
-    }),
-    {
-      name: "useRemoteStateStore",
-    }
-  )
-);
+export function makeRemoteStateStore() {
+  return createStore(
+    devtools<RemoteStateStore>(
+      () => ({
+        remotes: {},
+      }),
+      {
+        name: "useRemoteStateStore",
+      }
+    )
+  );
+}
 
 type Setter = (recipe: (draft: Draft<RemoteConnectionState>) => void | RemoteConnectionState) => void;
 function openRemoteConnection(connection: RemoteConnection, set: Setter): RemoteConnectionHandle {
@@ -190,17 +194,17 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
   };
 }
 
-function startSyncRemoteStateStore() {
+export function startSyncRemoteStateStore(beadi: BeadiContext) {
   console.log("Start syncRemoteStateStore");
   const syncRemoteStateStore = (state: RemoteStore) => {
-    const oldRemotes = useRemoteStateStore.getState().remotes;
+    const oldRemotes = useRemoteStateStore.getStateWith(beadi).remotes;
     const { missing, extra } = diffByKeys(oldRemotes, state.remotes, (a, b) => _.isEqual(a.definition, b));
     // console.log("syncRemoteStateStore: ", missing, extra);
 
     for (const extraKey in extra) {
       console.log("Closing Remote: ", extraKey);
       oldRemotes[extraKey].close().then(() => {
-        useRemoteStateStore.setState((s) =>
+        useRemoteStateStore.setStateWith(beadi, (s) =>
           produce(s, (draft) => {
             console.log("Closed Remote: ", extraKey);
             delete draft.remotes[extraKey];
@@ -208,12 +212,12 @@ function startSyncRemoteStateStore() {
         );
       });
     }
-    useRemoteStateStore.setState((s) =>
+    useRemoteStateStore.setStateWith(beadi, (s) =>
       produce(s, (draft) => {
         for (const missingKey in missing) {
           console.log("Missing: ", missing, missingKey);
           draft.remotes[missingKey] = openRemoteConnection(missing[missingKey], (recipe) => {
-            useRemoteStateStore.setState((s) =>
+            useRemoteStateStore.setStateWith(beadi, (s) =>
               produce(s, (draft) => {
                 const result = recipe(draft.remotes[missingKey].state);
                 if (result !== undefined) {
@@ -226,7 +230,6 @@ function startSyncRemoteStateStore() {
       })
     );
   };
-  useRemoteStore.subscribe(syncRemoteStateStore);
-  syncRemoteStateStore(useRemoteStore.getState());
+  useRemoteStore.subscribeWith(beadi, syncRemoteStateStore);
+  syncRemoteStateStore(useRemoteStore.getStateWith(beadi));
 }
-startSyncRemoteStateStore();

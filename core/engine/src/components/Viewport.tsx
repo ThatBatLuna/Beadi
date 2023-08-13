@@ -11,7 +11,7 @@ import ReactFlow, {
   OnConnectStartParams,
 } from "reactflow";
 import _ from "lodash";
-import { FileStore, useFileStore } from "../engine/store";
+import { FileStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
 import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
@@ -19,6 +19,7 @@ import { NodeHandleDisplay } from "./node/NodeHandle";
 import { WelcomeNode } from "../nodes/WelcomeNode";
 import { InputHandleDef, OutputHandleDef } from "../engine/node";
 import { useBeadi } from "../context";
+import { useFileStore } from "../storage";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -197,7 +198,9 @@ const Viewport: FunctionComponent<{
     }),
     [beadi.nodeDefs]
   );
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, _.isEqual);
+  //TODO Implement analog to useStoreWithEqualityFn
+  // const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector, _.isEqual);
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStore(selector);
   const { project } = useReactFlow();
 
   const connectingNode = useRef<OnConnectStartParams | null>(null);

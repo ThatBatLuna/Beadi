@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { create } from "zustand";
+import { createStore } from "zustand";
 import { getConversionFunction } from "./handles";
 import { BeadiContext } from "../context";
 
@@ -234,10 +234,14 @@ export type ModelStore = {
   model: Model | null;
 };
 
-export const useModelState = create<ModelStore>()(() => ({
-  sources: {
-    nodes: {},
-    edges: [],
-  },
-  model: null,
-}));
+export function makeModelState() {
+  return createStore<ModelStore>()(() => ({
+    sources: {
+      nodes: {},
+      edges: [],
+    },
+    model: null,
+  }));
+}
+
+export { useModelState } from "../storage";

@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { NodeHeaderProps, OutputHandleDefs, nodeDef } from "../engine/node";
 import { categories } from "./category";
-import { useFileStore } from "../engine/store";
+import { useFileStore } from "../storage";
 import { useBeadi } from "../context";
 import { Select } from "@beadi/components";
 
@@ -59,7 +59,7 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
     if (inputAdatperDef === undefined) {
       return {} as OutputHandleDefs;
     }
-    const type = inputAdatperDef.getType(s.adapterSettings?.[s.adapterId]);
+    const type = inputAdatperDef.getType(s.adapterSettings?.[s.adapterId], beadi);
     if (type === undefined) {
       return {} as OutputHandleDefs;
     }
@@ -81,7 +81,7 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
         return {};
       }
       const settings = context.settings.adapterSettings?.[context.settings.adapterId];
-      return { value: adapter.getData(context.id, settings) };
+      return { value: adapter.getData(context.id, settings, beadi) };
     },
     outputDriver: () => {},
     initialPersistence: undefined,

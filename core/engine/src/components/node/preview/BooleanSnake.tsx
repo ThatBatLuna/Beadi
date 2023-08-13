@@ -1,9 +1,10 @@
 import { FunctionComponent, useEffect, useState } from "react";
-import { usePreviewStore } from "../../../engine/preview";
 import { NodeHandleValuePreviewProps } from "../NodeHandleValuePreview";
 import produce from "immer";
 import _ from "lodash";
 import clsx from "clsx";
+import { usePreviewStore } from "../../../storage";
+import { useBeadi } from "../../..";
 
 type Entry = {
   begin: number;
@@ -23,10 +24,11 @@ export const BooleanSnakeHandleValuePreview: FunctionComponent<NodeHandleValuePr
       value: value,
     },
   ]);
+  const beadi = useBeadi();
 
   useEffect(() => {
     let timeout = setInterval(() => {
-      const value = usePreviewStore.getState().outputHandlePreviews[props.nodeId]?.[props.handleId];
+      const value = usePreviewStore.getStateWith(beadi).outputHandlePreviews[props.nodeId]?.[props.handleId];
 
       const oldest = new Date().getTime() - LENGTH * 1000.0;
 
@@ -51,7 +53,7 @@ export const BooleanSnakeHandleValuePreview: FunctionComponent<NodeHandleValuePr
     return () => {
       clearInterval(timeout);
     };
-  }, [props.nodeId, props.handleId, setData]);
+  }, [props.nodeId, props.handleId, setData, beadi]);
 
   const begin = data[0].begin;
   const end = data[data.length - 1].end;

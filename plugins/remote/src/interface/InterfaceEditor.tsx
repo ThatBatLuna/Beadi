@@ -1,8 +1,9 @@
 import { FunctionComponent } from "react";
-import { InterfaceDef, Widget, useInterfaceFileStore } from "./interfaceStores";
+import { InterfaceDef, Widget } from "./interfaceStores";
 import { MdRemove } from "react-icons/md";
 import { remoteWidgetDefs } from "../registry";
 import { Button } from "@beadi/components";
+import { useInterfaceFileStore } from "../storage";
 
 type InterfaceEditorEntryProps = {
   widget: Widget;

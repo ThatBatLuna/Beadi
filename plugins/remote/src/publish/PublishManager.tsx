@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
-import { usePublishStateStore } from "./publishStore";
 import { Button } from "@beadi/components";
+import { usePublishStateStore } from "../storage";
 
 type PublishManagerProps = {};
 export const PublishManager: FunctionComponent<PublishManagerProps> = () => {

@@ -1,9 +1,10 @@
 import { FunctionComponent, useCallback } from "react";
 import { NodeProps } from "reactflow";
 import NodeShell from "../components/node/NodeShell";
-import { BeadiFileData, useFileStore } from "../engine/store";
+import { BeadiFileData } from "../engine/store";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import { Button, Typo } from "@beadi/components";
+import { useFileStore } from "../storage";
 
 // import SimpleWaveExample from "EXAMPLES/SimpleNodes.json";
 

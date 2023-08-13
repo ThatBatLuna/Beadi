@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { FunctionComponent, useCallback, useState } from "react";
-import { useFileStore } from "../../engine/store";
+import { useFileStore } from "../../storage";
 import { Button, TextInput } from "@beadi/components";
 
 const LITTERBOX_URL = "https://litter.catbox.moe/";

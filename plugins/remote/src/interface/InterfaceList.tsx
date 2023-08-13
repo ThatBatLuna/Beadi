@@ -1,16 +1,16 @@
 import { FunctionComponent, useMemo, useState } from "react";
-import { InterfaceDef, useInterfaceFileStore } from "./interfaceStores";
+import { InterfaceDef } from "./interfaceStores";
 import { InterfaceEditor } from "./InterfaceEditor";
 import { MdDelete, MdDeviceHub, MdEdit, MdEditOff } from "react-icons/md";
 import _ from "lodash";
-import { RemoteStateStore, useRemoteStateStore } from "../remote/remoteStore";
-import { notNull } from "@beadi/engine";
+import { RemoteStateStore } from "../remote/remoteStore";
+import { notNull, useBeadi } from "@beadi/engine";
 import { Interface } from "./Interface";
-import { IOValueState, IOValueStore, useIOValueStore } from "../inputOutputStore";
-import { usePublishStateStore } from "../publish/publishStore";
+import { IOValueState, IOValueStore } from "../inputOutputStore";
 import { sendMessage } from "../message";
 import { CollapsibleCard, TextInput, Button } from "@beadi/components";
 import { StoreHandle } from "@beadi/engine";
+import { useIOValueStore, useInterfaceFileStore, usePublishStateStore, useRemoteStateStore } from "../storage";
 
 type InterfaceListEntryProps = {
   interfaceHandle: InterfaceHandle<any>;
@@ -78,13 +78,21 @@ export type InterfaceHandle<TValueStore> = {
 
 type InterfaceListProps = {};
 export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
-  const localInterfaces = useInterfaceFileStore(
-    (s) =>
-      Object.values(s.interfaces).map((it) => ({
-        interfaceDef: it,
-      })),
-    _.isEqual
+  //TODO EqualityFn
+  // const localInterfaces = useInterfaceFileStore(
+  //   (s) =>
+  //     Object.values(s.interfaces).map((it) => ({
+  //       interfaceDef: it,
+  //     })),
+  //   _.isEqual
+  // );
+  const localInterfaces = useInterfaceFileStore((s) =>
+    Object.values(s.interfaces).map((it) => ({
+      interfaceDef: it,
+    }))
   );
+
+  const beadi = useBeadi();
 
   const localInterfaceHandles = useMemo(() => {
     return localInterfaces.map(
@@ -93,37 +101,52 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
           interfaceDef: it.interfaceDef,
           brokerType: "local",
           valueStoreHandle: {
-            getState: () => useIOValueStore.getState(),
-            subscribe: (listener) => useIOValueStore.subscribe(listener),
+            getState: () => useIOValueStore.getStateWith(beadi),
+            subscribe: (listener) => useIOValueStore.subscribeWith(beadi, listener),
             selectData: (store) => store.values,
           },
           updateValue: (valueId, value) => {
             // console.log("Local Update Value: ", valueId, value);
-            usePublishStateStore.getState().state.updateValue(valueId, value);
+            usePublishStateStore.getStateWith(beadi).state.updateValue(valueId, value);
           },
           emitSignal: (valueId, data) => {
             // console.log("Local Emit Signal: ", valueId, data);
-            usePublishStateStore.getState().state.emitSignal(valueId, data);
+            usePublishStateStore.getStateWith(beadi).state.emitSignal(valueId, data);
           },
         } satisfies InterfaceHandle<IOValueStore>)
     );
-  }, [localInterfaces]);
+  }, [localInterfaces, beadi]);
 
-  const remoteInterfaces = useRemoteStateStore(
-    (s) =>
-      Object.values(s.remotes)
-        .flatMap((remote) => {
-          if (remote.state.state === "connected") {
-            return Object.values(remote.state.interfaces).map((it) => ({
-              interfaceDef: it,
-              remoteId: remote.definition.remoteConnectionId,
-            }));
-          } else {
-            return null;
-          }
-        })
-        .filter(notNull),
-    _.isEqual
+  //TODO EqualityFn
+  // const remoteInterfaces = useRemoteStateStore(
+  //   (s) =>
+  //     Object.values(s.remotes)
+  //       .flatMap((remote) => {
+  //         if (remote.state.state === "connected") {
+  //           return Object.values(remote.state.interfaces).map((it) => ({
+  //             interfaceDef: it,
+  //             remoteId: remote.definition.remoteConnectionId,
+  //           }));
+  //         } else {
+  //           return null;
+  //         }
+  //       })
+  //       .filter(notNull),
+  //   _.isEqual
+  // );
+  const remoteInterfaces = useRemoteStateStore((s) =>
+    Object.values(s.remotes)
+      .flatMap((remote) => {
+        if (remote.state.state === "connected") {
+          return Object.values(remote.state.interfaces).map((it) => ({
+            interfaceDef: it,
+            remoteId: remote.definition.remoteConnectionId,
+          }));
+        } else {
+          return null;
+        }
+      })
+      .filter(notNull)
   );
 
   const remoteInterfaceHandles = useMemo(() => {
@@ -133,8 +156,8 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
           interfaceDef: it.interfaceDef,
           brokerType: "remote",
           valueStoreHandle: {
-            getState: () => useRemoteStateStore.getState(),
-            subscribe: (listener) => useRemoteStateStore.subscribe(listener),
+            getState: () => useRemoteStateStore.getStateWith(beadi),
+            subscribe: (listener) => useRemoteStateStore.subscribeWith(beadi, listener),
             selectData: (store) => {
               const r = store.remotes[it.remoteId];
               if (r.state.state === "connected") {
@@ -146,7 +169,7 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
           },
           updateValue: (valueId, value) => {
             // console.log("Remote Update Value: ", valueId, value);
-            const r = useRemoteStateStore.getState().remotes[it.remoteId];
+            const r = useRemoteStateStore.getStateWith(beadi).remotes[it.remoteId];
             if (r.state.state === "connected") {
               sendMessage(r.state.socket, {
                 ValueChanged: {
@@ -158,7 +181,7 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
           },
           emitSignal: (valueId, data) => {
             console.log("Remote Emit Signal: ", valueId, data);
-            const r = useRemoteStateStore.getState().remotes[it.remoteId];
+            const r = useRemoteStateStore.getStateWith(beadi).remotes[it.remoteId];
             if (r.state.state === "connected") {
               sendMessage(r.state.socket, {
                 EmitSignal: {

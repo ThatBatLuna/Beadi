@@ -1,8 +1,8 @@
 import { FunctionComponent, useState } from "react";
 import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps } from "../interface/widget";
-import { useIOValueStore } from "../inputOutputStore";
-import { useInterfaceFileStore, useWidgetValueHandle } from "../interface/interfaceStores";
+import { useWidgetValueHandle } from "../interface/interfaceStores";
 import { Select } from "@beadi/components";
+import { useIOValueStore, useInterfaceFileStore } from "../storage";
 
 type SliderWidgetSettings = {
   valueId: string;

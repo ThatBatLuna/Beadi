@@ -1,8 +1,8 @@
 import { FunctionComponent } from "react";
 import { RemoteWidgetDef, RemoteWidgetProps, RemoteWidgetSettingsProps } from "../interface/widget";
-import { useIOValueStore } from "../inputOutputStore";
-import { useInterfaceFileStore, useWidgetSignalHandle } from "../interface/interfaceStores";
+import { useWidgetSignalHandle } from "../interface/interfaceStores";
 import { Button, Select } from "@beadi/components";
+import { useIOValueStore, useInterfaceFileStore } from "../storage";
 
 type ButtonWidgetSettings = {
   valueId: string;

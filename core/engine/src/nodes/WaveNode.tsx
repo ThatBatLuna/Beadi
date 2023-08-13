@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { NodeHeaderProps, nodeDef } from "../engine/node";
-import { useFileStore } from "../engine/store";
+import { useFileStore } from "../storage";
 import { categories } from "./category";
 import _ from "lodash";
 
