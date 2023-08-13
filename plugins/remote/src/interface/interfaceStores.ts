@@ -1,11 +1,11 @@
 import produce, { Draft } from "immer";
-import create from "zustand";
+import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { useCallback } from "react";
 import { InterfaceHandle } from "./InterfaceList";
 import { IOValueState } from "../inputOutputStore";
-import { HandleType, TypeOfHandleType } from "@beadi/engine/src/engine/node";
+import { HandleType, TypeOfHandleType } from "@beadi/engine";
 import { useDynamicStore } from "@beadi/engine";
 
 export type Widget = {
@@ -67,7 +67,7 @@ export const useInterfaceFileStore = create<InterfaceFileStore>()(
   )
 );
 
-const NULL_SET_VALUE = (value: any) => {
+const NULL_SET_VALUE = (_value: any) => {
   console.log("Tried to setValue on an invalid widget");
 };
 const NULL_GET_VALUE = () => {

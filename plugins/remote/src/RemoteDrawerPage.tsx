@@ -9,6 +9,7 @@ import _ from "lodash";
 import { usePublishStateStore } from "./publish/publishStore";
 import clsx from "clsx";
 import { Typo, Button } from "@beadi/components";
+import { Tab } from "@beadi/engine";
 
 const RemoteSettingsTab: FunctionComponent<{}> = () => {
   const addLocalInterface = useInterfaceFileStore((s) => s.addInterface);

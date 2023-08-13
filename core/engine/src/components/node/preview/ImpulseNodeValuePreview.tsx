@@ -1,9 +1,6 @@
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 import { usePreviewStore } from "../../../engine/preview";
 import { NodeHandleValuePreviewProps } from "../NodeHandleValuePreview";
-import { timerNodeDef } from "../../../nodes/TimerNode";
-import produce from "immer";
-import { useSignalBus } from "../../../engine/signal";
 import { useAnimationFrame } from "../../../hooks/useAnimationFrame";
 
 const HISTORY_LENGTH = 10.0;

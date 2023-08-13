@@ -57,7 +57,7 @@ export const InterfaceEditor: FunctionComponent<InterfaceEditorProps> = ({ inter
           </li>
         ))}
       </ul>
-      {Object.values(remoteWidgetDefs).map((value, index) => (
+      {Object.values(remoteWidgetDefs).map((value) => (
         <Button onClick={() => addWidget(value.id)} key={value.id}>
           Add {value.id}
         </Button>

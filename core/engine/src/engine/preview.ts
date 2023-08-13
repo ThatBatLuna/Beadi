@@ -1,6 +1,6 @@
 import produce from "immer";
 import _ from "lodash";
-import create from "zustand";
+import { create } from "zustand";
 
 type PreviewStore = {
   outputHandlePreviews: Record<string, Record<string, any>>;
@@ -19,7 +19,7 @@ export const usePreviewStore = create<PreviewStore>()((set, get) => ({
     const oldest = new Date().getTime() - 10.0 * 1000.0;
     set((s) =>
       produce(s, (draft) => {
-        const sig = _.mapValues(signals, (nodeSignals) => _.mapValues(nodeSignals, (signals) => [new Date()]));
+        const sig = _.mapValues(signals, (nodeSignals) => _.mapValues(nodeSignals, (_signals) => [new Date()]));
         console.log(sig);
 
         _.mergeWith(draft.signalLog, sig, (objValue, srcValue) => {

@@ -4,7 +4,7 @@ import { ResetDocument, useFileStore } from "../../engine/store";
 import _ from "lodash";
 import FileSaver from "file-saver";
 import { IDBPDatabase, openDB } from "idb";
-import create from "zustand";
+import { create } from "zustand";
 import { Edge, Node } from "reactflow";
 import clsx from "clsx";
 import { ImportFromLitterbox, UploadToLitterbox } from "./Litterbox";

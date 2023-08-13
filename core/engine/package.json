@@ -62,6 +62,7 @@
     "@types/file-saver": "^2.0.5",
     "@types/lodash": "^4.14.191",
     "@types/luxon": "^3.1.0",
+    "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.13",
     "gh-pages": "^4.0.0",
     "postcss": "^8.4.19",

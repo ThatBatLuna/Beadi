@@ -1,5 +1,5 @@
 import { devtools } from "zustand/middleware";
-import create from "zustand";
+import { create } from "zustand";
 import _ from "lodash";
 import { ButtplugClientState, syncClientState } from "./buttplug";
 import { ButtplugClient, ButtplugClientDevice } from "buttplug";
@@ -74,10 +74,7 @@ export const useButtplugStore = create<ButtplugState>()(
       },
 
       syncClients: () => {
-        localStorage.setItem(
-          "beadi-clients",
-          JSON.stringify(get().clientConfigs)
-        );
+        localStorage.setItem("beadi-clients", JSON.stringify(get().clientConfigs));
         set((store) => ({
           clients: syncClientState(
             store.clients,

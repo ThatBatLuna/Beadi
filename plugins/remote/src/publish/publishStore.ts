@@ -1,5 +1,5 @@
 import produce, { Draft } from "immer";
-import create from "zustand";
+import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { BeadiMessage, RemoteControlEndpoint, handleMessage, sendMessage } from "../message";
 import { useIOValueStore } from "../inputOutputStore";
@@ -199,7 +199,7 @@ function publish(set: Setter, get: Getter): void {
           },
         });
       },
-      PublishEndpoints: (payload) => {
+      PublishEndpoints: (_payload) => {
         console.log("TODO Compare payload endpoints to actually published endpoints and warn if they diverge");
       },
       ValueChanged: ({ endpoint, value }) => {

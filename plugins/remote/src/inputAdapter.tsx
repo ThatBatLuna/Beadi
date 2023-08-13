@@ -73,7 +73,7 @@ export type RemoteInputFromOutputAdapterSettings = {
 
 export const RemoteInputFromOutputSettingsEditor: FunctionComponent<
   InputAdapterSettingsEditorProps<RemoteInputFromOutputAdapterSettings>
-> = ({ settings, nodeId, updateSettings }) => {
+> = ({ settings, updateSettings }) => {
   const values = useRemoteStateStore((s) =>
     Object.values(s.remotes)
       .flatMap((remote) => {
@@ -137,7 +137,7 @@ export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputFr
       }
     }
   },
-  getData: (nodeId, settings) => {
+  getData: (_nodeId, settings) => {
     if (settings?.value != null) {
       const remote = useRemoteStateStore.getState().remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {

@@ -4,7 +4,7 @@ import { Entry } from "./drawer/Entry";
 import Logo from "./Logo";
 import { useBeadi } from "../context";
 
-const Drawer: FunctionComponent<{}> = (a) => {
+const Drawer: FunctionComponent = () => {
   const beadi = useBeadi();
 
   const nodes = useMemo(() => {
@@ -24,7 +24,7 @@ const Drawer: FunctionComponent<{}> = (a) => {
         <Logo></Logo>
       </div>
       <ul>
-        {nodes.map((category, index) => (
+        {nodes.map((category) => (
           <li key={category.name} className="mb-2">
             <h2 className="px-2 py-1 font-bold text-black" style={{ backgroundColor: category.color }}>
               {category.name}

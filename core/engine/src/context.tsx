@@ -18,7 +18,7 @@ import { curveNodeDef } from "./nodes/CurveNode";
 import { hysteresisNodeDef } from "./nodes/HysteresisNode";
 import { commentNodeDef } from "./nodes/CommentNode";
 import { edgeDetectorNodeDef } from "./nodes/EdgeDetector";
-import { FunctionComponent, ReactNode, createContext, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, createContext, useContext } from "react";
 import { UnknownBeadiNode } from "./engine/store";
 
 type BeadiContextProps = {

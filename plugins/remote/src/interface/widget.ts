@@ -1,7 +1,7 @@
 import { ComponentType } from "react";
 import { InterfaceHandle } from "./InterfaceList";
 
-export type RemoteWidgetProps<T, TSettings> = {
+export type RemoteWidgetProps<_T, TSettings> = {
   settings: TSettings;
   interfaceHandle: InterfaceHandle<any>;
   widgetId: string;
@@ -19,10 +19,4 @@ export type RemoteWidgetDef<TSettings> = {
   defaultSettings: TSettings | null;
   display: ComponentType<RemoteWidgetProps<any, TSettings>>;
   settings: ComponentType<RemoteWidgetSettingsProps<TSettings>>;
-};
-
-type WidgetValueHandle<T> = null | {
-  value: T;
-  localValue: T;
-  onChange: (value: T) => void;
 };

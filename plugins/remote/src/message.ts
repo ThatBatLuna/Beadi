@@ -1,4 +1,4 @@
-import { HandleType } from "../engine/node";
+import { HandleType } from "@beadi/engine";
 import { InterfaceDef } from "./interface/interfaceStores";
 
 type RemoteControlWidget = {

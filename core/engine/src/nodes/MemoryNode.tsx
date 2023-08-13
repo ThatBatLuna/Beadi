@@ -1,4 +1,4 @@
-import { NodeDef, nodeDef } from "../engine/node";
+import { nodeDef } from "../engine/node";
 import { categories } from "./category";
 
 export const memoryNodeDef = nodeDef()({

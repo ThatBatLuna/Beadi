@@ -1,4 +1,4 @@
-import { AnyRemoteWidgetDef, RemoteWidgetDef } from "./interface/widget";
+import { AnyRemoteWidgetDef } from "./interface/widget";
 import { buttonWidgetDef } from "./widgets/ButtonWidget";
 import { graphWidgetDef } from "./widgets/GraphWidget";
 import { sliderWidgetDef } from "./widgets/SliderWidget";

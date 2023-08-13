@@ -1,6 +1,6 @@
 import { Draft } from "immer";
 import { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition, applyEdgeChanges, applyNodeChanges } from "reactflow";
-import create from "zustand";
+import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import _ from "lodash";

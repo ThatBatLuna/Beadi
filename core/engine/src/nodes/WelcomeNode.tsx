@@ -49,7 +49,9 @@ export const ExampleList: FunctionComponent<{}> = () => {
 };
 
 export const WelcomeNodeContent: FunctionComponent<{}> = () => {
-  const changelog = BEADI_CHANGELOG;
+  //TODO Reintroduce Changelog
+  // const changelog = BEADI_CHANGELOG;
+  const changelog = "TODO CHANGELOG";
 
   return (
     <div className="flex flex-col gap-1 p-2">

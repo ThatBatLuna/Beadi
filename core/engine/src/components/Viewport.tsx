@@ -13,7 +13,6 @@ import ReactFlow, {
 import _ from "lodash";
 import { FileStore, useFileStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
-import { shallow } from "zustand/shallow";
 import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
@@ -81,7 +80,7 @@ type NewNodeDropDownProps = {
 const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClose }) => {
   const beadi = useBeadi();
 
-  const { addNode, addEdge, nodes } = useFileStore((s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.data.nodes }), shallow);
+  const { addNode, addEdge, nodes } = useFileStore((s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.data.nodes }));
 
   const handles = useMemo(() => {
     const sourceNodeType = nodes[data.source].type;
@@ -268,8 +267,8 @@ const Viewport: FunctionComponent<{
   );
 };
 
-const ViewportWrapper: FunctionComponent<{}> = (props) => {
-  const addNode = useFileStore((s) => s.addNode, shallow);
+const ViewportWrapper: FunctionComponent<{}> = () => {
+  const addNode = useFileStore((s) => s.addNode);
   const wrapper = useRef<HTMLDivElement | null>(null);
   const beadi = useBeadi();
 

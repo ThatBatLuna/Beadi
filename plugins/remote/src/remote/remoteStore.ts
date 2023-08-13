@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import produce, { Draft } from "immer";
 import { BeadiMessage, handleMessage } from "../message";
 import { immer } from "zustand/middleware/immer";
@@ -20,7 +20,7 @@ export type RemoteStore = {
 export const useRemoteStore = create(
   devtools(
     persist(
-      immer<RemoteStore>((set, get) => ({
+      immer<RemoteStore>((set) => ({
         remotes: {},
         addConnection: (connection) => {
           const id = `${new Date().getTime()}`;
@@ -88,7 +88,7 @@ export type RemoteStateStore = {
 };
 export const useRemoteStateStore = create(
   devtools<RemoteStateStore>(
-    (set, get) => ({
+    () => ({
       remotes: {},
     }),
     {
@@ -108,7 +108,7 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
   });
   socket.addEventListener("close", (event) => {
     console.log("WebSocket closed: ", event);
-    set((s) => ({ state: "disconnected" }));
+    set((_s) => ({ state: "disconnected" }));
   });
   socket.addEventListener("message", (event) => {
     // console.log("WebSocket message: ", event);
@@ -121,7 +121,7 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter): Remote
     }
     handleMessage(data, {
       WelcomeController: (payload) => {
-        set((s) => ({
+        set(() => ({
           state: "connected",
           id: payload.id,
           socket: socket,

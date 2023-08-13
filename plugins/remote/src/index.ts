@@ -1,4 +1,4 @@
-import { Plugin } from "@beadi/engine/src/plugin";
+import { Plugin } from "@beadi/engine";
 import { remoteInputAdapter } from "./inputAdapter";
 import { remoteInputFromOutputAdapter } from "./inputAdapter";
 import { remoteOutputAdapter, remoteOutputToInputAdapter } from "./outputAdapter";

@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { InputHandleDef, InputHandleDefs, InputTypesOf, NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
+import { InputHandleDef, InputHandleDefs, NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
 import { useFileStore } from "../engine/store";
 import { Select } from "@beadi/components";
@@ -129,7 +129,7 @@ function smoothMin(a: number, b: number, c: number): number {
   }
 }
 
-type MathNodeFuncDef<TInputHandles extends InputHandleDefs> = {
+type MathNodeFuncDef<_TInputHandles extends InputHandleDefs> = {
   execute: (inputs: Record<string, any>) => number;
   label: string;
   inputs: InputHandleDefs;

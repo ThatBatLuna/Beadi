@@ -1,9 +1,8 @@
 import _ from "lodash";
-import React, { FunctionComponent, MouseEventHandler, PointerEventHandler, useCallback, useMemo, useRef, useState } from "react";
-import { NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
-import { useFileStore, useInputHandleData } from "../engine/store";
+import React, { FunctionComponent, MouseEventHandler, PointerEventHandler, useCallback, useRef, useState } from "react";
+import { NodeHeaderProps, nodeDef } from "../engine/node";
+import { useFileStore } from "../engine/store";
 import { categories } from "./category";
-import { usePreviewStore } from "../engine/preview";
 
 type CurvePoint = {
   x: number;

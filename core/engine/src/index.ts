@@ -6,6 +6,7 @@ export * from "./hooks/useAnimationFrame";
 export * from "./hooks/useDeepDebounced";
 export * from "./hooks/useDynamicStore";
 
+export * from "./plugin";
 export * from "./engine/node";
 export * from "./engine/signal";
 export * from "./engine/store";

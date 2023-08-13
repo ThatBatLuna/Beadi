@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect, useRef, useState } from "react";
 import { NodeProps } from "reactflow";
-import { NodeDef, nodeDef } from "../engine/node";
+import { nodeDef } from "../engine/node";
 import { categories } from "./category";
 import { BeadiNodeData, useFileStore } from "../engine/store";
 

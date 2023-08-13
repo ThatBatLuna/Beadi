@@ -1,7 +1,6 @@
 import { FunctionComponent } from "react";
-import { NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
+import { NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
-import create from "zustand";
 import { createNodeDriverStore } from "../engine/nodeDriverStore";
 
 const useTimerNodeProgressStore = createNodeDriverStore<number>(0);

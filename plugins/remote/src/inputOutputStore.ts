@@ -1,7 +1,7 @@
-import create from "zustand";
+import { create } from "zustand";
 import produce from "immer";
 import _ from "lodash";
-import { devtools } from "zustand/middleware";
+// import { devtools } from "zustand/middleware";
 import { REMOTE_INPUT_ADAPTER_ID, RemoteInputAdapterSettings } from "./inputAdapter";
 import {
   HandleType,
@@ -19,7 +19,7 @@ import {
 type RemoteOutputAdapterSettings = any;
 const REMOTE_OUTPUT_ADAPTER_ID = "remoteOutput";
 
-export type IOValueDef<T> = {
+export type IOValueDef<_T> = {
   valueId: string;
   type: HandleType;
   name: string;
@@ -45,37 +45,37 @@ export type IOValueStore = {
 };
 
 /** Used by all input-/outputAdapters to push/pull their values from/to */
-export const useIOValueStore = create(
-  devtools<IOValueStore>(
-    (set, get) => ({
-      values: {},
-      setValue: (id, value, writeUnwriteable = false) => {
-        if (!writeUnwriteable) {
-          if (!get().values[id]?.writeable) {
-            return;
-          }
+export const useIOValueStore = create<IOValueStore>(
+  // devtools(
+  (set, get) => ({
+    values: {},
+    setValue: (id, value, writeUnwriteable = false) => {
+      if (!writeUnwriteable) {
+        if (!get().values[id]?.writeable) {
+          return;
         }
-        set((s) =>
-          produce(s, (draft) => {
-            draft.values[id].value = value;
-          })
-        );
-      },
-      signalBuffer: {},
-      emitSignal: (valueId, data) => {
-        set((s) =>
-          produce(s, (draft) => {
-            if (!(valueId in draft.signalBuffer)) {
-              draft.signalBuffer[valueId] = [];
-            }
-            draft.signalBuffer[valueId].push(data ?? null);
-          })
-        );
-      },
-    }),
+      }
+      set((s) =>
+        produce(s, (draft) => {
+          draft.values[id].value = value;
+        })
+      );
+    },
+    signalBuffer: {},
+    emitSignal: (valueId, data) => {
+      set((s) =>
+        produce(s, (draft) => {
+          if (!(valueId in draft.signalBuffer)) {
+            draft.signalBuffer[valueId] = [];
+          }
+          draft.signalBuffer[valueId].push(data ?? null);
+        })
+      );
+    },
+  })
 
-    { name: "useIOValueStore" }
-  )
+  //   { name: "useIOValueStore" }
+  // )
 );
 
 export function tempPopSignalBuffer() {

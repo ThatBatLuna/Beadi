@@ -1,5 +1,5 @@
 import _ from "lodash";
-import create from "zustand";
+import { create } from "zustand";
 import { getConversionFunction } from "./handles";
 import { BeadiContext } from "../context";
 

@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { useDrag } from "react-dnd";
-import { AnyNodeDef, NodeDef } from "../../engine/node";
+import { AnyNodeDef } from "../../engine/node";
 
 type EntryProps = {
   nodeDef: AnyNodeDef;

@@ -1,6 +1,6 @@
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import create from "zustand";
+import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import Drawer from "./components/Drawer";
 import { MobileView } from "./components/mobile/MobileView";
@@ -13,7 +13,7 @@ type GlobalSettings = {
   setMobileView: (mobile: boolean) => void;
 };
 export const useGlobalSettings = create(
-  immer<GlobalSettings>((set, get) => ({
+  immer<GlobalSettings>((set) => ({
     mobileView: window.innerWidth < 768,
     setMobileView: (mobile) => {
       set((state) => {

@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { NodeDef, NodeHeaderProps, nodeDef } from "../engine/node";
+import { NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
 import { gaussianRandom } from "./TimerNode";
 import { emitImpulse } from "../engine/signal";
