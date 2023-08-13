@@ -6,7 +6,7 @@ import App from "./App";
 import { enableAllPlugins } from "immer";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
-import { AnyPlugin, Plugin } from "./plugin";
+import { AnyPlugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
 
 export type BeadiOptions = {

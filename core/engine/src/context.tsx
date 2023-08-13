@@ -1,4 +1,4 @@
-import { AnyPlugin, Plugin } from "./plugin";
+import { AnyPlugin } from "./plugin";
 import { AnyNodeDef, InputHandleDefs, OutputHandleDefs } from "./engine/node";
 
 import { timerNodeDef } from "./nodes/TimerNode";

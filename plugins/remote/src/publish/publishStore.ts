@@ -5,7 +5,6 @@ import { BeadiMessage, RemoteControlEndpoint, handleMessage, sendMessage } from 
 import _ from "lodash";
 import { useIOValueStore, useInterfaceFileStore } from "../storage";
 import { BeadiContext } from "@beadi/engine";
-import { RemotePlugin, RemotePluginSettings } from "..";
 
 type PublishConnectionState =
   | {

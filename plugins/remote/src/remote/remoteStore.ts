@@ -8,7 +8,6 @@ import { IOValueState } from "../inputOutputStore";
 import { BeadiContext, diffByKeys } from "@beadi/engine";
 import { createStore } from "zustand";
 import { useRemoteStateStore, useRemoteStore } from "../storage";
-import { RemotePluginSettings } from "..";
 
 type RemoteConnection = {
   remoteConnectionId: string;
