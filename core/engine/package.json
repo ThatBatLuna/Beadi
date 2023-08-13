@@ -31,7 +31,7 @@
     "swr": "=2.1.0",
     "use-debounce": "=9.0.3",
     "web-vitals": "=2.1.4",
-    "zustand": "=4.1.4"
+    "zustand": "=4.4.1"
   },
   "homepage": "https://beadi.onrender.com/",
   "scripts": {

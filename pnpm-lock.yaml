@@ -186,8 +186,8 @@ importers:
         specifier: '=2.1.4'
         version: 2.1.4
       zustand:
-        specifier: '=4.1.4'
-        version: 4.1.4(immer@9.0.19)(react@18.2.0)
+        specifier: '=4.4.1'
+        version: 4.4.1(@types/react@18.0.25)(immer@9.0.19)(react@18.2.0)
     devDependencies:
       '@types/file-saver':
         specifier: ^2.0.5
@@ -244,8 +244,8 @@ importers:
         specifier: '=4.7.1'
         version: 4.7.1(react@18.2.0)
       zustand:
-        specifier: '=4.1.4'
-        version: 4.1.4(immer@9.0.21)(react@18.2.0)
+        specifier: '=4.4.1'
+        version: 4.4.1(@types/react@18.2.20)(immer@9.0.21)(react@18.2.0)
     devDependencies:
       '@types/lodash':
         specifier: ^4.14.191
@@ -4092,40 +4092,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zustand@4.1.4(immer@9.0.19)(react@18.2.0):
-    resolution: {integrity: sha512-k2jVOlWo8p4R83mQ+/uyB8ILPO2PCJOf+QVjcL+1PbMCk1w5OoPYpAIxy9zd93FSfmJqoH6lGdwzzjwqJIRU5A==}
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      immer: '>=9.0'
-      react: '>=16.8'
-    peerDependenciesMeta:
-      immer:
-        optional: true
-      react:
-        optional: true
-    dependencies:
-      immer: 9.0.19
-      react: 18.2.0
-      use-sync-external-store: 1.2.0(react@18.2.0)
-    dev: false
-
-  /zustand@4.1.4(immer@9.0.21)(react@18.2.0):
-    resolution: {integrity: sha512-k2jVOlWo8p4R83mQ+/uyB8ILPO2PCJOf+QVjcL+1PbMCk1w5OoPYpAIxy9zd93FSfmJqoH6lGdwzzjwqJIRU5A==}
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      immer: '>=9.0'
-      react: '>=16.8'
-    peerDependenciesMeta:
-      immer:
-        optional: true
-      react:
-        optional: true
-    dependencies:
-      immer: 9.0.21
-      react: 18.2.0
-      use-sync-external-store: 1.2.0(react@18.2.0)
-    dev: false
-
   /zustand@4.4.1(@types/react@18.0.25)(immer@9.0.19)(react@18.2.0):
     resolution: {integrity: sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==}
     engines: {node: '>=12.7.0'}
@@ -4143,6 +4109,27 @@ packages:
     dependencies:
       '@types/react': 18.0.25
       immer: 9.0.19
+      react: 18.2.0
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /zustand@4.4.1(@types/react@18.2.20)(immer@9.0.21)(react@18.2.0):
+    resolution: {integrity: sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.20
+      immer: 9.0.21
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false

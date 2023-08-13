@@ -13,7 +13,7 @@ import ReactFlow, {
 import _ from "lodash";
 import { FileStore, useFileStore } from "../engine/store";
 import { makeNodeRenderer } from "./node/NodeRenderer";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 import { useDrop } from "react-dnd";
 import { handlesCompatible } from "../engine/handles";
 import { NodeHandleDisplay } from "./node/NodeHandle";
