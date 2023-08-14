@@ -19,6 +19,7 @@ export const Typo: FunctionComponent<TypoProps> = ({ element = "h1", children, v
           "font-bold text-3xl": variant === "h0",
           "font-bold text-2xl": variant === "h1",
           "font-bold text-xl": variant === "h2",
+          "font-bold": variant === "h3",
         },
         className
       )}

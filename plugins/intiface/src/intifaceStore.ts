@@ -474,7 +474,9 @@ export function persistIntifaceStore(beadi: BeadiContext) {
 export function startSendCommandLoop(beadi: BeadiContext) {
   let inFlight = 0;
   function sendUpdates() {
-    console.log("inFlight: ", inFlight);
+    if (inFlight > 20) {
+      console.warn("Probably sending too many requests to intiface server. Currently ", inFlight, " requests in flight.");
+    }
     const state = useIntifaceStore.getStateWith(beadi);
     for (const connectionId in state.connections) {
       const connectionState = state.connections[connectionId].state;

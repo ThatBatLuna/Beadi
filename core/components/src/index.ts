@@ -1,5 +1,7 @@
-export { CollapsibleCard } from "./collapsible/CollapsibleCard";
-export type { CollapsibleCardProps } from "./collapsible/CollapsibleCard";
+export { CollapsibleCard } from "./card/CollapsibleCard";
+export type { CollapsibleCardProps } from "./card/CollapsibleCard";
+export { Card } from "./card/Card";
+export type { CardProps } from "./card/Card";
 
 export { Button } from "./input/Button";
 export type { ButtonProps } from "./input/Button";

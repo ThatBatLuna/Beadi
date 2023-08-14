@@ -60,7 +60,6 @@ export const IntifaceSettingsEditor: FunctionComponent<OutputAdapterSettingsEdit
 
   return (
     <div>
-      <div>{JSON.stringify(settings)}</div>
       <Select
         options={actuators}
         allowUnselect={false}
@@ -101,22 +100,24 @@ export const intifaceAdapter = outputAdapterDef({
           const device = connection.devices[settings.value.deviceIndex];
           if (device != null) {
             const actuator = device.actuactors[settings.value.actuatorIndex];
-            if (actuator.actuatorKind === "linear") {
-              return {
-                value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
-                duration: { type: "number", default: 0.0, min: 0.0, label: "Duration" },
-              } as IntifaceHandleDefs;
-            }
-            if (actuator.actuatorKind === "rotate") {
-              return {
-                value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
-                clockwise: { type: "boolean", default: true, label: "Clockwise" },
-              } as IntifaceHandleDefs;
-            }
-            if (actuator.actuatorKind === "scalar") {
-              return {
-                value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
-              } as IntifaceHandleDefs;
+            if (actuator !== undefined) {
+              if (actuator.actuatorKind === "linear") {
+                return {
+                  value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
+                  duration: { type: "number", default: 0.0, min: 0.0, label: "Duration" },
+                } as IntifaceHandleDefs;
+              }
+              if (actuator.actuatorKind === "rotate") {
+                return {
+                  value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
+                  clockwise: { type: "boolean", default: true, label: "Clockwise" },
+                } as IntifaceHandleDefs;
+              }
+              if (actuator.actuatorKind === "scalar") {
+                return {
+                  value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
+                } as IntifaceHandleDefs;
+              }
             }
           }
         }
@@ -131,14 +132,15 @@ export const intifaceAdapter = outputAdapterDef({
         if (connection.state === "connected") {
           const device = connection.devices[settings.value.deviceIndex];
           if (device != null) {
-            //TODO These events should be batched
             const actuator = device.actuactors[settings.value.actuatorIndex];
-            if (actuator.actuatorKind === "scalar") {
-              actuator.actuate(data.value ?? 0.0);
-            } else if (actuator.actuatorKind === "linear") {
-              actuator.actuate(data.value ?? 0.0, (data as any).duration ?? 1.0);
-            } else if (actuator.actuatorKind === "rotate") {
-              actuator.actuate(data.value ?? 0.0, (data as any).clockwise ?? false);
+            if (actuator !== undefined) {
+              if (actuator.actuatorKind === "scalar") {
+                actuator.actuate(data.value ?? 0.0);
+              } else if (actuator.actuatorKind === "linear") {
+                actuator.actuate(data.value ?? 0.0, (data as any).duration ?? 1.0);
+              } else if (actuator.actuatorKind === "rotate") {
+                actuator.actuate(data.value ?? 0.0, (data as any).clockwise ?? false);
+              }
             }
           }
         }
