@@ -13,15 +13,7 @@ import {
   LinearCmd,
   VectorSubcommand,
 } from "buttplug";
-import {
-  BeadiContext,
-  BeadiFileData,
-  FileStore,
-  OUTPUT_ADAPTER_NODE_ID,
-  OutputAdapterNodeSettings,
-  notNull,
-  useFileStore,
-} from "@beadi/engine";
+import { BeadiContext, FileStore, OUTPUT_ADAPTER_NODE_ID, OutputAdapterNodeSettings, notNull, useFileStore } from "@beadi/engine";
 import { useIntifaceStore } from "./storage";
 import _ from "lodash";
 import { INTIFACE_OUTPUT_ADAPTER_ID, IntifaceAdapterSettings } from "./outputAdapter";
@@ -32,21 +24,47 @@ type IntifaceActuatorAttribute = {
 } & (
   | {
       actuatorKind: "scalar";
+      scalarAttributeIndex: number;
       actuate: (n: number) => void;
+      wanted: {
+        value: number;
+      } | null;
+      actual: {
+        value: number;
+      } | null;
     }
   | {
       actuatorKind: "linear";
+      linearAttributeIndex: number;
       actuate: (n: number, duration: number) => void;
+      wanted: {
+        value: number;
+        duration: number;
+      } | null;
+      actual: {
+        value: number;
+        duration: number;
+      } | null;
     }
   | {
       actuatorKind: "rotate";
+      rotateAttributeIndex: number;
       actuate: (speed: number, clockwise: boolean) => void;
+      wanted: {
+        speed: number;
+        clockwise: boolean;
+      } | null;
+      actual: {
+        speed: number;
+        clockwise: boolean;
+      } | null;
     }
 );
 type IntifaceDevice = {
   name: string;
   displayName: string;
   deviceIndex: number;
+  deviceHandle: ButtplugClientDevice;
   actuactors: IntifaceActuatorAttribute[];
 };
 
@@ -141,48 +159,85 @@ function makeConnectingState(actions: StateControls): IntifaceConnectionState & 
   };
 }
 
-function makeDevice(device: ButtplugClientDevice): IntifaceDevice {
+function makeDevice(device: ButtplugClientDevice, actions: StateControls): IntifaceDevice {
   return {
     name: device.name,
     displayName: device.displayName ?? device.name,
     deviceIndex: device.index,
+    deviceHandle: device,
     actuactors: [
-      ...(device.messageAttributes.LinearCmd?.map((it) => ({
-        featureDescriptor: it.FeatureDescriptor,
-        actuatorType: it.ActuatorType,
-        actuatorKind: "linear" as const,
-        actuate: (n: number, durationSec: number) => {
-          const duration = Math.floor(durationSec * 1000.0);
-          const subcommand = new VectorSubcommand(it.Index, n, duration);
-          device.sendExpectOk(new LinearCmd([subcommand], device.index));
-        },
-      })) ?? []),
-      ...(device.messageAttributes.RotateCmd?.map((it) => ({
-        featureDescriptor: it.FeatureDescriptor,
-        actuatorType: it.ActuatorType,
-        actuatorKind: "rotate" as const,
-        actuate: (n: number, clockwise: boolean) => {
-          const subcommand = new RotateSubcommand(it.Index, n, clockwise);
-          device.sendExpectOk(new RotateCmd([subcommand], device.index));
-        },
-      })) ?? []),
-      ...(device.messageAttributes.ScalarCmd?.map((it) => ({
-        featureDescriptor: it.FeatureDescriptor,
-        actuatorType: it.ActuatorType,
-        actuatorKind: "scalar" as const,
-        actuate: (n: number) => {
-          const subcommand = new ScalarSubcommand(it.Index, n, it.ActuatorType);
-          device.sendExpectOk(new ScalarCmd([subcommand], device.index));
-        },
-      })) ?? []),
-    ],
+      ...(device.messageAttributes.LinearCmd?.map((it) => ({ kind: "linear" as const, attribute: it })) ?? []),
+      ...(device.messageAttributes.RotateCmd?.map((it) => ({ kind: "rotate" as const, attribute: it })) ?? []),
+      ...(device.messageAttributes.ScalarCmd?.map((it) => ({ kind: "scalar" as const, attribute: it })) ?? []),
+    ].map((it, index) => {
+      if (it.kind === "linear") {
+        return {
+          featureDescriptor: it.attribute.FeatureDescriptor,
+          actuatorType: it.attribute.ActuatorType,
+          actuatorKind: "linear" as const,
+          linearAttributeIndex: it.attribute.Index,
+          wanted: null,
+          actual: null,
+          actuate: (n: number, durationSec: number) => {
+            actions.set((d) => {
+              if (d.state === "connected") {
+                d.devices[device.index].actuactors[index].wanted = {
+                  value: n,
+                  duration: durationSec,
+                };
+              }
+            });
+          },
+        } satisfies IntifaceActuatorAttribute;
+      }
+      if (it.kind === "rotate") {
+        return {
+          featureDescriptor: it.attribute.FeatureDescriptor,
+          actuatorType: it.attribute.ActuatorType,
+          actuatorKind: "rotate" as const,
+          rotateAttributeIndex: it.attribute.Index,
+          wanted: null,
+          actual: null,
+          actuate: (n: number, clockwise: boolean) => {
+            actions.set((d) => {
+              if (d.state === "connected") {
+                d.devices[device.index].actuactors[index].wanted = {
+                  value: n,
+                  clockwise: clockwise,
+                };
+              }
+            });
+          },
+        };
+      }
+      if (it.kind === "scalar") {
+        return {
+          featureDescriptor: it.attribute.FeatureDescriptor,
+          actuatorType: it.attribute.ActuatorType,
+          actuatorKind: "scalar" as const,
+          scalarAttributeIndex: it.attribute.Index,
+          wanted: null,
+          actual: null,
+          actuate: (n: number) => {
+            actions.set((d) => {
+              if (d.state === "connected") {
+                d.devices[device.index].actuactors[index].wanted = {
+                  value: n,
+                };
+              }
+            });
+          },
+        };
+      }
+      throw new Error("");
+    }),
   };
 }
 function makeConnectedState(client: ButtplugClient, actions: StateControls): IntifaceConnectionState & { state: "connected" } {
   const deviceAddedListener = (device: ButtplugClientDevice) => {
     actions.set((d) => {
       if (d.state === "connected") {
-        d.devices[device.index] = makeDevice(device);
+        d.devices[device.index] = makeDevice(device, actions);
       }
     });
   };
@@ -238,14 +293,17 @@ function makeConnectedState(client: ButtplugClient, actions: StateControls): Int
     });
   };
 
+  const devices = _.keyBy(
+    client.devices.map((it) => makeDevice(it, actions)),
+    (it) => it.deviceIndex
+  );
+
+  console.log("Connected with devices: ", devices);
   return {
     state: "connected",
     client,
     scanning: false,
-    devices: _.keyBy(
-      client.devices.map((it) => makeDevice(it)),
-      (it) => it.deviceIndex
-    ),
+    devices,
     disconnect,
     startScan,
     stopScan,
@@ -257,6 +315,12 @@ type IntifaceStore = {
 
   addConnection: (def: Partial<IntifaceConnectionDef> & Omit<IntifaceConnectionDef, "connectionId">, connectImmediately?: boolean) => void;
   removeConnection: (id: string) => void;
+  updateActuator: (
+    connectionId: string,
+    deviceIndex: number,
+    actuatorIndex: number,
+    recipe: (draft: Draft<IntifaceActuatorAttribute>) => void
+  ) => void;
 };
 export function makeIntifaceStore() {
   return createStore(
@@ -312,6 +376,20 @@ export function makeIntifaceStore() {
             })
           );
         }
+      },
+      updateActuator: (connId, devIdx, actIdx, recipe) => {
+        set((s) =>
+          produce(s, (draft) => {
+            const state = draft.connections[connId]?.state;
+            if (state?.state === "connected") {
+              const dev = state.devices[devIdx];
+              if (dev != null) {
+                const act = dev.actuactors[actIdx];
+                recipe(act);
+              }
+            }
+          })
+        );
       },
     }))
   );
@@ -393,13 +471,84 @@ export function persistIntifaceStore(beadi: BeadiContext) {
   }
 }
 
-// export function startSendCommandLoop(beadi: BeadiContext) {
-//   function sendCommands() {
-//     const state = useIntifaceStore.getStateWith(beadi);
-//     for (const connectionId in state.connections) {
-//       const connectionState = state.connections[connectionId].state;
-//       if (connectionState.state === "connected") {
-//       }
-//     }
-//   }
-// }
+export function startSendCommandLoop(beadi: BeadiContext) {
+  let inFlight = 0;
+  function sendUpdates() {
+    console.log("inFlight: ", inFlight);
+    const state = useIntifaceStore.getStateWith(beadi);
+    for (const connectionId in state.connections) {
+      const connectionState = state.connections[connectionId].state;
+      if (connectionState.state === "connected") {
+        const devices = connectionState.devices;
+        for (const dId in devices) {
+          const device = devices[dId];
+          for (let actuatorIndex = 0; actuatorIndex < device.actuactors.length; actuatorIndex++) {
+            const actuator = device.actuactors[actuatorIndex];
+            if (!_.isEqual(actuator.wanted, actuator.actual)) {
+              console.log(
+                "Updating for : ",
+                "Device ",
+                dId,
+                "/",
+                device.deviceIndex,
+                "act: ",
+                connectionState.client.devices,
+                actuatorIndex
+              );
+              const updateActual = () => {
+                useIntifaceStore
+                  .getStateWith(beadi)
+                  .updateActuator(connectionId, device.deviceIndex, actuatorIndex, (draft) => (draft.actual = actuator.wanted));
+                inFlight--;
+              };
+              switch (actuator.actuatorKind) {
+                case "linear":
+                  {
+                    const duration = Math.floor((actuator.wanted?.duration ?? 1.0) * 1000.0);
+                    const subcommand = new VectorSubcommand(actuator.linearAttributeIndex, actuator.wanted?.value ?? 0.0, duration);
+                    inFlight++;
+                    // connectionState.client.devices.find(it => it.index === device.deviceIndex)
+                    device.deviceHandle
+                      .sendExpectOk(new LinearCmd([subcommand], device.deviceIndex))
+                      .then(updateActual)
+                      .catch(() => inFlight--);
+                  }
+                  break;
+                case "rotate":
+                  {
+                    const subcommand = new RotateSubcommand(
+                      actuator.rotateAttributeIndex,
+                      actuator.wanted?.speed ?? 0.0,
+                      actuator.wanted?.clockwise ?? false
+                    );
+                    inFlight++;
+                    device.deviceHandle
+                      .sendExpectOk(new RotateCmd([subcommand], device.deviceIndex))
+                      .then(updateActual)
+                      .catch(() => inFlight--);
+                  }
+                  break;
+                case "scalar":
+                  {
+                    const subcommand = new ScalarSubcommand(
+                      actuator.scalarAttributeIndex,
+                      actuator.wanted?.value ?? 0.0,
+                      actuator.actuatorType
+                    );
+                    inFlight++;
+                    device.deviceHandle
+                      .sendExpectOk(new ScalarCmd([subcommand], device.deviceIndex))
+                      .then(updateActual)
+                      .catch(() => inFlight--);
+                  }
+                  break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  setInterval(sendUpdates, 1000 / 20.0);
+}

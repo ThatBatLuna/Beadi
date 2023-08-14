@@ -60,6 +60,7 @@ export const IntifaceSettingsEditor: FunctionComponent<OutputAdapterSettingsEdit
 
   return (
     <div>
+      <div>{JSON.stringify(settings)}</div>
       <Select
         options={actuators}
         allowUnselect={false}
@@ -67,7 +68,7 @@ export const IntifaceSettingsEditor: FunctionComponent<OutputAdapterSettingsEdit
         renderOption={(s) => (
           <>
             {" "}
-            {s.deviceName}::{s.actuator.actuatorType}
+            {s.deviceIndex}|{s.deviceName}::{s.actuator.actuatorType}
           </>
         )}
         onSelect={updateValue}
