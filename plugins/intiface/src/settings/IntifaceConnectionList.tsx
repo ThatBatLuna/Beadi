@@ -14,7 +14,7 @@ export const IntifaceConnectionListEntry: FunctionComponent<IntifaceConnectionLi
     <li>
       <div>{connection.state.state}</div>
       <code className="break-all">{JSON.stringify(connection.def)}</code>
-      <Button onClick={() => removeConnection(connection.id)}>X</Button>
+      <Button onClick={() => removeConnection(connection.def.connectionId)}>X</Button>
 
       {state.state === "disconnected" && <Button onClick={() => state.connect()}>Connect</Button>}
       {state.state === "connected" && !state.scanning && <Button onClick={() => state.startScan()}>Scan</Button>}
@@ -33,7 +33,7 @@ export const IntifaceConnectionList: FunctionComponent<IntifaceConnectionListPro
   return (
     <ul>
       {Object.values(connections).map((it) => (
-        <IntifaceConnectionListEntry connection={it} key={it.id}></IntifaceConnectionListEntry>
+        <IntifaceConnectionListEntry connection={it} key={it.def.connectionId}></IntifaceConnectionListEntry>
       ))}
     </ul>
   );

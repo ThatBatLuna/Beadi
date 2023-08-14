@@ -136,9 +136,9 @@ type MathNodeFuncDef<_TInputHandles extends InputHandleDefs> = {
 };
 const funcs: Record<Operator, MathNodeFuncDef<any>> = {
   add: twoCompMath("Add", ({ a, b }) => a + b),
-  multiply: twoCompMath("Multiply", ({ a, b }) => a + b),
-  subtract: twoCompMath("Subtract", ({ a, b }) => a + b),
-  divide: twoCompMath("Divide", ({ a, b }) => a + b),
+  multiply: twoCompMath("Multiply", ({ a, b }) => a * b),
+  subtract: twoCompMath("Subtract", ({ a, b }) => a - b),
+  divide: twoCompMath("Divide", ({ a, b }) => a / b),
   multiplyAdd: threeCompMath("Multiply Add", ({ a, b, c }) => a * b + c, ["Value", "Multiplier", "Addend"]),
   mix: threeCompMath("Mix", ({ a, b, c: amount }) => b * amount + a * (1 - amount), ["Value 0", "Value 1", "Mix Amount"]),
   power: twoCompMath("Power", ({ a, b }) => Math.pow(a, b), ["Base", "Exponent"]),

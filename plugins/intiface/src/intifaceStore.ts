@@ -1,7 +1,14 @@
 import produce, { Draft } from "immer";
 import { createStore } from "zustand";
 import { devtools } from "zustand/middleware";
-import { ButtplugClient, ButtplugBrowserWebsocketClientConnector, ButtplugClientDevice, ActuatorType } from "buttplug";
+import {
+  ButtplugClient,
+  ButtplugBrowserWebsocketClientConnector,
+  ButtplugClientDevice,
+  ActuatorType,
+  ScalarCmd,
+  ScalarSubcommand,
+} from "buttplug";
 import { BeadiContext } from "@beadi/engine";
 import { useIntifaceStore } from "./storage";
 import _ from "lodash";
@@ -9,8 +16,18 @@ import _ from "lodash";
 type IntifaceActuatorAttribute = {
   featureDescriptor: string;
   actuatorType: ActuatorType;
-  actuatorKind: "scalar" | "rotate" | "linear";
-};
+} & (
+  | {
+      actuatorKind: "scalar";
+      actuate: (n: number) => void;
+    }
+  | {
+      actuatorKind: "linear";
+    }
+  | {
+      actuatorKind: "rotate";
+    }
+);
 type IntifaceDevice = {
   name: string;
   displayName: string;
@@ -20,9 +37,9 @@ type IntifaceDevice = {
 
 export type IntifaceConnectionDef = {
   url: string;
+  connectionId: string;
 };
 export type IntifaceConnection = {
-  id: string;
   def: IntifaceConnectionDef;
   state: IntifaceConnectionState;
 };
@@ -129,6 +146,10 @@ function makeDevice(device: ButtplugClientDevice): IntifaceDevice {
         featureDescriptor: it.FeatureDescriptor,
         actuatorType: it.ActuatorType,
         actuatorKind: "scalar" as const,
+        actuate: (n: number) => {
+          const subcommand = new ScalarSubcommand(it.Index, n, it.ActuatorType);
+          device.sendExpectOk(new ScalarCmd([subcommand], device.index));
+        },
       })) ?? []),
     ],
   };
@@ -210,7 +231,7 @@ function makeConnectedState(client: ButtplugClient, actions: StateControls): Int
 type IntifaceStore = {
   connections: Record<string, IntifaceConnection>;
 
-  addConnection: (def: IntifaceConnectionDef, connectImmediately?: boolean) => void;
+  addConnection: (def: Partial<IntifaceConnectionDef> & Omit<IntifaceConnectionDef, "connectionId">, connectImmediately?: boolean) => void;
   removeConnection: (id: string) => void;
 };
 export function makeIntifaceStore() {
@@ -218,23 +239,26 @@ export function makeIntifaceStore() {
     devtools<IntifaceStore>((set, get) => ({
       connections: {},
 
-      addConnection: (def, connectImmediately = false) => {
-        const id = `${new Date().getTime()}`;
+      addConnection: (pdef, connectImmediately = false) => {
+        const def: IntifaceConnectionDef = {
+          ...pdef,
+          connectionId: pdef.connectionId ?? `${new Date().getTime()}`,
+        };
         const state = makeDisconnectedState({
           get: () => {
-            return get().connections[id];
+            return get().connections[def.connectionId];
           },
           set: (recipe) => {
             if (typeof recipe === "function") {
               set((s) =>
                 produce(s, (draft) => {
-                  recipe(draft.connections[id].state);
+                  recipe(draft.connections[def.connectionId].state);
                 })
               );
             } else {
               set((s) =>
                 produce(s, (draft) => {
-                  draft.connections[id].state = recipe;
+                  draft.connections[def.connectionId].state = recipe;
                 })
               );
             }
@@ -242,9 +266,8 @@ export function makeIntifaceStore() {
         });
         set((s) =>
           produce(s, (draft) => {
-            draft.connections[id] = {
+            draft.connections[def.connectionId] = {
               def: def,
-              id: id,
               state: state,
             };
           })
@@ -294,3 +317,14 @@ export function persistIntifaceStore(beadi: BeadiContext) {
     }
   }
 }
+
+// export function startSendCommandLoop(beadi: BeadiContext) {
+//   function sendCommands() {
+//     const state = useIntifaceStore.getStateWith(beadi);
+//     for (const connectionId in state.connections) {
+//       const connectionState = state.connections[connectionId].state;
+//       if (connectionState.state === "connected") {
+//       }
+//     }
+//   }
+// }
