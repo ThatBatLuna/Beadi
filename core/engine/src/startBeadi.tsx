@@ -1,52 +1,48 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { FunctionComponent, useMemo } from "react";
 import "./index.css";
 import "reactflow/dist/style.css";
 import App from "./App";
-import { enableAllPlugins } from "immer";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
 import { AnyPlugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
-import { HomePage } from "./components/home/HomePage";
 
 export const EDITOR_ROOT_URL = "/edit";
 
 export type BeadiOptions = {
-  rootElement: string;
   plugins: AnyPlugin[];
+  extraRoutes: RouteObject[];
 };
-export function startBeadi(options: BeadiOptions) {
-  enableAllPlugins();
 
-  const context = new BeadiContext({ plugins: options.plugins });
-  context.finalize();
+type BeadiProps = {
+  options: BeadiOptions;
+};
+export const Beadi: FunctionComponent<BeadiProps> = ({ options }) => {
+  const [context, router] = useMemo(() => {
+    console.log("Beadi was instantiated - creating BeadiContext");
+    const context = new BeadiContext({ plugins: options.plugins });
+    context.finalize();
+    watchForChanges(context);
 
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <HomePage />,
-    },
-    {
-      path: EDITOR_ROOT_URL,
-      element: <App />,
-      children: [
-        ...Object.values(context.settingsTabs).map((it) => ({
-          path: it.id,
-          element: it.tab,
-        })),
-      ],
-    },
-  ]);
+    const router = createBrowserRouter([
+      ...options.extraRoutes,
+      {
+        path: EDITOR_ROOT_URL,
+        element: <App />,
+        children: [
+          ...Object.values(context.settingsTabs).map((it) => ({
+            path: it.id,
+            element: it.tab,
+          })),
+        ],
+      },
+    ]);
+    return [context, router];
+  }, []);
 
-  const root = ReactDOM.createRoot(document.getElementById(options.rootElement) as HTMLElement);
-  root.render(
-    <React.StrictMode>
-      <BeadiContextProvider context={context}>
-        <RouterProvider router={router}></RouterProvider>
-      </BeadiContextProvider>
-    </React.StrictMode>
+  return (
+    <BeadiContextProvider context={context}>
+      <RouterProvider router={router}></RouterProvider>
+    </BeadiContextProvider>
   );
-
-  watchForChanges(context);
-}
+};

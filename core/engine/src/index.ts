@@ -1,4 +1,4 @@
-export { startBeadi } from "./startBeadi";
+export * from "./startBeadi";
 export type { BeadiOptions } from "./startBeadi";
 
 export * from "./utils";

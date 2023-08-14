@@ -25,3 +25,6 @@ export type { TypoProps } from "./typo/Typo";
 
 export { NodeShell } from "./node/NodeShell";
 export type { NodeShellProps } from "./node/NodeShell";
+
+export { Logo } from "./logo/Logo";
+export type { LogoProps } from "./logo/Logo";
