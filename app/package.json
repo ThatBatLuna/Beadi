@@ -13,6 +13,9 @@
   "dependencies": {
     "@beadi/components": "workspace:^",
     "@beadi/engine": "workspace:^",
+    "@beadi/plugin-device-sensors": "workspace:^",
+    "@beadi/plugin-intiface": "workspace:^",
+    "@beadi/plugin-media": "workspace:^",
     "@beadi/plugin-remote": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

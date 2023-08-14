@@ -23,6 +23,13 @@ export class Storage {
   constructor(shards: StorageShardDef<StorageShard>[]) {
     this.shards = _.keyBy(shards, (it) => it.name);
   }
+
+  getShard(shard: string): StorageShardDef<StorageShard> {
+    if (import.meta.env.DEV && !(shard in this.shards)) {
+      throw new Error(`Shard '${shard}' was not found in storage. Did you forget to add in in a plugin?`);
+    }
+    return this.shards[shard];
+  }
 }
 
 type Store<TState> = WithReact<StoreApi<TState>>;
@@ -63,31 +70,26 @@ export function createStorageShard<T extends StorageShard>(shard: StorageShardDe
   const hooks = Object.fromEntries([
     ...Object.keys(shard.makeShards).map((key) => {
       const useHook: StorageShardHookFn<any> = (selector) => {
-        const storage = useBeadi().getStorage();
-        const shardDef = storage.shards[shard.name];
+        const shardDef = useBeadi().getStorage().getShard(shard.name);
         return useStore(shardDef.shard[key], selector as any);
       };
       (useHook as StorageShardHook<any>).subscribeWith = (beadi, subscriber) => {
-        const storage = beadi.getStorage(); //useStorage
-        const shardDef = storage.shards[shard.name];
+        const shardDef = beadi.getStorage().getShard(shard.name);
         return shardDef.shard[key].subscribe(subscriber);
       };
       (useHook as StorageShardHook<any>).getStateWith = (beadi) => {
-        const storage = beadi.getStorage(); //useStorage
-        const shardDef = storage.shards[shard.name];
+        const shardDef = beadi.getStorage().getShard(shard.name);
         return shardDef.shard[key].getState();
       };
       (useHook as StorageShardHook<any>).setStateWith = (beadi, state) => {
-        const storage = beadi.getStorage(); //useStorage
-        const shardDef = storage.shards[shard.name];
+        const shardDef = beadi.getStorage().getShard(shard.name);
         return shardDef.shard[key].setState(state);
       };
       return [`use${key.charAt(0).toUpperCase() + key.slice(1)}` as keyof StorageShardHooks<T>, useHook];
     }),
     ...Object.keys(shard.makeShards).map((key) => {
       const useHook: StorageShardEqualityFnHook<any> = (selector, equality) => {
-        const storage = useBeadi().getStorage();
-        const shardDef = storage.shards[shard.name];
+        const shardDef = useBeadi().getStorage().getShard(shard.name);
         return useStoreWithEqualityFn(shardDef.shard[key], selector as any, equality as any);
       };
       return [`use${key.charAt(0).toUpperCase() + key.slice(1)}EqualityFn` as keyof StorageShardHooks<T>, useHook];

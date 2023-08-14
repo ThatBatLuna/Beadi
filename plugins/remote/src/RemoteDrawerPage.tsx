@@ -1,4 +1,4 @@
-import { MdSettingsRemote } from "react-icons/md";
+import { MdConnectWithoutContact } from "react-icons/md";
 import { FunctionComponent } from "react";
 import { InterfaceList } from "./interface/InterfaceList";
 import { ConnectionManager } from "./remote/ConnectionManager";
@@ -38,7 +38,8 @@ export const RemoteSettingsIcon: FunctionComponent<RemoteSettingsIconProps> = ()
 
   return (
     <div className="w-full h-full relative">
-      <MdSettingsRemote className="w-full h-full"></MdSettingsRemote>
+      {/* <MdSettingsRemote className="w-full h-full"></MdSettingsRemote> */}
+      <MdConnectWithoutContact className="w-full h-full"></MdConnectWithoutContact>
       {publishState !== "disconnected" && (
         <div
           className={clsx("rounded-full bg-red-500 absolute top-0 left-0 w-2 h-2", { "animate-pulse": publishState === "connecting" })}
