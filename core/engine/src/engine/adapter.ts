@@ -1,13 +1,12 @@
 import { FunctionComponent } from "react";
-import { HandleType } from "./node";
-import { BeadiContext } from "..";
+import { BeadiContext, InputHandleDefs, InputTypesOf, OutputHandleDefs, OutputTypesOf } from "..";
 
 export type AnyInputAdapterDef = InputAdapterDef<any, any>;
-export type InputAdapterDef<TData, TSettings> = {
+export type InputAdapterDef<THandles extends OutputHandleDefs, TSettings> = {
   id: string;
   label: string;
-  getType: (settings: TSettings | undefined, beadi: BeadiContext) => HandleType | undefined;
-  getData: (nodeId: string, settings: TSettings | undefined, beadi: BeadiContext) => TData;
+  getTypes: (settings: TSettings | undefined, beadi: BeadiContext) => THandles | undefined;
+  getData: (nodeId: string, settings: TSettings | undefined, beadi: BeadiContext) => OutputTypesOf<THandles>;
   settingsEditor?: FunctionComponent<InputAdapterSettingsEditorProps<TSettings>>;
 };
 export type InputAdapterSettingsEditorProps<TSettings> = {
@@ -17,11 +16,11 @@ export type InputAdapterSettingsEditorProps<TSettings> = {
 };
 
 export type AnyOutputAdapterDef = OutputAdapterDef<any, any>;
-export type OutputAdapterDef<TData, TSettings> = {
+export type OutputAdapterDef<THandles extends InputHandleDefs, TSettings> = {
   id: string;
   label: string;
-  getType: (settings: TSettings | undefined, beadi: BeadiContext) => HandleType | undefined;
-  pushData: (nodeId: string, data: TData, settings: TSettings | undefined, beadi: BeadiContext) => void;
+  getTypes: (settings: TSettings | undefined, beadi: BeadiContext) => THandles | undefined;
+  pushData: (nodeId: string, data: InputTypesOf<THandles>, settings: TSettings | undefined, beadi: BeadiContext) => void;
   settingsEditor?: FunctionComponent<OutputAdapterSettingsEditorProps<TSettings>>;
 };
 
@@ -30,3 +29,10 @@ export type OutputAdapterSettingsEditorProps<TSettings> = {
   settings: TSettings | undefined;
   updateSettings: (s: TSettings) => void;
 };
+
+export function outputAdapterDef<THandles extends InputHandleDefs, TSettings>(t: OutputAdapterDef<THandles, TSettings>) {
+  return t;
+}
+export function inputAdapterDef<THandles extends OutputHandleDefs, TSettings>(t: InputAdapterDef<THandles, TSettings>) {
+  return t;
+}

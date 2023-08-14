@@ -1,7 +1,7 @@
 import { plugin } from "@beadi/engine";
 import { intifaceTab } from "./settings/IntifaceTab";
 import { shard } from "./storage";
-import { persistIntifaceStore } from "./intifaceStore";
+import { persistIntifaceStore, stopUnusedDevices } from "./intifaceStore";
 import { intifaceAdapter } from "./outputAdapter";
 
 export const intifacePlugin = plugin({
@@ -10,6 +10,7 @@ export const intifacePlugin = plugin({
   processingHooks: {
     finalizedContext: (beadi) => {
       persistIntifaceStore(beadi);
+      stopUnusedDevices(beadi);
     },
   },
   settingsTabs: [intifaceTab],

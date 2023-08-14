@@ -1,4 +1,4 @@
-import { OutputAdapterDef, OutputAdapterSettingsEditorProps, notNull } from "@beadi/engine";
+import { InputHandleDef, OutputAdapterSettingsEditorProps, notNull, outputAdapterDef } from "@beadi/engine";
 import { FunctionComponent } from "react";
 import { useIntifaceStore } from "./storage";
 import { Select } from "@beadi/components";
@@ -76,9 +76,23 @@ export const IntifaceSettingsEditor: FunctionComponent<OutputAdapterSettingsEdit
   );
 };
 
-export const intifaceAdapter: OutputAdapterDef<number, IntifaceAdapterSettings> = {
-  id: "intifaceOutput",
-  getType: (settings, beadi) => {
+type IntifaceHandleDefs =
+  | {
+      value: InputHandleDef & { type: "number" };
+      speed: InputHandleDef;
+    }
+  | {
+      value: InputHandleDef & { type: "number" };
+      clockwise: InputHandleDef;
+    }
+  | {
+      value: InputHandleDef & { type: "number" };
+    };
+
+export const INTIFACE_OUTPUT_ADAPTER_ID = "intifaceOutput";
+export const intifaceAdapter = outputAdapterDef({
+  id: INTIFACE_OUTPUT_ADAPTER_ID,
+  getTypes: (settings, beadi) => {
     if (settings?.value != null) {
       const connection = useIntifaceStore.getStateWith(beadi).connections[settings.value.connectionId]?.state;
       if (connection != null) {
@@ -86,16 +100,22 @@ export const intifaceAdapter: OutputAdapterDef<number, IntifaceAdapterSettings> 
           const device = connection.devices[settings.value.deviceIndex];
           if (device != null) {
             const actuator = device.actuactors[settings.value.actuatorIndex];
-            if (actuator.actuatorKind === "scalar") {
-              return "number";
-            }
             if (actuator.actuatorKind === "linear") {
-              //TODO Allow multiple outputs from an adapter, we need another scalar speed
-              return "number";
+              return {
+                value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
+                duration: { type: "number", default: 0.0, min: 0.0, label: "Duration" },
+              } as IntifaceHandleDefs;
             }
             if (actuator.actuatorKind === "rotate") {
-              //TODO Allow multiple outputs from an adapter, we need a clockwise bool additionally
-              return "number";
+              return {
+                value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
+                clockwise: { type: "boolean", default: true, label: "Clockwise" },
+              } as IntifaceHandleDefs;
+            }
+            if (actuator.actuatorKind === "scalar") {
+              return {
+                value: { type: "number", default: 0.0, min: 0.0, max: 1.0, label: "Value" },
+              } as IntifaceHandleDefs;
             }
           }
         }
@@ -113,7 +133,11 @@ export const intifaceAdapter: OutputAdapterDef<number, IntifaceAdapterSettings> 
             //TODO These events should be batched
             const actuator = device.actuactors[settings.value.actuatorIndex];
             if (actuator.actuatorKind === "scalar") {
-              actuator.actuate(data);
+              actuator.actuate(data.value ?? 0.0);
+            } else if (actuator.actuatorKind === "linear") {
+              actuator.actuate(data.value ?? 0.0, (data as any).duration ?? 1.0);
+            } else if (actuator.actuatorKind === "rotate") {
+              actuator.actuate(data.value ?? 0.0, (data as any).clockwise ?? false);
             }
           }
         }
@@ -122,4 +146,4 @@ export const intifaceAdapter: OutputAdapterDef<number, IntifaceAdapterSettings> 
   },
   label: "Intiface",
   settingsEditor: IntifaceSettingsEditor,
-};
+});

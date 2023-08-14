@@ -1,6 +1,6 @@
 import { sendMessage } from "./message";
 
-import { OutputAdapterDef, OutputAdapterSettingsEditorProps } from "@beadi/engine";
+import { OutputAdapterSettingsEditorProps, outputAdapterDef } from "@beadi/engine";
 import { HandleType, asHandleType } from "@beadi/engine";
 import { notNull } from "@beadi/engine";
 import { FunctionComponent } from "react";
@@ -36,9 +36,18 @@ export const RemoteOutputSettingsEditor: FunctionComponent<OutputAdapterSettings
 };
 
 export const REMOTE_OUTPUT_ADAPTER_ID = "remoteOutput";
-export const remoteOutputAdapter: OutputAdapterDef<number, RemoteOutputAdapterSettings> = {
+export const remoteOutputAdapter = outputAdapterDef({
   id: REMOTE_OUTPUT_ADAPTER_ID,
-  getType: (settings) => settings?.type,
+  getTypes: (settings) =>
+    settings == null
+      ? undefined
+      : {
+          value: {
+            label: "Value",
+            type: settings.type,
+            default: 0.0,
+          },
+        },
   pushData: (nodeId, data, settings, beadi) => {
     if (settings === undefined) {
       return;
@@ -46,14 +55,14 @@ export const remoteOutputAdapter: OutputAdapterDef<number, RemoteOutputAdapterSe
     if (settings.type === "impulse") {
       console.error("Output impulses are not yet supported.");
     }
-    const safeValue = asHandleType(settings.type, data);
+    const safeValue = asHandleType(settings.type, data.value);
     if (safeValue !== undefined) {
       usePublishStateStore.getStateWith(beadi).state.updateValue(nodeId, safeValue, true);
     }
   },
   label: "Remote Display",
   settingsEditor: RemoteOutputSettingsEditor,
-};
+});
 
 export type RemoteOutputToInputAdapterSettings = {
   value: {
@@ -118,14 +127,21 @@ export const RemoteOutputToInputSettingsEditor: FunctionComponent<OutputAdapterS
   );
 };
 
-export const remoteOutputToInputAdapter: OutputAdapterDef<number, RemoteOutputToInputAdapterSettings> = {
+export const remoteOutputToInputAdapter = outputAdapterDef({
   id: "remoteOutputToInput",
-  getType: (settings, beadi) => {
+  getTypes: (settings, beadi) => {
     if (settings?.value != null) {
       const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
-          return remote.values[settings.value.valueId]?.type;
+          return {
+            value: {
+              label: "Value",
+              type: remote.values[settings.value.valueId]?.type,
+              //TODO Typesafe defaults
+              default: 0.0,
+            },
+          };
         }
       }
     }
@@ -135,10 +151,12 @@ export const remoteOutputToInputAdapter: OutputAdapterDef<number, RemoteOutputTo
       const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
+          //TODO Why is valueChanged.value always a number?
+          //TODO Maybe typecheck data.value here?
           sendMessage(remote.socket, {
             ValueChanged: {
               endpoint: settings.value.valueId,
-              value: data,
+              value: data.value as any,
             },
           });
         }
@@ -147,4 +165,4 @@ export const remoteOutputToInputAdapter: OutputAdapterDef<number, RemoteOutputTo
   },
   label: "Set Remote Value",
   settingsEditor: RemoteOutputToInputSettingsEditor,
-};
+});

@@ -4,6 +4,7 @@ import { categories } from "./category";
 import { useFileStore } from "../storage";
 import { useBeadi } from "../context";
 import { Select } from "@beadi/components";
+import _ from "lodash";
 
 export type InputAdapterNodeSettings = {
   adapterId: string | null;
@@ -59,16 +60,11 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
     if (inputAdatperDef === undefined) {
       return {} as OutputHandleDefs;
     }
-    const type = inputAdatperDef.getType(s.adapterSettings?.[s.adapterId], beadi);
-    if (type === undefined) {
+    const outputs = inputAdatperDef.getTypes(s.adapterSettings?.[s.adapterId], beadi);
+    if (outputs === undefined) {
       return {} as OutputHandleDefs;
     }
-    return {
-      value: {
-        label: "Value",
-        type: type,
-      },
-    };
+    return outputs;
   },
   inputs: {},
   executor: {
@@ -81,15 +77,13 @@ export const inputAdapterNode = nodeDef<InputAdapterNodeSettings>()({
         return {};
       }
       const settings = context.settings.adapterSettings?.[context.settings.adapterId];
-      return { value: adapter.getData(context.id, settings, beadi) };
+      return { handleValues: adapter.getData(context.id, settings, beadi) };
     },
     outputDriver: () => {},
     initialPersistence: undefined,
     executor: (_a, _b, data) => {
       return {
-        outputs: {
-          value: data.value,
-        },
+        outputs: data.handleValues as any,
         driverOutputs: {},
         persistentData: undefined,
       };

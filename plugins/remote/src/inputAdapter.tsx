@@ -3,8 +3,8 @@
 // import { useIOValueStore } from "./inputOutputStore";
 // import { Select } from "../components/input/Select";
 // import { useFileStore } from "../engine/store";
-import { InputAdapterSettingsEditorProps, InputAdapterDef } from "@beadi/engine";
-import { HandleType, TypeOfHandleType, asHandleType } from "@beadi/engine";
+import { InputAdapterSettingsEditorProps, inputAdapterDef } from "@beadi/engine";
+import { HandleType, asHandleType } from "@beadi/engine";
 import { emitImpulse } from "@beadi/engine";
 import { notNull } from "@beadi/engine";
 import { FunctionComponent } from "react";
@@ -43,25 +43,38 @@ export const RemoteInputSettingsEditor: FunctionComponent<InputAdapterSettingsEd
 };
 
 export const REMOTE_INPUT_ADAPTER_ID = "remoteInput";
-export const remoteInputAdapter: InputAdapterDef<TypeOfHandleType<HandleType>, RemoteInputAdapterSettings> = {
+export const remoteInputAdapter = inputAdapterDef({
   id: REMOTE_INPUT_ADAPTER_ID,
-  getType: (settings) => settings?.type,
-  getData: (nodeId: string, settings, beadi) => {
+  getTypes: (settings) =>
+    settings == null
+      ? undefined
+      : {
+          value: {
+            label: "Value",
+            type: settings.type,
+          },
+        },
+  getData: (nodeId, settings, beadi) => {
     if (settings === undefined) {
-      return 0.0;
+      return {} as any;
     }
     if (settings.type === "impulse") {
       const value = useIOValueStore.getStateWith(beadi).values[nodeId]?.value;
       const safeValue = asHandleType(settings.type, value);
-      return emitImpulse(safeValue?.length ?? 0);
+      return {
+        value: emitImpulse(safeValue?.length ?? 0),
+      };
     }
     const value = useIOValueStore.getStateWith(beadi).values[nodeId]?.value;
     const safeValue = asHandleType(settings.type, value);
-    return safeValue ?? 0.0;
+    //TODO Typesafe defaults
+    return {
+      value: safeValue ?? 0.0,
+    };
   },
   label: "Remote Control",
   settingsEditor: RemoteInputSettingsEditor,
-};
+});
 
 export type RemoteInputFromOutputAdapterSettings = {
   value: {
@@ -124,17 +137,26 @@ export const RemoteInputFromOutputSettingsEditor: FunctionComponent<
     </div>
   );
 };
-export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputFromOutputAdapterSettings> = {
+export const remoteInputFromOutputAdapter = inputAdapterDef({
   id: "remoteInputFromOutput",
-  getType: (settings, beadi) => {
+  getTypes: (settings, beadi) => {
     if (settings?.value != null) {
       const remote = useRemoteStateStore.getStateWith(beadi).remotes[settings.value.remoteId]?.state;
       if (remote !== undefined) {
         if (remote.state === "connected") {
-          return remote.values[settings.value.valueId]?.type;
+          const type = remote.values[settings.value.valueId]?.type;
+          if (type !== undefined) {
+            return {
+              value: {
+                type,
+                label: "Value",
+              },
+            };
+          }
         }
       }
     }
+    return undefined;
   },
   getData: (_nodeId, settings, beadi) => {
     if (settings?.value != null) {
@@ -148,4 +170,4 @@ export const remoteInputFromOutputAdapter: InputAdapterDef<number, RemoteInputFr
   },
   label: "Read Remote Output",
   settingsEditor: RemoteInputFromOutputSettingsEditor,
-};
+});

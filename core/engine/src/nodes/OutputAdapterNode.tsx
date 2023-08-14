@@ -58,22 +58,16 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
     if (outputAdatperDef === undefined) {
       return {} as InputHandleDefs;
     }
-    const type = outputAdatperDef.getType(s.adapterSettings?.[s.adapterId], beadi);
-    if (type === undefined) {
+    const inputs = outputAdatperDef.getTypes(s.adapterSettings?.[s.adapterId], beadi);
+    if (inputs === undefined) {
       return {} as InputHandleDefs;
     }
-    return {
-      value: {
-        label: "Value",
-        type: type,
-        default: 0.0, //TODO Typesafe defaults
-      },
-    };
+    return inputs;
   },
   outputs: {},
   executor: {
     inputDriver: undefined,
-    outputDriver: ({ value }, context, beadi) => {
+    outputDriver: (handleValues, context, beadi) => {
       if (context.settings.adapterId === null) {
         return {};
       }
@@ -85,15 +79,14 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
       if (settings === undefined) {
         return {};
       }
-      adapter.pushData(context.id, value, settings, beadi);
+      adapter.pushData(context.id, handleValues, settings, beadi);
     },
     initialPersistence: undefined,
-    executor: ({ value }) => {
+    executor: (handleValues) => {
       return {
         outputs: {},
-        driverOutputs: {
-          value,
-        },
+        driverOutputs: handleValues,
+
         persistentData: undefined,
       };
     },

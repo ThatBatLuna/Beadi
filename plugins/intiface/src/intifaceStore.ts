@@ -8,10 +8,23 @@ import {
   ActuatorType,
   ScalarCmd,
   ScalarSubcommand,
+  RotateSubcommand,
+  RotateCmd,
+  LinearCmd,
+  VectorSubcommand,
 } from "buttplug";
-import { BeadiContext } from "@beadi/engine";
+import {
+  BeadiContext,
+  BeadiFileData,
+  FileStore,
+  OUTPUT_ADAPTER_NODE_ID,
+  OutputAdapterNodeSettings,
+  notNull,
+  useFileStore,
+} from "@beadi/engine";
 import { useIntifaceStore } from "./storage";
 import _ from "lodash";
+import { INTIFACE_OUTPUT_ADAPTER_ID, IntifaceAdapterSettings } from "./outputAdapter";
 
 type IntifaceActuatorAttribute = {
   featureDescriptor: string;
@@ -23,9 +36,11 @@ type IntifaceActuatorAttribute = {
     }
   | {
       actuatorKind: "linear";
+      actuate: (n: number, duration: number) => void;
     }
   | {
       actuatorKind: "rotate";
+      actuate: (speed: number, clockwise: boolean) => void;
     }
 );
 type IntifaceDevice = {
@@ -136,11 +151,20 @@ function makeDevice(device: ButtplugClientDevice): IntifaceDevice {
         featureDescriptor: it.FeatureDescriptor,
         actuatorType: it.ActuatorType,
         actuatorKind: "linear" as const,
+        actuate: (n: number, durationSec: number) => {
+          const duration = Math.floor(durationSec * 1000.0);
+          const subcommand = new VectorSubcommand(it.Index, n, duration);
+          device.sendExpectOk(new LinearCmd([subcommand], device.index));
+        },
       })) ?? []),
       ...(device.messageAttributes.RotateCmd?.map((it) => ({
         featureDescriptor: it.FeatureDescriptor,
         actuatorType: it.ActuatorType,
         actuatorKind: "rotate" as const,
+        actuate: (n: number, clockwise: boolean) => {
+          const subcommand = new RotateSubcommand(it.Index, n, clockwise);
+          device.sendExpectOk(new RotateCmd([subcommand], device.index));
+        },
       })) ?? []),
       ...(device.messageAttributes.ScalarCmd?.map((it) => ({
         featureDescriptor: it.FeatureDescriptor,
@@ -291,6 +315,57 @@ export function makeIntifaceStore() {
       },
     }))
   );
+}
+
+export function stopUnusedDevices(beadi: BeadiContext) {
+  let lastAdapters: NonNullable<IntifaceAdapterSettings["value"]>[];
+  const checkUnusedDevices = (nodes: FileStore) => {
+    const adapters = _.values(nodes.data.nodes)
+      .filter(
+        (it) =>
+          it.type === OUTPUT_ADAPTER_NODE_ID && (it.data.settings as OutputAdapterNodeSettings).adapterId === INTIFACE_OUTPUT_ADAPTER_ID
+      )
+      .map(
+        (it) =>
+          ((it.data.settings as OutputAdapterNodeSettings).adapterSettings?.["intifaceOutput"] as IntifaceAdapterSettings)?.value ?? null
+      )
+      .filter(notNull);
+    if (!_.isEqual(adapters, lastAdapters)) {
+      lastAdapters = adapters;
+      const connections = useIntifaceStore.getStateWith(beadi).connections;
+      for (const cId in connections) {
+        const state = connections[cId].state;
+        if (state.state === "connected") {
+          const devices = state.devices;
+          for (const dId in devices) {
+            const device = devices[dId];
+            for (let actuatorIndex = 0; actuatorIndex < device.actuactors.length; actuatorIndex++) {
+              const actuator = device.actuactors[actuatorIndex];
+              const adapter = lastAdapters.find(
+                (adapter) =>
+                  adapter.deviceIndex === device.deviceIndex && adapter.connectionId === cId && adapter.actuatorIndex === actuatorIndex
+              );
+              console.log("Checking: ", actuator, " => ", adapter);
+              if (adapter === undefined) {
+                if (actuator.actuatorKind === "linear") {
+                  actuator.actuate(0.0, 1);
+                } else if (actuator.actuatorKind === "rotate") {
+                  actuator.actuate(0.0, false);
+                } else if (actuator.actuatorKind === "scalar") {
+                  actuator.actuate(0.0);
+                } else {
+                  console.error("Unsupported: ", actuator);
+                  throw new Error(`Unsupported actuatorKind`);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+  useFileStore.subscribeWith(beadi, checkUnusedDevices);
+  checkUnusedDevices(useFileStore.getStateWith(beadi));
 }
 
 export function persistIntifaceStore(beadi: BeadiContext) {
