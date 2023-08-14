@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { FunctionComponent, useMemo } from "react";
 import { Entry } from "./drawer/Entry";
-import Logo from "./Logo";
+import { Icon } from "./Logo";
 import { useBeadi } from "../context";
 import { Link } from "react-router-dom";
 
@@ -23,7 +23,7 @@ const Drawer: FunctionComponent = () => {
     <div className="bg-primary-900 w-60 min-h-full flex flex-col">
       <div className="bg-primary-900 w-60 overflow-y-scroll flex flex-col grow">
         <div>
-          <Logo></Logo>
+          <Icon></Icon>
         </div>
         <ul>
           {nodes.map((category) => (

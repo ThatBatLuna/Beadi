@@ -5,7 +5,6 @@ import { MdChevronRight, MdInsertDriveFile } from "react-icons/md";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useBeadi } from "../context";
 import { EDITOR_ROOT_URL } from "../startBeadi";
-import exp from "constants";
 
 export type Tab = {
   id: string;

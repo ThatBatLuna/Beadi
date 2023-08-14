@@ -8,6 +8,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { watchForChanges } from "./engine";
 import { AnyPlugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
+import { HomePage } from "./components/home/HomePage";
 
 export const EDITOR_ROOT_URL = "/edit";
 
@@ -22,6 +23,10 @@ export function startBeadi(options: BeadiOptions) {
   context.finalize();
 
   const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <HomePage />,
+    },
     {
       path: EDITOR_ROOT_URL,
       element: <App />,

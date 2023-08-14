@@ -17,6 +17,19 @@ module.exports = {
       },
       boxShadow: {
         "error": "0 0 10px 3px red"
+      },
+      keyframes: {
+        "outline": {
+          "0%, 100%": {
+            "outline-offset": "-4px"
+          },
+          "50%": {
+            "outline-offset": "4px"
+          }
+        }
+      },
+      animation: {
+        "outline": "outline 1s ease-in-out infinite"
       }
     },
 
