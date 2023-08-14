@@ -91,7 +91,7 @@ export const timerNodeDef = nodeDef()({
         }
       }
 
-      const duration = persistent.toggleTime.getTime() - persistent.toggleTime.getTime();
+      const duration = persistent.toggleTime.getTime() - persistent.lastTime.getTime();
       const elapsed = new Date().getTime() - persistent.lastTime.getTime();
       const progress = elapsed / duration;
 
