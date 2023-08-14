@@ -27,7 +27,7 @@ function App() {
   const mobile = useGlobalSettings((s) => s.mobileView);
 
   return (
-    <div className="flex flex-row w-full h-full text-white bg-black">
+    <div className="flex flex-row w-full h-full text-white bg-black overflow-x-hidden">
       {mobile ? (
         <MobileView></MobileView>
       ) : (

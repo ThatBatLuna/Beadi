@@ -9,6 +9,8 @@ import { watchForChanges } from "./engine";
 import { AnyPlugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
 
+export const EDITOR_ROOT_URL = "/edit";
+
 export type BeadiOptions = {
   rootElement: string;
   plugins: AnyPlugin[];
@@ -21,7 +23,7 @@ export function startBeadi(options: BeadiOptions) {
 
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: EDITOR_ROOT_URL,
       element: <App />,
       children: [
         ...Object.values(context.settingsTabs).map((it) => ({

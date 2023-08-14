@@ -3,6 +3,7 @@ import { FunctionComponent, useMemo } from "react";
 import { Entry } from "./drawer/Entry";
 import Logo from "./Logo";
 import { useBeadi } from "../context";
+import { Link } from "react-router-dom";
 
 const Drawer: FunctionComponent = () => {
   const beadi = useBeadi();
@@ -19,25 +20,38 @@ const Drawer: FunctionComponent = () => {
   }, [beadi.nodeDefs]);
 
   return (
-    <div className="bg-primary-900 w-60 overflow-y-scroll min-h-full flex flex-col">
-      <div>
-        <Logo></Logo>
+    <div className="bg-primary-900 w-60 min-h-full flex flex-col">
+      <div className="bg-primary-900 w-60 overflow-y-scroll flex flex-col grow">
+        <div>
+          <Logo></Logo>
+        </div>
+        <ul>
+          {nodes.map((category) => (
+            <li key={category.name} className="mb-2">
+              <h2 className="px-2 py-1 font-bold text-black" style={{ backgroundColor: category.color }}>
+                {category.name}
+              </h2>
+              <ul>
+                {category.items.map((node, index) => (
+                  <Entry key={index} nodeDef={node}></Entry>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul>
-        {nodes.map((category) => (
-          <li key={category.name} className="mb-2">
-            <h2 className="px-2 py-1 font-bold text-black" style={{ backgroundColor: category.color }}>
-              {category.name}
-            </h2>
-            <ul>
-              {category.items.map((node, index) => (
-                <Entry key={index} nodeDef={node}></Entry>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-auto text-xs text-center text-slate-500">©Mona Mayrhofer, 2023 Linz, Austria</div>
+      <div className="text-xs text-slate-500 pt-1">
+        <div className="">©Mona Mayrhofer, 2023 Linz, Austria</div>
+        <div className="text-center">
+          <Link to={"/imprint"} className="px-2 inline-block">
+            Impressum/Imprint
+          </Link>
+          <span>|</span>
+          <Link to={"/privacy"} className="px-2 inline-block">
+            Privacy
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
