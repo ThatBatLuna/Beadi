@@ -5,7 +5,7 @@ import { immer } from "zustand/middleware/immer";
 import Drawer from "./components/Drawer";
 import { MobileView } from "./components/mobile/MobileView";
 import { Settings } from "./components/Settings";
-import Viewport from "./components/Viewport";
+import { ViewportWrapper } from "./components/Viewport";
 
 type GlobalSettings = {
   mobileView: boolean;
@@ -33,7 +33,7 @@ function App() {
       ) : (
         <DndProvider backend={HTML5Backend}>
           <Drawer />
-          <Viewport />
+          <ViewportWrapper />
           <Settings />
         </DndProvider>
       )}

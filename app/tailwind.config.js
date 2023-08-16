@@ -1,6 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-const colors = require('tailwindcss/colors')
-
 const purple = {
           100: "#fcacfa",
           200: "#f38bef",

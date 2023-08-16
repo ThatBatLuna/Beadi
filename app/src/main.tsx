@@ -6,11 +6,28 @@ import { Beadi } from "@beadi/engine";
 import { beadiAppPlugin } from "./beadiAppPlugin";
 import { makeRemotePlugin } from "../../plugins/remote/src";
 import { intifacePlugin } from "@beadi/plugin-intiface";
+import { Introduction } from "./pages/Introduction";
+import { ChangelogPage } from "./pages/Changelog";
+import { GuidePage } from "./pages/Guide";
 
 const routes = [
   {
     path: "/",
     element: <HomePage />,
+    children: [
+      {
+        path: "/",
+        element: <Introduction />,
+      },
+      {
+        path: "guide",
+        element: <GuidePage />,
+      },
+      {
+        path: "changelog",
+        element: <ChangelogPage />,
+      },
+    ],
   },
 ];
 const options = {

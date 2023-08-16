@@ -22,9 +22,14 @@ export { Graph } from "./graph/Graph";
 export type { GraphProps } from "./graph/Graph";
 export { Typo } from "./typo/Typo";
 export type { TypoProps } from "./typo/Typo";
+export { TypoLink } from "./typo/TypoLink";
+export type { TypoLinkProps } from "./typo/TypoLink";
 
 export { NodeShell } from "./node/NodeShell";
 export type { NodeShellProps } from "./node/NodeShell";
 
 export { Logo } from "./logo/Logo";
 export type { LogoProps } from "./logo/Logo";
+
+export { VBar } from "./typo/VBar";
+export type { VBarProps } from "./typo/VBar";

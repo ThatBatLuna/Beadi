@@ -13,4 +13,8 @@ body,
   .markdown h1 {
     @apply text-xl mt-2 mb-1;
   }
+
+  .hero-tilt {
+    transform: perspective(30cm)  translateY(-10%) translateX(-10%) translateZ(500px) rotateX(40deg) rotateZ(25deg);
+  }
 }

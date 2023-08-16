@@ -185,9 +185,10 @@ const selector = (state: FileStore) => ({
   addEdge: state.addEdge,
 });
 
-const Viewport: FunctionComponent<{
-  wrapper: RefObject<HTMLDivElement | null>;
-}> = ({ wrapper }) => {
+export const Viewport: FunctionComponent<{
+  // wrapper: RefObject<HTMLDivElement | null>;
+}> = () => {
+  const wrapper = useRef<HTMLDivElement | null>(null);
   const beadi = useBeadi();
   const nodeTypes: NodeTypes = beadi.nodeRenderers;
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } = useFileStoreEqualityFn(selector, _.isEqual);
@@ -243,6 +244,7 @@ const Viewport: FunctionComponent<{
   return (
     <>
       <ReactFlow
+        ref={wrapper}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
@@ -260,20 +262,20 @@ const Viewport: FunctionComponent<{
   );
 };
 
-const ViewportWrapper: FunctionComponent<{}> = () => {
+export const ViewportFlowProvider = ReactFlowProvider;
+
+export const ViewportWrapper: FunctionComponent<{}> = () => {
   const addNode = useFileStore((s) => s.addNode);
   const wrapper = useRef<HTMLDivElement | null>(null);
   const beadi = useBeadi();
 
   return (
     <div className="relative grow" ref={wrapper}>
-      <ReactFlowProvider>
+      <ViewportFlowProvider>
         <ViewportDropTarget onNodeDrop={(pos, type) => addNode(type, pos, beadi)} wrapper={wrapper}>
-          <Viewport wrapper={wrapper}></Viewport>
+          <Viewport />
         </ViewportDropTarget>
-      </ReactFlowProvider>
+      </ViewportFlowProvider>
     </div>
   );
 };
-
-export default ViewportWrapper;

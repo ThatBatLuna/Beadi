@@ -228,19 +228,19 @@ export function useInputHandleData<T>(nodeId: string, handleId: string): UseInpu
 export const ResetDocument: BeadiFileData = {
   edges: {},
   nodes: {
-    welcome: {
-      id: "welcome",
-      type: "welcome",
-      position: {
-        x: 0,
-        y: 0,
-      },
-      data: {
-        displaySettings: {},
-        handles: {},
-        settings: {},
-      },
-    },
+    // welcome: {
+    //   id: "welcome",
+    //   type: "welcome",
+    //   position: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    //   data: {
+    //     displaySettings: {},
+    //     handles: {},
+    //     settings: {},
+    //   },
+    // },
   },
 };
 
