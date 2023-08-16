@@ -6,8 +6,7 @@ import { emitImpulse } from "../engine/signal";
 import { usePreviewStore } from "../storage";
 
 const DelayNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
-  // const progress = useCommittedData<number>(id, "progress") || 0.0;
-  const progress = usePreviewStore((s) => s.outputHandlePreviews[id]?.["progress"]);
+  const progress = usePreviewStore((s) => s.outputHandlePreviews[id]?.["progress"] ?? 0.0);
 
   return (
     <div className="h-4 mx-2 overflow-hidden rounded-md bg-primary-1100">

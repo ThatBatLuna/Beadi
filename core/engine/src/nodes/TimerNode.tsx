@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import { NodeHeaderProps, nodeDef } from "../engine/node";
 import { categories } from "./category";
+import { usePreviewStore } from "..";
 // import { createNodeDriverStore } from "../engine/nodeDriverStore";
 
 // const useTimerNodeProgressStore = createNodeDriverStore<number>(0);
@@ -13,10 +14,10 @@ export function gaussianRandom(mean = 0, stdev = 1) {
   return z * stdev + mean;
 }
 
-const TimerNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({}) => {
+const TimerNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
   // const progress = useTimerNodeProgressStore(id);
+  const progress = usePreviewStore((s) => s.outputHandlePreviews[id]?.["progress"] ?? 0.0);
   //TODO Find a replacement for nodeDriverStore
-  const progress = 0.5;
 
   return (
     <div className="h-4 mx-2 overflow-hidden rounded-md bg-primary-1100">
