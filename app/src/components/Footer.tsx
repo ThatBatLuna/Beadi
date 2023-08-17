@@ -25,7 +25,7 @@ export const Footer: FunctionComponent = () => {
       <div>
         <Link to="/imprint">Imprint/Impressum</Link>
         <VBar />
-        <Link to="/privacy">Privacy</Link>
+        <Link to="/privacy">Privacy Policy</Link>
         <VBar />
         <Link to="/cookies">Cookies</Link>
         <VBar />

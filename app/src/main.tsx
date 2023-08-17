@@ -9,6 +9,7 @@ import { intifacePlugin } from "@beadi/plugin-intiface";
 import { Introduction } from "./pages/Introduction";
 import { ChangelogPage } from "./pages/Changelog";
 import { GuidePage } from "./pages/Guide";
+import { Privacy } from "./pages/Privacy";
 
 const routes = [
   {
@@ -26,6 +27,10 @@ const routes = [
       {
         path: "changelog",
         element: <ChangelogPage />,
+      },
+      {
+        path: "privacy",
+        element: <Privacy />,
       },
     ],
   },
