@@ -4,11 +4,13 @@ import { Logo } from "@beadi/components";
 import { BeadiContext, BeadiContextProvider, Viewport, ViewportFlowProvider } from "@beadi/engine";
 import { NavBar } from "../components/NavBar";
 import { Footer } from "../components/Footer";
+import { previewSave } from "./beadiPreviewSave";
 
 export const PreviewBeadi: FunctionComponent = () => {
   const context = useMemo(() => {
     const context = new BeadiContext({
       plugins: [],
+      initialData: previewSave,
     });
     context.finalize();
     return context;

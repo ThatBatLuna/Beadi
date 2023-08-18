@@ -3,7 +3,6 @@ import "./index.css";
 import "reactflow/dist/style.css";
 import App from "./App";
 import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
-import { watchForChanges } from "./engine";
 import { AnyPlugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
 
@@ -20,9 +19,8 @@ type BeadiProps = {
 export const Beadi: FunctionComponent<BeadiProps> = ({ options }) => {
   const [context, router] = useMemo(() => {
     console.log("Beadi was instantiated - creating BeadiContext");
-    const context = new BeadiContext({ plugins: options.plugins });
+    const context = new BeadiContext({ plugins: options.plugins, initialData: {} });
     context.finalize();
-    watchForChanges(context);
 
     const router = createBrowserRouter([
       ...options.extraRoutes,

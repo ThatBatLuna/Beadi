@@ -73,7 +73,7 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
   const InputComponent = NODE_HANDLE_INPUT_TYPES[type];
 
   return (
-    <div className="flex flex-col items-stretch mt-2 w-full">
+    <div className="flex flex-col items-stretch mt-2 w-full gap-2">
       <div className="flex flex-row items-center">
         {kind === "input" && (
           <Handle
@@ -102,7 +102,7 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
               {label}
             </span>
           ) : (
-            <InputComponent handleId={handleId} input={handleDef as InputHandleDef} nodeId={nodeId}></InputComponent>
+            kind === "input" && <InputComponent handleId={handleId} input={handleDef as InputHandleDef} nodeId={nodeId}></InputComponent>
           )}
           {kind === "output" && NodeHandleValuePreview !== undefined && (
             <button onMouseDownCapture={(e) => e.stopPropagation()} onClick={() => setExpanded(!expanded)}>

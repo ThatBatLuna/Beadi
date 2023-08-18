@@ -19,15 +19,21 @@ import { hysteresisNodeDef } from "./nodes/HysteresisNode";
 import { commentNodeDef } from "./nodes/CommentNode";
 import { edgeDetectorNodeDef } from "./nodes/EdgeDetector";
 import { ComponentType, FunctionComponent, ReactNode, createContext, useContext } from "react";
-import { UnknownBeadiNode, UnknownBeadiNodeData } from "./engine/store";
+import { BeadiFileData, UnknownBeadiNode, UnknownBeadiNodeData } from "./engine/store";
 import { Storage, beadiStorageShard } from "./storage";
 import { notNull } from ".";
 import _ from "lodash";
 import { NodeProps } from "reactflow";
 import { BeadiNodeRenderer } from "./components/node/NodeRenderer";
+import { watchForChanges } from "./engine";
+
+export interface BeadiPersistentData {
+  nodes: BeadiFileData;
+}
 
 type BeadiContextProps = {
   plugins: AnyPlugin[];
+  initialData: Partial<BeadiPersistentData>;
 };
 
 export type BeadiContextOf<TPlugin extends AnyPlugin> = BeadiContext<{ [Key in TPlugin["id"]]: TPlugin["globals"] }>;
@@ -40,6 +46,8 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
   plugins: AnyPlugin[];
   storage: Storage | null;
   globals: TGlobals;
+
+  savedFileData: Partial<BeadiPersistentData>;
 
   constructor(props: BeadiContextProps) {
     const nodeDefList: AnyNodeDef[] = [
@@ -60,6 +68,8 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
       edgeDetectorNodeDef as any,
       ...props.plugins.flatMap((it) => it.nodeDefs ?? []),
     ];
+
+    this.savedFileData = props.initialData;
 
     this.nodeDefs = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
 
@@ -104,6 +114,7 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
     ]);
     console.log("FINALIZE === ", this.storage, this.plugins);
     this.runHooks("finalizedContext");
+    watchForChanges(this);
   }
 
   getNodeOutputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): OutputHandleDefs {

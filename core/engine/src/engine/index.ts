@@ -1,11 +1,14 @@
-import { useFileStore } from "./store";
+import { FileStore, useFileStore } from "./store";
 import _ from "lodash";
 import { ModelSources, buildModel, useModelState } from "./compiler";
 import { restartLoopWithModel } from "./runner";
 import { BeadiContext } from "../context";
 
 export function watchForChanges(beadi: BeadiContext) {
-  useFileStore.subscribeWith(beadi, (store) => {
+  useModelState.subscribeWith(beadi, (state) => {
+    restartLoopWithModel(state.model, beadi);
+  });
+  const updateModelState = (store: FileStore) => {
     const newNodes = _.mapValues(store.data.nodes, (it) => ({
       id: it.id,
       type: it.type,
@@ -31,11 +34,10 @@ export function watchForChanges(beadi: BeadiContext) {
         model: buildModel(newState, beadi),
       });
     }
-  });
+  };
 
-  useModelState.subscribeWith(beadi, (state) => {
-    restartLoopWithModel(state.model, beadi);
-  });
+  useFileStore.subscribeWith(beadi, updateModelState);
+  updateModelState(useFileStore.getStateWith(beadi));
 }
 
 /*

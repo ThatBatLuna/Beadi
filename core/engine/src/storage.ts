@@ -114,7 +114,10 @@ const [
 ] = createStorageShard({
   name: "beadi",
   makeShards: {
-    fileStore: () => makeFileStore(),
+    fileStore: (beadi) => {
+      //TODO Validate the input
+      return makeFileStore(beadi.savedFileData?.nodes ?? { nodes: {}, edges: {} });
+    },
     previewStore: () => makePreviewStore(),
     signalBus: () => makeSignalBus(),
     modelState: () => makeModelState(),
