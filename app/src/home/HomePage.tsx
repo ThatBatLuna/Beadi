@@ -1,26 +1,30 @@
 import { FunctionComponent, useMemo } from "react";
 import { Outlet } from "react-router-dom";
 import { Logo } from "@beadi/components";
-import { BeadiContext, BeadiContextProvider, Viewport, ViewportFlowProvider } from "@beadi/engine";
+import { BeadiContext, BeadiInstance, BeadiContextProvider, Viewport, ViewportFlowProvider, BeadiInstanceProvider } from "@beadi/engine";
 import { NavBar } from "../components/NavBar";
 import { Footer } from "../components/Footer";
 import { previewSave } from "./beadiPreviewSave";
 
 export const PreviewBeadi: FunctionComponent = () => {
-  const context = useMemo(() => {
+  const [context, instance] = useMemo(() => {
     const context = new BeadiContext({
       plugins: [],
+    });
+    const instance = new BeadiInstance({
+      beadiContext: context,
       initialData: previewSave,
     });
-    context.finalize();
-    return context;
+    return [context, instance];
   }, []);
 
   return (
     <BeadiContextProvider context={context}>
-      <ViewportFlowProvider>
-        <Viewport />
-      </ViewportFlowProvider>
+      <BeadiInstanceProvider context={instance}>
+        <ViewportFlowProvider>
+          <Viewport />
+        </ViewportFlowProvider>
+      </BeadiInstanceProvider>
     </BeadiContextProvider>
   );
 };

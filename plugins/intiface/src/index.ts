@@ -8,10 +8,10 @@ export const intifacePlugin = plugin({
   id: "intifacePlugin",
   outputAdapterDefs: [intifaceAdapter],
   processingHooks: {
-    finalizedContext: (beadi) => {
-      persistIntifaceStore(beadi);
-      stopUnusedDevices(beadi);
-      startSendCommandLoop(beadi);
+    finalizedContext: ({ beadiInstance }) => {
+      persistIntifaceStore(beadiInstance);
+      stopUnusedDevices(beadiInstance);
+      startSendCommandLoop(beadiInstance);
     },
   },
   settingsTabs: [intifaceTab],

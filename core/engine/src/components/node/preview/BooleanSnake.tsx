@@ -4,7 +4,7 @@ import produce from "immer";
 import _ from "lodash";
 import clsx from "clsx";
 import { usePreviewStore } from "../../../storage";
-import { useBeadi } from "../../..";
+import { useBeadiInstance } from "../../..";
 
 type Entry = {
   begin: number;
@@ -24,7 +24,7 @@ export const BooleanSnakeHandleValuePreview: FunctionComponent<NodeHandleValuePr
       value: value,
     },
   ]);
-  const beadi = useBeadi();
+  const beadi = useBeadiInstance();
 
   useEffect(() => {
     let timeout = setInterval(() => {

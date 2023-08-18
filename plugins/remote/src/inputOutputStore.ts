@@ -13,7 +13,7 @@ import {
   OutputAdapterNodeSettings,
   diffByKeys,
   useFileStore,
-  BeadiContext,
+  BeadiInstance,
 } from "@beadi/engine";
 import { useIOValueStore } from "./storage";
 // import { REMOTE_OUTPUT_ADAPTER_ID, RemoteOutputAdapterSettings } from "./outputAdapter";
@@ -46,7 +46,7 @@ export type IOValueStore = {
   emitSignal: (valueId: string, data?: any) => void;
 };
 
-export function tempPopSignalBuffer(beadi: BeadiContext) {
+export function tempPopSignalBuffer(beadi: BeadiInstance) {
   useIOValueStore.setStateWith(beadi, (s) =>
     produce(s, (draft) => {
       for (const valueId in draft.signalBuffer) {
@@ -100,7 +100,7 @@ export function makeIOValueStore() {
 
   return store;
 }
-export function tempSyncIOValueStore(beadi: BeadiContext) {
+export function tempSyncIOValueStore(beadi: BeadiInstance) {
   const func = (state: FileStore) => {
     const adapterNodes: Record<string, IOValueDef<any>> = _.mapValues(
       _.pickBy(state.data.nodes, (it) => {

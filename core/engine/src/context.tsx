@@ -1,5 +1,5 @@
 import { AnyPlugin } from "./plugin";
-import { AnyNodeDef, InputHandleDefs, OutputHandleDefs } from "./engine/node";
+import { AnyNodeDef } from "./engine/node";
 
 import { timerNodeDef } from "./nodes/TimerNode";
 import { inputAdapterNode } from "./nodes/inputAdapterNode";
@@ -19,21 +19,13 @@ import { hysteresisNodeDef } from "./nodes/HysteresisNode";
 import { commentNodeDef } from "./nodes/CommentNode";
 import { edgeDetectorNodeDef } from "./nodes/EdgeDetector";
 import { ComponentType, FunctionComponent, ReactNode, createContext, useContext } from "react";
-import { BeadiFileData, UnknownBeadiNode, UnknownBeadiNodeData } from "./engine/store";
-import { Storage, beadiStorageShard } from "./storage";
-import { notNull } from ".";
+import { UnknownBeadiNodeData } from "./engine/store";
 import _ from "lodash";
 import { NodeProps } from "reactflow";
 import { BeadiNodeRenderer } from "./components/node/NodeRenderer";
-import { watchForChanges } from "./engine";
-
-export interface BeadiPersistentData {
-  nodes: BeadiFileData;
-}
 
 type BeadiContextProps = {
   plugins: AnyPlugin[];
-  initialData: Partial<BeadiPersistentData>;
 };
 
 export type BeadiContextOf<TPlugin extends AnyPlugin> = BeadiContext<{ [Key in TPlugin["id"]]: TPlugin["globals"] }>;
@@ -44,10 +36,7 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
   outputAdapterDefs: Record<string, AnyOutputAdapterDef>;
   settingsTabs: Record<string, Tab>;
   plugins: AnyPlugin[];
-  storage: Storage | null;
   globals: TGlobals;
-
-  savedFileData: Partial<BeadiPersistentData>;
 
   constructor(props: BeadiContextProps) {
     const nodeDefList: AnyNodeDef[] = [
@@ -69,8 +58,6 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
       ...props.plugins.flatMap((it) => it.nodeDefs ?? []),
     ];
 
-    this.savedFileData = props.initialData;
-
     this.nodeDefs = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
 
     this.nodeRenderers = Object.assign(
@@ -91,51 +78,9 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
 
     this.settingsTabs = Object.assign({}, ...settingsTabsList.map((it) => ({ [it.id]: it })));
 
-    this.storage = null;
-
     this.globals = Object.fromEntries(props.plugins.map((plugin) => [plugin.id, plugin.globals]));
 
     this.plugins = props.plugins;
-  }
-
-  getStorage(): Storage {
-    if (this.storage === null) {
-      throw new Error("Attempted to access Storages before BeadiContext was finalized");
-    }
-    return this.storage;
-  }
-
-  finalize() {
-    this.storage = new Storage([
-      ...[beadiStorageShard, ...this.plugins.map((it) => it.storageShard ?? null).filter(notNull)].map((it) => ({
-        name: it.name,
-        shard: _.mapValues(it.makeShards, (maker) => maker(this)),
-      })),
-    ]);
-    console.log("FINALIZE === ", this.storage, this.plugins);
-    this.runHooks("finalizedContext");
-    watchForChanges(this);
-  }
-
-  getNodeOutputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): OutputHandleDefs {
-    const outputs = this.nodeDefs[nodeType]?.outputs;
-    if (typeof outputs === "function") {
-      return outputs(settings, this);
-    } else {
-      return outputs;
-    }
-  }
-
-  getNodeInputs<TSettings>(nodeType: UnknownBeadiNode["type"], settings: TSettings): InputHandleDefs {
-    const inputs = this.nodeDefs[nodeType]?.inputs;
-    if (typeof inputs === "function") {
-      return inputs(settings, this);
-    } else {
-      return inputs;
-    }
-  }
-  runHooks(hook: keyof NonNullable<AnyPlugin["processingHooks"]>) {
-    this.plugins.forEach((it) => it.processingHooks?.[hook]?.(this));
   }
 }
 

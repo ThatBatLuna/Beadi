@@ -5,6 +5,7 @@ import App from "./App";
 import { RouteObject, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { AnyPlugin } from "./plugin";
 import { BeadiContext, BeadiContextProvider } from "./context";
+import { BeadiInstance, BeadiInstanceProvider } from ".";
 
 export const EDITOR_ROOT_URL = "/edit";
 
@@ -17,10 +18,9 @@ type BeadiProps = {
   options: BeadiOptions;
 };
 export const Beadi: FunctionComponent<BeadiProps> = ({ options }) => {
-  const [context, router] = useMemo(() => {
+  const [context, router, instance] = useMemo(() => {
     console.log("Beadi was instantiated - creating BeadiContext");
-    const context = new BeadiContext({ plugins: options.plugins, initialData: {} });
-    context.finalize();
+    const context = new BeadiContext({ plugins: options.plugins });
 
     const router = createBrowserRouter([
       ...options.extraRoutes,
@@ -35,12 +35,19 @@ export const Beadi: FunctionComponent<BeadiProps> = ({ options }) => {
         ],
       },
     ]);
-    return [context, router];
+
+    const instance = new BeadiInstance({
+      beadiContext: context,
+      initialData: {},
+    });
+    return [context, router, instance];
   }, []);
 
   return (
     <BeadiContextProvider context={context}>
-      <RouterProvider router={router}></RouterProvider>
+      <BeadiInstanceProvider context={instance}>
+        <RouterProvider router={router}></RouterProvider>
+      </BeadiInstanceProvider>
     </BeadiContextProvider>
   );
 };

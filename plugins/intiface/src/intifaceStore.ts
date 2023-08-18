@@ -13,7 +13,7 @@ import {
   LinearCmd,
   VectorSubcommand,
 } from "buttplug";
-import { BeadiContext, FileStore, OUTPUT_ADAPTER_NODE_ID, OutputAdapterNodeSettings, notNull, useFileStore } from "@beadi/engine";
+import { BeadiInstance, FileStore, OUTPUT_ADAPTER_NODE_ID, OutputAdapterNodeSettings, notNull, useFileStore } from "@beadi/engine";
 import { useIntifaceStore } from "./storage";
 import _ from "lodash";
 import { INTIFACE_OUTPUT_ADAPTER_ID, IntifaceAdapterSettings } from "./outputAdapter";
@@ -395,7 +395,7 @@ export function makeIntifaceStore() {
   );
 }
 
-export function stopUnusedDevices(beadi: BeadiContext) {
+export function stopUnusedDevices(beadi: BeadiInstance) {
   let lastAdapters: NonNullable<IntifaceAdapterSettings["value"]>[];
   const checkUnusedDevices = (nodes: FileStore) => {
     const adapters = _.values(nodes.data.nodes)
@@ -446,7 +446,7 @@ export function stopUnusedDevices(beadi: BeadiContext) {
   checkUnusedDevices(useFileStore.getStateWith(beadi));
 }
 
-export function persistIntifaceStore(beadi: BeadiContext) {
+export function persistIntifaceStore(beadi: BeadiInstance) {
   const selectPersistent = (store: IntifaceStore) => {
     return _.values(store.connections).map((c) => ({
       def: c.def,
@@ -471,7 +471,7 @@ export function persistIntifaceStore(beadi: BeadiContext) {
   }
 }
 
-export function startSendCommandLoop(beadi: BeadiContext) {
+export function startSendCommandLoop(beadi: BeadiInstance) {
   let inFlight = 0;
   function sendUpdates() {
     if (inFlight > 20) {

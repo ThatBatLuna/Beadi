@@ -4,7 +4,7 @@ import { InterfaceEditor } from "./InterfaceEditor";
 import { MdDelete, MdDeviceHub, MdEdit, MdEditOff } from "react-icons/md";
 import _ from "lodash";
 import { RemoteStateStore } from "../remote/remoteStore";
-import { notNull, useBeadi } from "@beadi/engine";
+import { notNull, useBeadiInstance } from "@beadi/engine";
 import { Interface } from "./Interface";
 import { IOValueState, IOValueStore } from "../inputOutputStore";
 import { sendMessage } from "../message";
@@ -93,7 +93,7 @@ export const InterfaceList: FunctionComponent<InterfaceListProps> = () => {
     _.isEqual
   );
 
-  const beadi = useBeadi();
+  const beadi = useBeadiInstance();
 
   const localInterfaceHandles = useMemo(() => {
     return localInterfaces.map(

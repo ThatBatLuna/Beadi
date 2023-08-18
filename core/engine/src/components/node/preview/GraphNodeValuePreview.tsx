@@ -3,7 +3,7 @@ import { NodeHandleValuePreviewProps } from "../NodeHandleValuePreview";
 import produce from "immer";
 import { Graph } from "@beadi/components";
 import { usePreviewStore } from "../../../storage";
-import { useBeadi } from "../../..";
+import { useBeadiInstance } from "../../..";
 
 const HISTORY_LENGTH = 3 * 60;
 const HEIGHT = 100;
@@ -11,7 +11,7 @@ const MIN_HEIGHT = 1.0;
 const SAMPLE_RATE = 60;
 export const GraphNodeValuePreview: FunctionComponent<NodeHandleValuePreviewProps> = (props) => {
   const [preview, setPreview] = useState({ index: 0, history: new Array(HISTORY_LENGTH).fill(0) });
-  const beadi = useBeadi();
+  const beadi = useBeadiInstance();
 
   useEffect(() => {
     let timeout = setInterval(() => {

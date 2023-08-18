@@ -5,19 +5,19 @@ import { InputHandleDef } from "../../engine/node";
 import { useFileStore } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
 import { EditableNodeTitle } from "./EditableNodeTitle";
-import { useBeadi } from "../../context";
 import { NodeShell } from "@beadi/components";
+import { useBeadiInstance } from "../..";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
   nodeId: string;
 };
 export const BeadiNodeRenderer: FunctionComponent<NodeProps> = ({ id, data, type }) => {
-  const beadi = useBeadi();
+  const beadi = useBeadiInstance();
   const edges = useEdges();
   const errors = useModelState((s) => s.model?.errors?.[id]);
 
-  const def = beadi.nodeDefs[type];
+  const def = beadi.context.nodeDefs[type];
   const HeaderComponent = def.header;
 
   const nodeInputs = beadi.getNodeInputs(def.type, data.settings);

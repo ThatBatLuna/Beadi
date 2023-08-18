@@ -54,7 +54,7 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
     if (s.adapterId === null) {
       return {} as InputHandleDefs;
     }
-    const outputAdatperDef = beadi.outputAdapterDefs[s.adapterId];
+    const outputAdatperDef = beadi.context.outputAdapterDefs[s.adapterId];
     if (outputAdatperDef === undefined) {
       return {} as InputHandleDefs;
     }
@@ -71,7 +71,7 @@ export const outputAdapterNode = nodeDef<OutputAdapterNodeSettings>()({
       if (context.settings.adapterId === null) {
         return {};
       }
-      const adapter = beadi.outputAdapterDefs[context.settings.adapterId];
+      const adapter = beadi.context.outputAdapterDefs[context.settings.adapterId];
       if (context.settings.adapterId === undefined) {
         return {};
       }

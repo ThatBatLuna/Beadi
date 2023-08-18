@@ -1,10 +1,13 @@
 import { ComponentType } from "react";
-import { BeadiContext, StorageShardDefBuilder, UnknownBeadiNodeProps } from ".";
+import { BeadiInstance, StorageShardDefBuilder, UnknownBeadiNodeProps } from ".";
 import { Tab } from "./components/Settings";
 import { AnyInputAdapterDef, AnyOutputAdapterDef } from "./engine/adapter";
 import { AnyNodeDef } from "./engine/node";
 import { StorageShard } from "./storage";
 
+export type ProcessingHookContext = {
+  beadiInstance: BeadiInstance;
+};
 export type { Tab };
 export type Plugin<TShard extends StorageShard, TGlobals, TId extends string> = {
   id: TId;
@@ -15,8 +18,8 @@ export type Plugin<TShard extends StorageShard, TGlobals, TId extends string> = 
   settingsTabs?: Tab[];
   globals?: TGlobals;
   processingHooks?: {
-    postPrepareSignals?: (beadi: BeadiContext) => void;
-    finalizedContext?: (beadi: BeadiContext) => void;
+    postPrepareSignals?: (props: ProcessingHookContext) => void;
+    finalizedContext?: (props: ProcessingHookContext) => void;
   };
   storageShard?: StorageShardDefBuilder<TShard>;
 };

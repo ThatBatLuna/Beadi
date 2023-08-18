@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { createStore } from "zustand";
 import { getConversionFunction } from "./handles";
-import { BeadiContext } from "../context";
+import { BeadiInstance } from "..";
 
 export type RecipeDependency = {
   nodeId: string;
@@ -28,8 +28,8 @@ type EdgedNode = ModelNode & {
   outgoingEdges: ModelEdge[];
 };
 
-export function buildModel({ nodes: rawNodes, edges }: ModelSources, beadi: BeadiContext): Model {
-  const nodes = _.omitBy(rawNodes, (node) => !(node.type in beadi.nodeDefs));
+export function buildModel({ nodes: rawNodes, edges }: ModelSources, beadi: BeadiInstance): Model {
+  const nodes = _.omitBy(rawNodes, (node) => !(node.type in beadi.context.nodeDefs));
 
   //Find all terminating handles
   console.log("Rebuilding Model");

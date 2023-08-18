@@ -4,8 +4,8 @@ import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import _ from "lodash";
 import { useCallback } from "react";
-import { BeadiContext } from "../context";
 import { useFileStore } from "../storage";
+import { BeadiInstance } from "..";
 
 export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, any>>;
 export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = Node<
@@ -50,21 +50,20 @@ export type FileStore = {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addEdge: (edge: Omit<BeadiEdge, "id">) => string;
-  addNode: (type: string, pos: XYPosition, tempBeadi: BeadiContext) => string;
+  addNode: (type: string, pos: XYPosition) => string;
 
   exportJson: () => any;
   importJson: (data: any) => void;
   //   reset: () => void;
 };
-export function makeFileStore(initialData: BeadiFileData) {
+export function makeFileStore(beadiInstance: BeadiInstance, initialData: BeadiFileData) {
   return createStore<FileStore>()(
     immer((set, get) => ({
       data: initialData,
 
-      addNode: (type, pos, tempBeadi: BeadiContext) => {
-        //TODO tempBeadi should not be in here, rather this store should be somewhere where it has access to getNodeInputs
+      addNode: (type, pos) => {
         const id = "" + Date.now();
-        const nodeDef = tempBeadi.nodeDefs[type];
+        const nodeDef = beadiInstance.context.nodeDefs[type];
         set((draft) => {
           draft.data.nodes[id] = {
             id: id,
@@ -72,7 +71,7 @@ export function makeFileStore(initialData: BeadiFileData) {
             type: type,
             data: {
               displaySettings: {},
-              handles: _.mapValues(tempBeadi.getNodeInputs(nodeDef.type, {}), (handle) => ({
+              handles: _.mapValues(beadiInstance.getNodeInputs(nodeDef.type, {}), (handle) => ({
                 preview: false,
                 value: handle.default,
               })),

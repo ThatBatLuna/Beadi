@@ -2,7 +2,7 @@ import { ComponentType } from "react";
 import { NodeProps } from "reactflow";
 import { ImpulseEmissions } from "./signal";
 import { BeadiNodeData, UnknownBeadiNodeData } from "./store";
-import { BeadiContext } from "../context";
+import { BeadiInstance } from "..";
 
 export type Category = {
   label: string;
@@ -85,15 +85,14 @@ export type NodeContext<TSettings> = {
   id: string;
   settings: TSettings;
 };
-
 export type DriverProps = {
   nodePersistence: Record<string, any>;
 };
-export type InputDriver<TDriverInputs, TSettings> = (context: NodeContext<TSettings>, beadi: BeadiContext) => TDriverInputs;
+export type InputDriver<TDriverInputs, TSettings> = (context: NodeContext<TSettings>, beadi: BeadiInstance) => TDriverInputs;
 export type OutputDriver<TDriverOutputs, TSettings> = (
   outputs: TDriverOutputs,
   context: NodeContext<TSettings>,
-  beadi: BeadiContext
+  beadi: BeadiInstance
 ) => void;
 
 export type InputTypeOf<THandleDef extends HandleDef> = TypeOfHandleType<THandleDef["type"]>;
@@ -185,7 +184,7 @@ export type NodeDef<
   header?: ComponentType<THeaderProps>;
   /** Overrides the how the entire node is rendered. Default to the node-shell */
   nodeComponent?: ComponentType<NodeProps>;
-  inputs: TInputHandleDefs | ((settings: TSettings, beadi: BeadiContext) => TInputHandleDefs);
-  outputs: TOutputHandleDefs | ((settings: TSettings, beadi: BeadiContext) => TOutputHandleDefs);
+  inputs: TInputHandleDefs | ((settings: TSettings, beadi: BeadiInstance) => TInputHandleDefs);
+  outputs: TOutputHandleDefs | ((settings: TSettings, beadi: BeadiInstance) => TOutputHandleDefs);
   executor: NodeExecutorDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings>;
 };

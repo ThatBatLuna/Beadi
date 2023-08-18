@@ -1,10 +1,9 @@
 import { StoreApi, useStore } from "zustand";
 import { useStoreWithEqualityFn } from "zustand/traditional";
-import { makeFileStore, makeSignalBus } from ".";
+import { BeadiInstance, BeadiPersistentData, makeFileStore, makeSignalBus, useBeadiInstance } from ".";
 import { makeModelState } from "./engine/compiler";
 import { makePreviewStore } from "./engine/preview";
 import _ from "lodash";
-import { BeadiContext, useBeadi } from "./context";
 
 //=== Types extracted from from zustand react.d.ts
 type ExtractState<S> = S extends {
@@ -37,9 +36,13 @@ export type StorageShardDef<TShard extends StorageShard> = {
   name: string;
   shard: TShard;
 };
+export type MakeShardProps = {
+  beadiInstance: BeadiInstance;
+  initialData: Partial<BeadiPersistentData>;
+};
 export type StorageShardDefBuilder<TShard extends StorageShard> = {
   name: string;
-  makeShards: { [Key in keyof TShard]: (beadi: BeadiContext) => TShard[Key] };
+  makeShards: { [Key in keyof TShard]: (props: MakeShardProps) => TShard[Key] };
 };
 export type StorageShard = Record<string, StoreApi<any>>;
 type StorageShardHooks<D extends StorageShard> = {
@@ -57,10 +60,10 @@ type StorageShardHookFn<TStore extends Store<any>> = <TData = ExtractState<TStor
   selector?: (store: ExtractState<TStore>) => TData
 ) => TData;
 interface StorageShardHook<TStore extends Store<any>> extends StorageShardHookFn<TStore> {
-  subscribeWith: (beadi: BeadiContext, subscriber: (store: ExtractState<TStore>) => void) => () => void;
-  getStateWith: (beadi: BeadiContext) => ExtractState<TStore>;
+  subscribeWith: (beadi: BeadiInstance, subscriber: (store: ExtractState<TStore>) => void) => () => void;
+  getStateWith: (beadi: BeadiInstance) => ExtractState<TStore>;
   setStateWith: (
-    beadi: BeadiContext,
+    beadi: BeadiInstance,
     state: Partial<ExtractState<TStore>> | ((old: ExtractState<TStore>) => ExtractState<TStore>)
   ) => ExtractState<TStore>;
 }
@@ -70,7 +73,7 @@ export function createStorageShard<T extends StorageShard>(shard: StorageShardDe
   const hooks = Object.fromEntries([
     ...Object.keys(shard.makeShards).map((key) => {
       const useHook: StorageShardHookFn<any> = (selector) => {
-        const shardDef = useBeadi().getStorage().getShard(shard.name);
+        const shardDef = useBeadiInstance().getStorage().getShard(shard.name);
         return useStore(shardDef.shard[key], selector as any);
       };
       (useHook as StorageShardHook<any>).subscribeWith = (beadi, subscriber) => {
@@ -89,7 +92,7 @@ export function createStorageShard<T extends StorageShard>(shard: StorageShardDe
     }),
     ...Object.keys(shard.makeShards).map((key) => {
       const useHook: StorageShardEqualityFnHook<any> = (selector, equality) => {
-        const shardDef = useBeadi().getStorage().getShard(shard.name);
+        const shardDef = useBeadiInstance().getStorage().getShard(shard.name);
         return useStoreWithEqualityFn(shardDef.shard[key], selector as any, equality as any);
       };
       return [`use${key.charAt(0).toUpperCase() + key.slice(1)}EqualityFn` as keyof StorageShardHooks<T>, useHook];
@@ -114,9 +117,9 @@ const [
 ] = createStorageShard({
   name: "beadi",
   makeShards: {
-    fileStore: (beadi) => {
+    fileStore: ({ initialData, beadiInstance }) => {
       //TODO Validate the input
-      return makeFileStore(beadi.savedFileData?.nodes ?? { nodes: {}, edges: {} });
+      return makeFileStore(beadiInstance, initialData.nodes ?? { nodes: {}, edges: {} });
     },
     previewStore: () => makePreviewStore(),
     signalBus: () => makeSignalBus(),

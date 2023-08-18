@@ -7,8 +7,8 @@ import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeHandleValuePreviews } from "./NodeHandleValuePreview";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
 import { HandleType, InputHandleDef, OutputHandleDef } from "../../engine/node";
-import { useBeadi } from "../../context";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
+import { useBeadiInstance } from "../..";
 
 type NodeHandleLineProps = {
   // input?: ReactNode;
@@ -38,7 +38,7 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
 }) => {
   // const [open, setOpen] = useState(false);
 
-  const beadi = useBeadi();
+  const beadi = useBeadiInstance();
 
   const isValidConnection = useCallback(
     (connection: Connection) => {

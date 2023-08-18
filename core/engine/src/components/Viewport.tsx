@@ -18,6 +18,7 @@ import { NodeHandleDisplay } from "./node/NodeHandle";
 import { InputHandleDef, OutputHandleDef } from "../engine/node";
 import { useBeadi } from "../context";
 import { useFileStore, useFileStoreEqualityFn } from "../storage";
+import { useBeadiInstance } from "..";
 
 function position(e: HTMLElement) {
   let element: HTMLElement | null = e;
@@ -77,7 +78,7 @@ type NewNodeDropDownProps = {
   onClose: () => void;
 };
 const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClose }) => {
-  const beadi = useBeadi();
+  const beadi = useBeadiInstance();
 
   const { addNode, addEdge, nodes } = useFileStore((s) => ({ addNode: s.addNode, addEdge: s.addEdge, nodes: s.data.nodes }));
 
@@ -93,7 +94,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
         handleType = beadi.getNodeInputs(nodes[data.source].type, nodes[data.source].data.settings)[data.sourceHandle];
       }
 
-      return Object.values(beadi.nodeDefs)
+      return Object.values(beadi.context.nodeDefs)
         .flatMap((def) =>
           Object.entries(
             fromOutput ? (typeof def.inputs !== "function" ? def.inputs : []) : typeof def.outputs !== "function" ? def.outputs : []
@@ -116,7 +117,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
 
   const complete = useCallback(
     (type: string, handle: string, toOutput: boolean) => {
-      const newId = addNode(type, data.pos, beadi);
+      const newId = addNode(type, data.pos);
 
       const fromTo = toOutput
         ? {
@@ -146,7 +147,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
         targetHandle: fromTo.target.handle,
       });
     },
-    [addNode, addEdge, data, beadi]
+    [addNode, addEdge, data]
   );
 
   return (
@@ -267,12 +268,11 @@ export const ViewportFlowProvider = ReactFlowProvider;
 export const ViewportWrapper: FunctionComponent<{}> = () => {
   const addNode = useFileStore((s) => s.addNode);
   const wrapper = useRef<HTMLDivElement | null>(null);
-  const beadi = useBeadi();
 
   return (
     <div className="relative grow" ref={wrapper}>
       <ViewportFlowProvider>
-        <ViewportDropTarget onNodeDrop={(pos, type) => addNode(type, pos, beadi)} wrapper={wrapper}>
+        <ViewportDropTarget onNodeDrop={(pos, type) => addNode(type, pos)} wrapper={wrapper}>
           <Viewport />
         </ViewportDropTarget>
       </ViewportFlowProvider>

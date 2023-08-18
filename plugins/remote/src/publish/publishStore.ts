@@ -4,7 +4,7 @@ import { devtools } from "zustand/middleware";
 import { BeadiMessage, RemoteControlEndpoint, handleMessage, sendMessage } from "../message";
 import _ from "lodash";
 import { useIOValueStore, useInterfaceFileStore } from "../storage";
-import { BeadiContext } from "@beadi/engine";
+import { BeadiInstance } from "@beadi/engine";
 
 type PublishConnectionState =
   | {
@@ -33,7 +33,7 @@ type PublishStateStore = {
   state: PublishConnectionState;
 };
 
-export function makePublishStateStore(beadi: BeadiContext) {
+export function makePublishStateStore(beadi: BeadiInstance, remoteServerUrl: string) {
   function makeDisconnectedState(set: Setter, get: Getter, error?: string): PublishConnectionState & { state: "disconnected" } {
     return {
       error,
@@ -137,7 +137,8 @@ export function makePublishStateStore(beadi: BeadiContext) {
   }
 
   function publish(set: Setter, get: Getter): void {
-    const socket = new WebSocket(`${(beadi.globals as any).remotePlugin.remoteServerUrl}/publish`);
+    // const socket = new WebSocket(`${(beadi.globals as any).remotePlugin.remoteServerUrl}/publish`);
+    const socket = new WebSocket(`${remoteServerUrl}/publish`);
 
     socket.addEventListener("open", (event) => {
       console.log("WebSocket Opened: ", event);

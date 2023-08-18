@@ -5,7 +5,7 @@ import { devtools, persist } from "zustand/middleware";
 import _ from "lodash";
 import { InterfaceDef } from "../interface/interfaceStores";
 import { IOValueState } from "../inputOutputStore";
-import { BeadiContext, diffByKeys } from "@beadi/engine";
+import { BeadiInstance, diffByKeys } from "@beadi/engine";
 import { createStore } from "zustand";
 import { useRemoteStateStore, useRemoteStore } from "../storage";
 
@@ -193,7 +193,7 @@ function openRemoteConnection(connection: RemoteConnection, set: Setter, serverU
   };
 }
 
-export function startSyncRemoteStateStore(beadi: BeadiContext) {
+export function startSyncRemoteStateStore(beadi: BeadiInstance, remoteServerUrl: string) {
   console.log("Start syncRemoteStateStore");
   const syncRemoteStateStore = (state: RemoteStore) => {
     const oldRemotes = useRemoteStateStore.getStateWith(beadi).remotes;
@@ -227,7 +227,8 @@ export function startSyncRemoteStateStore(beadi: BeadiContext) {
                 })
               );
             },
-            (beadi.globals as any).remotePlugin.remoteServerUrl
+            // (beadi.globals as any).remotePlugin.remoteServerUrl
+            remoteServerUrl
           );
         }
       })

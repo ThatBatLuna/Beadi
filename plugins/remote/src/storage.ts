@@ -22,7 +22,8 @@ const [
   name: "remotePlugin",
   makeShards: {
     IOValueStore: () => makeIOValueStore(),
-    publishStateStore: (beadi) => makePublishStateStore(beadi),
+    publishStateStore: ({ beadiInstance }) =>
+      makePublishStateStore(beadiInstance, (beadiInstance.context.globals as any).remotePlugin.remoteServerUrl),
     interfaceFileStore: () => makeInterfaceFileStore(),
     remoteStore: () => makeRemoteStore(),
     remoteStateStore: () => makeRemoteStateStore(),

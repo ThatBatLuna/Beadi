@@ -17,12 +17,12 @@ export function makeRemotePlugin(settings: RemotePluginSettings) {
     inputAdapterDefs: [remoteInputAdapter, remoteInputFromOutputAdapter],
     outputAdapterDefs: [remoteOutputAdapter, remoteOutputToInputAdapter],
     processingHooks: {
-      finalizedContext: (beadi) => {
-        tempSyncIOValueStore(beadi);
-        startSyncRemoteStateStore(beadi);
+      finalizedContext: ({ beadiInstance }) => {
+        tempSyncIOValueStore(beadiInstance);
+        startSyncRemoteStateStore(beadiInstance, (beadiInstance.context.globals as any).remotePlugin.remoteServerUrl);
       },
-      postPrepareSignals: (beadi) => {
-        tempPopSignalBuffer(beadi);
+      postPrepareSignals: ({ beadiInstance }) => {
+        tempPopSignalBuffer(beadiInstance);
       },
     },
     globals: {
