@@ -2,17 +2,18 @@ import { FunctionComponent, useMemo } from "react";
 import { NodeProps, useEdges } from "reactflow";
 import { NodeHandleLine } from "./NodeHandleLine";
 import { InputHandleDef } from "../../engine/node";
-import { useFileStore } from "../../engine/store";
+import { UnknownBeadiNodeData, useFileStore } from "../../engine/store";
 import { useModelState } from "../../engine/compiler";
 import { EditableNodeTitle } from "./EditableNodeTitle";
 import { NodeShell } from "@beadi/components";
 import { useBeadiInstance } from "../..";
+import { current } from "immer";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
   nodeId: string;
 };
-export const BeadiNodeRenderer: FunctionComponent<NodeProps> = ({ id, data, type }) => {
+export const BeadiNodeRenderer: FunctionComponent<NodeProps<UnknownBeadiNodeData>> = ({ id, data, type }) => {
   const beadi = useBeadiInstance();
   const edges = useEdges();
   const errors = useModelState((s) => s.model?.errors?.[id]);
@@ -43,9 +44,12 @@ export const BeadiNodeRenderer: FunctionComponent<NodeProps> = ({ id, data, type
   };
 
   const setHandleExpanded = (e: boolean, handle: string) => {
+    console.log("SHE", id, e, handle);
     updateNode(id, (n) => {
-      if (handle in n.data.handles) {
-        n.data.handles[handle].preview = e;
+      console.log("D", handle, current(n.data.outputHandles));
+      if (handle in n.data.outputHandles) {
+        console.log("Expand ", e, handle, current(n.data.outputHandles));
+        n.data.outputHandles[handle].preview = e;
       }
     });
   };
@@ -66,8 +70,8 @@ export const BeadiNodeRenderer: FunctionComponent<NodeProps> = ({ id, data, type
           label={input.label}
           handleId={inputId}
           connected={connections[index]}
-          expanded={data.handles?.[inputId]?.preview ?? false}
-          setExpanded={(expanded) => setHandleExpanded(expanded, inputId)}
+          expanded={false}
+          setExpanded={() => {}}
           handleDef={input}
           // input={getHandleInput({
           //   type: input.type,
@@ -86,7 +90,7 @@ export const BeadiNodeRenderer: FunctionComponent<NodeProps> = ({ id, data, type
           label={output.label}
           nodeId={id}
           handleDef={output}
-          expanded={data.handles?.[outputId]?.preview ?? false}
+          expanded={data.outputHandles?.[outputId]?.preview ?? false}
           setExpanded={(expanded) => setHandleExpanded(expanded, outputId)}
         ></NodeHandleLine>
       ))}

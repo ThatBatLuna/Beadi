@@ -8,7 +8,7 @@ type PositiveWaveNodeSettings = {
   positiveOnly: boolean;
 };
 
-const PositiveWaveNode: FunctionComponent<NodeHeaderProps<{}, PositiveWaveNodeSettings, any>> = ({ id, data }) => {
+const PositiveWaveNode: FunctionComponent<NodeHeaderProps<{}, PositiveWaveNodeSettings, any, any>> = ({ id, data }) => {
   // const [positive, setPositive] = useInputHandleData<boolean>(id, "positive");
   const updateNode = useFileStore((s) => s.updateNode);
 

@@ -5,7 +5,7 @@ import { gaussianRandom } from "./TimerNode";
 import { emitImpulse } from "../engine/signal";
 import { usePreviewStore } from "../storage";
 
-const DelayNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
+const DelayNode: FunctionComponent<NodeHeaderProps<{}, {}, any, any>> = ({ id }) => {
   const progress = usePreviewStore((s) => s.outputHandlePreviews[id]?.["progress"] ?? 0.0);
 
   return (

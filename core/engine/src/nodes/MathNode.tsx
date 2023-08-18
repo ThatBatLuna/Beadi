@@ -30,7 +30,7 @@ type MathNodeSettings = {
   operation: Operator;
 };
 
-export const MathNodeHeader: FunctionComponent<NodeHeaderProps<{}, MathNodeSettings, any>> = ({ id, data }) => {
+export const MathNodeHeader: FunctionComponent<NodeHeaderProps<{}, MathNodeSettings, any, any>> = ({ id, data }) => {
   const updateNode = useFileStore((s) => s.updateNode);
 
   const setOperation = (s: Operator | null) => {

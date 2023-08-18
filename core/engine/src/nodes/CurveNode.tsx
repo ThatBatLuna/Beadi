@@ -13,7 +13,7 @@ type CurveNodeSettings = {
   points: CurvePoint[] | undefined;
 };
 
-const CurveNode: FunctionComponent<NodeHeaderProps<{}, CurveNodeSettings, any>> = ({ id, data }) => {
+const CurveNode: FunctionComponent<NodeHeaderProps<{}, CurveNodeSettings, any, any>> = ({ id, data }) => {
   const updateNode = useFileStore((s) => s.updateNode);
   const editor = useRef<SVGSVGElement | null>(null);
   // const value = usePreviewStore(s => s.outputHandlePreviews[id][""])

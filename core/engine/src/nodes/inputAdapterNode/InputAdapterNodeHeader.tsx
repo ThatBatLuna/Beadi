@@ -2,7 +2,7 @@ import { Select } from "@beadi/components";
 import { FunctionComponent } from "react";
 import { NodeHeaderProps, useFileStore, useBeadi, InputAdapterNodeSettings } from "../..";
 
-export const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapterNodeSettings, any>> = ({ id, data }) => {
+export const InputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, InputAdapterNodeSettings, any, any>> = ({ id, data }) => {
   const updateNode = useFileStore((s) => s.updateNode);
   const beadi = useBeadi();
   const adapterId = data.settings.adapterId;

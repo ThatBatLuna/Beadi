@@ -11,7 +11,7 @@ export function gaussianRandom(mean = 0, stdev = 1) {
   return z * stdev + mean;
 }
 
-const TimerNode: FunctionComponent<NodeHeaderProps<{}, {}, any>> = ({ id }) => {
+const TimerNode: FunctionComponent<NodeHeaderProps<{}, {}, any, any>> = ({ id }) => {
   const progress = usePreviewStore((s) => s.outputHandlePreviews[id]?.["progress"] ?? 0.0);
 
   return (

@@ -105,7 +105,7 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
             kind === "input" && <InputComponent handleId={handleId} input={handleDef as InputHandleDef} nodeId={nodeId}></InputComponent>
           )}
           {kind === "output" && NodeHandleValuePreview !== undefined && (
-            <button onMouseDownCapture={(e) => e.stopPropagation()} onClick={() => setExpanded(!expanded)}>
+            <button onClick={() => setExpanded(!expanded)} data-uwu="owo">
               {expanded ? <MdExpandLess></MdExpandLess> : <MdExpandMore></MdExpandMore>}
             </button>
           )}

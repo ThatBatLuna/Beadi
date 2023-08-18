@@ -7,23 +7,28 @@ import { useCallback } from "react";
 import { useFileStore } from "../storage";
 import { BeadiInstance } from "..";
 
-export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, any>>;
-export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>> = Node<
-  BeadiNodeData<TDisplaySettings, TSettings, THandles>
+export type UnknownBeadiNode = BeadiNode<unknown, unknown, Record<string, any>, Record<string, any>>;
+export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<string, any>, TOutputHandles extends Record<string, any>> = Node<
+  BeadiNodeData<TDisplaySettings, TSettings, THandles, TOutputHandles>
 > & {
-  type: NonNullable<Node<BeadiNodeData<TDisplaySettings, TSettings, THandles>>["type"]>;
+  type: NonNullable<Node<BeadiNodeData<TDisplaySettings, TSettings, THandles, TOutputHandles>>["type"]>;
 };
 
-export type BeadiNodeHandleData<T> = {
-  preview: boolean;
+export type BeadiInputNodeHandleData<T> = {
   value: T;
 };
-export type UnknownBeadiNodeData = BeadiNodeData<unknown, unknown, Record<string, unknown>>;
-export type BeadiNodeData<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
+export type BeadiOutputNodeHandleData = {
+  preview: boolean;
+};
+export type UnknownBeadiNodeData = BeadiNodeData<unknown, unknown, Record<string, unknown>, Record<string, unknown>>;
+export type BeadiNodeData<TDisplaySettings, TSettings, THandles extends Record<string, any>, TOutputHandles extends Record<string, any>> = {
   displaySettings: TDisplaySettings;
   settings: TSettings;
-  handles: {
-    [Key in keyof THandles]: BeadiNodeHandleData<THandles[Key]>;
+  inputHandles: {
+    [Key in keyof THandles]: BeadiInputNodeHandleData<THandles[Key]>;
+  };
+  outputHandles: {
+    [Key in keyof TOutputHandles]: BeadiOutputNodeHandleData;
   };
   name?: string;
 };
@@ -71,9 +76,11 @@ export function makeFileStore(beadiInstance: BeadiInstance, initialData: BeadiFi
             type: type,
             data: {
               displaySettings: {},
-              handles: _.mapValues(beadiInstance.getNodeInputs(nodeDef.type, {}), (handle) => ({
-                preview: false,
+              inputHandles: _.mapValues(beadiInstance.getNodeInputs(nodeDef.type, {}), (handle) => ({
                 value: handle.default,
+              })),
+              outputHandles: _.mapValues(beadiInstance.getNodeOutputs(nodeDef.type, {}), () => ({
+                preview: false,
               })),
               settings: {},
             },
@@ -154,13 +161,12 @@ export function makeFileStore(beadiInstance: BeadiInstance, initialData: BeadiFi
         set((store) => {
           const node = store.data.nodes[nodeId];
           if (node !== undefined) {
-            if (!(handleId in node.data.handles)) {
-              node.data.handles[handleId] = {
-                preview: false,
+            if (!(handleId in node.data.inputHandles)) {
+              node.data.inputHandles[handleId] = {
                 value: data,
               };
             } else {
-              node.data.handles[handleId].value = data;
+              node.data.inputHandles[handleId].value = data;
             }
           } else {
             console.trace("Tried to set handle of node, but node '", nodeId, "' does not exist.");
@@ -171,7 +177,7 @@ export function makeFileStore(beadiInstance: BeadiInstance, initialData: BeadiFi
       getHandleValue: (nodeId, handleId) => {
         const node = get().data.nodes[nodeId];
         if (node !== undefined) {
-          return node.data.handles[handleId]?.value ?? null;
+          return node.data.inputHandles[handleId]?.value ?? null;
         } else {
           return null;
         }
@@ -181,9 +187,12 @@ export function makeFileStore(beadiInstance: BeadiInstance, initialData: BeadiFi
         set((store) => (store.data = file));
       },
       updateNode: (nodeId, recipe) => {
+        console.log("A");
         set((store) => {
+          console.log("B");
           const node = store.data.nodes[nodeId];
-          if (node !== undefined) {
+          if (node != null) {
+            console.log("C");
             recipe(node);
           } else {
             console.trace("Tried to update nonexisting node '", nodeId, "'");
@@ -213,7 +222,7 @@ export function makeFileStore(beadiInstance: BeadiInstance, initialData: BeadiFi
 export type UseInputHandleData<T> = [T, (value: T) => void];
 export function useInputHandleData<T>(nodeId: string, handleId: string): UseInputHandleData<T> {
   const value = useFileStore((state) => {
-    return state.data.nodes[nodeId]?.data?.handles?.[handleId]?.value;
+    return state.data.nodes[nodeId]?.data?.inputHandles?.[handleId]?.value;
   });
   const setHandle = useFileStore((state) => state.setHandleValue);
   const setValue = useCallback(

@@ -14,20 +14,18 @@ export const previewSave: BeadiPersistentData = {
           type: "wave",
           data: {
             displaySettings: {},
-            handles: {
+            inputHandles: {
               amplitude: {
                 value: 1.0,
-                preview: false,
               },
               frequency: {
                 value: 0.2,
-                preview: false,
               },
               phase: {
                 value: 0.0,
-                preview: false,
               },
             },
+            outputHandles: {},
             settings: {},
             name: "Wave",
           },
@@ -41,20 +39,18 @@ export const previewSave: BeadiPersistentData = {
           type: "wave",
           data: {
             displaySettings: {},
-            handles: {
+            inputHandles: {
               amplitude: {
                 value: 1.0,
-                preview: false,
               },
               frequency: {
                 value: 0.2,
-                preview: false,
               },
               phase: {
                 value: 0.0,
-                preview: false,
               },
             },
+            outputHandles: {},
             settings: {},
             name: "Wave",
           },
@@ -68,12 +64,12 @@ export const previewSave: BeadiPersistentData = {
           type: "math",
           data: {
             displaySettings: {},
-            handles: {
+            outputHandles: {
               result: {
                 preview: true,
-                value: 0.0,
               },
             },
+            inputHandles: {},
             settings: {
               operation: "mix",
             },

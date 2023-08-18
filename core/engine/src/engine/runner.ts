@@ -5,6 +5,7 @@ import { useSignalBus } from "./signal";
 import { NodeContext } from "./node";
 import { BeadiContext } from "../context";
 import { usePreviewStore } from "../storage";
+import { BeadiInstance } from "..";
 
 /** NodeId -> HandleId -> Value */
 type HandleValues = Record<string, Record<string, any>>;
@@ -15,12 +16,12 @@ const timestep = 1000 / 60;
 
 let timeout: number | null = null;
 
-function runEngineLoop(model: Model, beadi: BeadiContext) {
+function runEngineLoop(model: Model, beadi: BeadiInstance) {
   // let last = Date.now();
 
   const persistentData: NodePersistData = Object.assign(
     {},
-    ...model.executionPlan.map((it) => ({ [it.nodeId]: beadi.nodeDefs[it.type].executor.initialPersistence }))
+    ...model.executionPlan.map((it) => ({ [it.nodeId]: beadi.context.nodeDefs[it.type].executor.initialPersistence }))
   );
 
   function update() {
@@ -41,7 +42,7 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
     //Exeucte all independent outputs before the executionPlan commences
 
     for (const step of model.preprocessIndependent) {
-      const nodeType = beadi.nodeDefs[step.type];
+      const nodeType = beadi.context.nodeDefs[step.type];
       if (nodeType.executor.independentExecutor !== undefined) {
         const persistent = persistentData[step.nodeId];
         const outputs = nodeType.executor.independentExecutor(persistent);
@@ -55,7 +56,7 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
         settings: step.settings,
       };
 
-      const nodeType = beadi.nodeDefs[step.type];
+      const nodeType = beadi.context.nodeDefs[step.type];
       // const inputs = step.dependencies.map((it) => (it.convert ? it.convert(data[it.id]) : data[it.id]));
       const inputs = _.mapValues(step.dependencies, (dependency, handleId) => {
         if (beadi.getNodeInputs(step.type, step.settings)[handleId].type === "impulse") {
@@ -102,7 +103,8 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
   timeout = setTimeout(update, timestep) as any;
 }
 
-export function restartLoopWithModel(model: Model | null, beadi: BeadiContext) {
+export function restartLoopWithModel(model: Model | null, beadi: BeadiInstance) {
+  console.log("UU");
   if (timeout !== null) {
     console.log("Stopping old Engine Loop");
     clearTimeout(timeout);

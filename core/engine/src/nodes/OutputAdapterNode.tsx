@@ -10,7 +10,7 @@ export type OutputAdapterNodeSettings = {
   adapterSettings: Record<string, any>;
 };
 
-const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, OutputAdapterNodeSettings, any>> = ({ id, data }) => {
+const OutputAdapterNodeHeader: FunctionComponent<NodeHeaderProps<{}, OutputAdapterNodeSettings, any, any>> = ({ id, data }) => {
   const beadi = useBeadi();
   const updateNode = useFileStore((s) => s.updateNode);
   const adapterId = data.settings.adapterId;

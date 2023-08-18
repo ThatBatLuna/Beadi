@@ -2,9 +2,9 @@ import { FileStore, useFileStore } from "./store";
 import _ from "lodash";
 import { ModelSources, buildModel, useModelState } from "./compiler";
 import { restartLoopWithModel } from "./runner";
-import { BeadiContext } from "../context";
+import { BeadiInstance } from "..";
 
-export function watchForChanges(beadi: BeadiContext) {
+export function watchForChanges(beadi: BeadiInstance) {
   useModelState.subscribeWith(beadi, (state) => {
     restartLoopWithModel(state.model, beadi);
   });

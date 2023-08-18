@@ -9,7 +9,7 @@ type CommentNodeSettings = {
   text: string;
   height: number;
 };
-export const CommentNode: FunctionComponent<NodeProps<BeadiNodeData<{}, CommentNodeSettings, any>>> = ({ id, data }) => {
+export const CommentNode: FunctionComponent<NodeProps<BeadiNodeData<{}, CommentNodeSettings, any, any>>> = ({ id, data }) => {
   const [editing, setEditing] = useState(false);
   // const [text, setText] = useHandleData<string>("input", id, "text");
   const text = data.settings.text;

@@ -75,9 +75,14 @@ export type IndependentNodeExecutor<in out TOutputs, TPersistence> = (persistent
 export type InputHandleDefs = Record<string, InputHandleDef>;
 export type OutputHandleDefs = Record<string, OutputHandleDef>;
 
-export type NodeHeaderProps<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
+export type NodeHeaderProps<
+  TDisplaySettings,
+  TSettings,
+  THandles extends Record<string, any>,
+  TOutputHandles extends Record<string, any>
+> = {
   id: string;
-  data: BeadiNodeData<TDisplaySettings, TSettings, THandles>;
+  data: BeadiNodeData<TDisplaySettings, TSettings, THandles, TOutputHandles>;
 };
 export type MobileViewProps = { id: string; data: any };
 
@@ -158,7 +163,7 @@ export function nodeDef<TSettings>() {
     TOutputHandleDefs extends OutputHandleDefs,
     TDriverOutputs extends Record<string, any>,
     TPersistence,
-    THeaderProps extends NodeHeaderProps<any, TSettings, InputTypesOf<TInputHandleDefs>>
+    THeaderProps extends NodeHeaderProps<any, TSettings, InputTypesOf<TInputHandleDefs>, OutputTypesOf<TOutputHandleDefs>>
   >(
     n: NodeDef<TInputHandleDefs, TDriverInputs, TOutputHandleDefs, TDriverOutputs, TPersistence, TSettings, THeaderProps>
   ) => {
@@ -174,7 +179,7 @@ export type NodeDef<
   TDriverOutputs extends Record<string, any>,
   TPersistence,
   TSettings,
-  THeaderProps extends NodeHeaderProps<any, TSettings, InputTypesOf<TInputHandleDefs>>
+  THeaderProps extends NodeHeaderProps<any, TSettings, InputTypesOf<TInputHandleDefs>, OutputTypesOf<TOutputHandleDefs>>
 > = {
   label: string;
   publishable?: boolean;

@@ -3,6 +3,7 @@ import { BeadiFileData, UnknownBeadiNode } from "./engine/store";
 import { Storage, beadiStorageShard } from "./storage";
 import { AnyPlugin, BeadiContext, InputHandleDefs, OutputHandleDefs, notNull } from ".";
 import _ from "lodash";
+import { watchForChanges } from "./engine";
 
 export interface BeadiPersistentData {
   nodes: BeadiFileData;
@@ -36,6 +37,7 @@ export class BeadiInstance {
       })),
     ]);
     this.runHooks("finalizedContext");
+    watchForChanges(this);
   }
 
   getStorage(): Storage {
