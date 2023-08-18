@@ -15,11 +15,17 @@ export type BeadiNode<TDisplaySettings, TSettings, THandles extends Record<strin
   type: NonNullable<Node<BeadiNodeData<TDisplaySettings, TSettings, THandles>>["type"]>;
 };
 
+export type BeadiNodeHandleData<T> = {
+  preview: boolean;
+  value: T;
+};
 export type UnknownBeadiNodeData = BeadiNodeData<unknown, unknown, Record<string, unknown>>;
 export type BeadiNodeData<TDisplaySettings, TSettings, THandles extends Record<string, any>> = {
   displaySettings: TDisplaySettings;
   settings: TSettings;
-  handles: THandles;
+  handles: {
+    [Key in keyof THandles]: BeadiNodeHandleData<THandles[Key]>;
+  };
   name?: string;
 };
 
@@ -36,8 +42,8 @@ export type BeadiFileData = {
 export type FileStore = {
   data: BeadiFileData;
 
-  setHandle: (nodeId: string, handleId: string, data: any) => void;
-  getHandle: (nodeId: string, handleId: string) => any;
+  setHandleValue: (nodeId: string, handleId: string, data: any) => void;
+  getHandleValue: (nodeId: string, handleId: string) => any;
   updateNode: (nodeId: string, recipe: (node: Draft<UnknownBeadiNode>) => void) => void;
   overwrite: (file: BeadiFileData) => void;
 
@@ -72,7 +78,10 @@ export function makeFileStore() {
                 type: type,
                 data: {
                   displaySettings: {},
-                  handles: _.mapValues(tempBeadi.getNodeInputs(nodeDef.type, {}), (handle) => handle.default),
+                  handles: _.mapValues(tempBeadi.getNodeInputs(nodeDef.type, {}), (handle) => ({
+                    preview: false,
+                    value: handle.default,
+                  })),
                   settings: {},
                 },
               };
@@ -151,21 +160,28 @@ export function makeFileStore() {
             });
           },
 
-          setHandle: (nodeId, handleId, data) => {
+          setHandleValue: (nodeId, handleId, data) => {
             set((store) => {
               const node = store.data.nodes[nodeId];
               if (node !== undefined) {
-                node.data.handles[handleId] = data;
+                if (!(handleId in node.data.handles)) {
+                  node.data.handles[handleId] = {
+                    preview: false,
+                    value: data,
+                  };
+                } else {
+                  node.data.handles[handleId].value = data;
+                }
               } else {
                 console.trace("Tried to set handle of node, but node '", nodeId, "' does not exist.");
               }
             });
           },
 
-          getHandle: (nodeId, handleId) => {
+          getHandleValue: (nodeId, handleId) => {
             const node = get().data.nodes[nodeId];
             if (node !== undefined) {
-              return node.data.handles[handleId];
+              return node.data.handles[handleId]?.value ?? null;
             } else {
               return null;
             }
@@ -212,9 +228,9 @@ export function makeFileStore() {
 export type UseInputHandleData<T> = [T, (value: T) => void];
 export function useInputHandleData<T>(nodeId: string, handleId: string): UseInputHandleData<T> {
   const value = useFileStore((state) => {
-    return state.data.nodes[nodeId]?.data?.handles?.[handleId];
+    return state.data.nodes[nodeId]?.data?.handles?.[handleId]?.value;
   });
-  const setHandle = useFileStore((state) => state.setHandle);
+  const setHandle = useFileStore((state) => state.setHandleValue);
   const setValue = useCallback(
     (value: T) => {
       setHandle(nodeId, handleId, value);

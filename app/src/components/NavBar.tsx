@@ -7,9 +7,8 @@ import { NavLink, To } from "react-router-dom";
 type NavBarItemProps = {
   to: To;
   children?: ReactNode;
-  highlight?: boolean;
 };
-const NavBarItem: FunctionComponent<NavBarItemProps> = ({ to, children, highlight = false }) => {
+const NavBarItem: FunctionComponent<NavBarItemProps> = ({ to, children }) => {
   return (
     <li className="contents">
       <NavLink
@@ -19,7 +18,6 @@ const NavBarItem: FunctionComponent<NavBarItemProps> = ({ to, children, highligh
             "border-b-8": isActive,
             "border-b": !isActive,
             "text-purple-100": !isActive,
-            // "bg-purple-1000 shadow-purple-100 transition-all": !isActive && highlight,
           })
         }
       >
@@ -37,7 +35,7 @@ export const NavBar: FunctionComponent = () => {
         <NavBarItem to="/">Home</NavBarItem>
         <NavBarItem to="/guide">Guide</NavBarItem>
         <NavBarItem to="/changelog">Changelog</NavBarItem>
-        <NavBarItem to={EDITOR_ROOT_URL} highlight={true}>
+        <NavBarItem to={EDITOR_ROOT_URL}>
           <span className="inline-flex flex-row bg-purple-700 text-white items-center pl-4 py-1 rounded-md">
             Editor
             <MdChevronRight className="w-8 h-8" />

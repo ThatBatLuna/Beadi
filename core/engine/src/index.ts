@@ -13,7 +13,7 @@ export * from "./engine/node";
 export * from "./engine/signal";
 export * from "./engine/store";
 export * from "./engine/adapter";
-export * from "./nodes/InputAdapterNode";
+export * from "./nodes/inputAdapterNode";
 export * from "./nodes/OutputAdapterNode";
 
 //TODO Factor this

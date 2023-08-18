@@ -175,7 +175,7 @@ const NewNodeDropdown: FunctionComponent<NewNodeDropDownProps> = ({ data, onClos
 const selector = (state: FileStore) => ({
   nodes: Object.values(state.data.nodes).map((node) => ({
     ...node,
-    data: _.omit(node.data, "handles"),
+    // data: _.omit(node.data, "handles"),
   })),
   edges: Object.values(state.data.edges),
   onNodesChange: state.onNodesChange,

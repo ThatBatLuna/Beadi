@@ -29,7 +29,6 @@ const StringHandleInput: FunctionComponent<HandleInputProps> = ({ handleId, node
 };
 
 const BooleanHandleInput: FunctionComponent<HandleInputProps> = ({ handleId, nodeId, input }) => {
-  //TODO GUI STUB
   const [value, setValue] = useInputHandleData<boolean>(nodeId, handleId);
 
   return (

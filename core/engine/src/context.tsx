@@ -2,7 +2,7 @@ import { AnyPlugin } from "./plugin";
 import { AnyNodeDef, InputHandleDefs, OutputHandleDefs } from "./engine/node";
 
 import { timerNodeDef } from "./nodes/TimerNode";
-import { inputAdapterNode } from "./nodes/InputAdapterNode";
+import { inputAdapterNode } from "./nodes/inputAdapterNode";
 import { toggleNodeDef } from "./nodes/ToggleNode";
 import { AnyInputAdapterDef, AnyOutputAdapterDef } from "./engine/adapter";
 import { outputAdapterNode } from "./nodes/OutputAdapterNode";

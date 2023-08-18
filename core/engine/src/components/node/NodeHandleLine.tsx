@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useCallback, useState } from "react";
+import { FunctionComponent, ReactNode, useCallback } from "react";
 import { Connection, Handle, Position } from "reactflow";
 import clsx from "clsx";
 import { useFileStore } from "../../storage";
@@ -17,10 +17,24 @@ type NodeHandleLineProps = {
   connected?: boolean;
   handleId: string;
   nodeId: string;
+
+  expanded: boolean;
+  setExpanded: (expanded: boolean) => void;
 };
 
-const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, type, label, handleId, connected, nodeId }) => {
-  const [open, setOpen] = useState(false);
+export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
+  input,
+  kind,
+  type,
+  label,
+  handleId,
+  connected,
+  nodeId,
+  expanded,
+  setExpanded,
+}) => {
+  // const [open, setOpen] = useState(false);
+
   const beadi = useBeadi();
 
   const isValidConnection = useCallback(
@@ -86,8 +100,8 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, t
             </span>
           )}
           {kind === "output" && NodeHandleValuePreview !== undefined && (
-            <button onMouseDownCapture={(e) => e.stopPropagation()} onClick={() => setOpen(!open)}>
-              {open ? <MdExpandLess></MdExpandLess> : <MdExpandMore></MdExpandMore>}
+            <button onMouseDownCapture={(e) => e.stopPropagation()} onClick={() => setExpanded(!expanded)}>
+              {expanded ? <MdExpandLess></MdExpandLess> : <MdExpandMore></MdExpandMore>}
             </button>
           )}
         </div>
@@ -104,9 +118,7 @@ const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({ input, kind, t
           </Handle>
         )}
       </div>
-      {open && <NodeHandleValuePreview handleId={handleId} nodeId={nodeId} type={type}></NodeHandleValuePreview>}
+      {expanded && kind === "output" && <NodeHandleValuePreview handleId={handleId} nodeId={nodeId} type={type}></NodeHandleValuePreview>}
     </div>
   );
 };
-
-export default NodeHandleLine;

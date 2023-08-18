@@ -69,7 +69,7 @@ function runEngineLoop(model: Model, beadi: BeadiContext) {
           if (dependency !== null) {
             return handleValues[dependency.nodeId][dependency.handleId];
           } else {
-            return useFileStore.getStateWith(beadi).getHandle(step.nodeId, handleId);
+            return useFileStore.getStateWith(beadi).getHandleValue(step.nodeId, handleId);
           }
         }
       });

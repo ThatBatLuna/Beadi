@@ -1,6 +1,6 @@
 import { ComponentType, useMemo } from "react";
 import { NodeProps, useEdges } from "reactflow";
-import NodeHandleLine from "./NodeHandleLine";
+import { NodeHandleLine } from "./NodeHandleLine";
 import { AnyNodeDef, InputHandleDef } from "../../engine/node";
 import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 import { UnknownBeadiNodeData, useFileStore } from "../../engine/store";
@@ -8,6 +8,7 @@ import { useModelState } from "../../engine/compiler";
 import { EditableNodeTitle } from "./EditableNodeTitle";
 import { useBeadi } from "../../context";
 import { NodeShell } from "@beadi/components";
+import { current } from "immer";
 export type HandleInputProps = {
   input: InputHandleDef;
   handleId: string;
@@ -61,6 +62,14 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
       }
     };
 
+    const setHandleExpanded = (e: boolean, handle: string) => {
+      updateNode(id, (n) => {
+        if (handle in n.data.handles) {
+          n.data.handles[handle].preview = e;
+        }
+      });
+    };
+
     return (
       <NodeShell
         title={<EditableNodeTitle title={data.name} emptyLabel={def.label} onChange={setNodeName}></EditableNodeTitle>}
@@ -77,6 +86,8 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
             label={input.label}
             handleId={inputId}
             connected={connections[index]}
+            expanded={data.handles?.[inputId]?.preview ?? false}
+            setExpanded={(expanded) => setHandleExpanded(expanded, inputId)}
             input={getHandleInput({
               type: input.type,
               input: input,
@@ -93,6 +104,8 @@ export function makeNodeRenderer(def: AnyNodeDef): ComponentType<NodeProps<Unkno
             type={output.type}
             label={output.label}
             nodeId={id}
+            expanded={data.handles?.[outputId]?.preview ?? false}
+            setExpanded={(expanded) => setHandleExpanded(expanded, outputId)}
           ></NodeHandleLine>
         ))}
       </NodeShell>

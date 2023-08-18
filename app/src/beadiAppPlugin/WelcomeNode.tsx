@@ -1,6 +1,6 @@
 import { FunctionComponent, useCallback } from "react";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { Button, Typo, NodeShell } from "@beadi/components";
+import { Button, NodeShell } from "@beadi/components";
 import { BeadiFileData, UnknownBeadiNodeProps, useFileStore } from "@beadi/engine";
 
 // import SimpleWaveExample from "EXAMPLES/SimpleNodes.json";
