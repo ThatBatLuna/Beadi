@@ -9,6 +9,7 @@ import { previewSave } from "./beadiPreviewSave";
 export const PreviewBeadi: FunctionComponent = () => {
   const [context, instance] = useMemo(() => {
     const context = new BeadiContext({
+      rootUrl: "",
       plugins: [],
     });
     const instance = new BeadiInstance({

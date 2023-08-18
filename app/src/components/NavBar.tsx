@@ -1,8 +1,8 @@
-import { EDITOR_ROOT_URL } from "@beadi/engine";
 import clsx from "clsx";
 import { FunctionComponent, ReactNode } from "react";
 import { MdChevronRight } from "react-icons/md";
 import { NavLink, To } from "react-router-dom";
+import { EDITOR_ROOT_URL } from "../App";
 
 type NavBarItemProps = {
   to: To;

@@ -1,7 +1,7 @@
 import { Typo, TypoLink } from "@beadi/components";
 import { FunctionComponent } from "react";
 import { ExampleList } from "../beadiAppPlugin/WelcomeNode";
-import { EDITOR_ROOT_URL } from "@beadi/engine";
+import { EDITOR_ROOT_URL } from "../App";
 
 export const GuidePage: FunctionComponent = () => {
   return (

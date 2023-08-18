@@ -4,7 +4,6 @@ import { FileSettings } from "./settings/FileSettings";
 import { MdChevronRight, MdInsertDriveFile } from "react-icons/md";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useBeadi } from "../context";
-import { EDITOR_ROOT_URL } from "../startBeadi";
 
 export type Tab = {
   id: string;
@@ -23,7 +22,7 @@ export const fileTab: Tab = {
 export const Settings: FunctionComponent<{}> = () => {
   const beadi = useBeadi();
   const isRoot = useLocation();
-  const expanded = isRoot.pathname !== EDITOR_ROOT_URL;
+  const expanded = isRoot.pathname !== beadi.rootUrl;
 
   return (
     <div className="flex flex-row shadow-sm bg-primary-1100">
@@ -31,7 +30,7 @@ export const Settings: FunctionComponent<{}> = () => {
         {Object.entries(beadi.settingsTabs).map(([key, value]) => (
           <NavLink
             key={key}
-            to={`${EDITOR_ROOT_URL}/${value.id}`}
+            to={`${beadi.rootUrl}/${value.id}`}
             className={({ isActive }) => clsx("w-10 h-10 p-2 rounded-l-md cursor-pointer", isActive ? "bg-primary-900" : "bg-primary-1000")}
           >
             {value.icon}
@@ -43,7 +42,7 @@ export const Settings: FunctionComponent<{}> = () => {
               "opacity-0": !expanded,
             })
           }
-          to={EDITOR_ROOT_URL}
+          to={beadi.rootUrl}
         >
           <MdChevronRight className="w-full h-full"></MdChevronRight>
         </NavLink>

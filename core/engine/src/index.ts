@@ -1,5 +1,5 @@
-export * from "./startBeadi";
-export type { BeadiOptions } from "./startBeadi";
+import "./index.css";
+import "reactflow/dist/style.css";
 
 export * from "./utils";
 export * from "./hooks/useAnimationFrame";
@@ -16,6 +16,6 @@ export * from "./engine/store";
 export * from "./engine/adapter";
 export * from "./nodes/inputAdapterNode";
 export * from "./nodes/OutputAdapterNode";
-
+export { BeadiEditor } from "./components/BeadiEditor";
 //TODO Factor this
 export * from "./components/Viewport";

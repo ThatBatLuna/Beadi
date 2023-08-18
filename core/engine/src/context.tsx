@@ -26,6 +26,7 @@ import { BeadiNodeRenderer } from "./components/node/NodeRenderer";
 
 type BeadiContextProps = {
   plugins: AnyPlugin[];
+  rootUrl: string;
 };
 
 export type BeadiContextOf<TPlugin extends AnyPlugin> = BeadiContext<{ [Key in TPlugin["id"]]: TPlugin["globals"] }>;
@@ -37,6 +38,7 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
   settingsTabs: Record<string, Tab>;
   plugins: AnyPlugin[];
   globals: TGlobals;
+  rootUrl: string;
 
   constructor(props: BeadiContextProps) {
     const nodeDefList: AnyNodeDef[] = [
@@ -57,6 +59,7 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
       edgeDetectorNodeDef as any,
       ...props.plugins.flatMap((it) => it.nodeDefs ?? []),
     ];
+    this.rootUrl = props.rootUrl;
 
     this.nodeDefs = Object.assign({}, ...nodeDefList.map((it) => ({ [it.type]: it })));
 
@@ -81,6 +84,15 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
     this.globals = Object.fromEntries(props.plugins.map((plugin) => [plugin.id, plugin.globals]));
 
     this.plugins = props.plugins;
+  }
+
+  createRoutes() {
+    return [
+      ...Object.values(this.settingsTabs).map((it) => ({
+        path: it.id,
+        element: it.tab,
+      })),
+    ];
   }
 }
 

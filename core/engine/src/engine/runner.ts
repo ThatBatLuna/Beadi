@@ -3,7 +3,6 @@ import { Model } from "./compiler";
 import { useFileStore } from "./store";
 import { useSignalBus } from "./signal";
 import { NodeContext } from "./node";
-import { BeadiContext } from "../context";
 import { usePreviewStore } from "../storage";
 import { BeadiInstance } from "..";
 
