@@ -1,7 +1,7 @@
-import { BeadiEdge, BeadiPersistentData, UnknownBeadiNode } from "@beadi/engine";
+import { BeadiEdge, BeadiFileData, UnknownBeadiNode } from "@beadi/engine";
 import _ from "lodash";
 
-export const previewSave: BeadiPersistentData = {
+export const previewSave = {
   nodes: {
     nodes: _.keyBy(
       [
@@ -98,5 +98,5 @@ export const previewSave: BeadiPersistentData = {
       ] satisfies BeadiEdge[],
       (it) => it.id
     ),
-  },
+  } satisfies BeadiFileData,
 };

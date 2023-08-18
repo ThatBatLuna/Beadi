@@ -1,6 +1,6 @@
 import { StoreApi, useStore } from "zustand";
 import { useStoreWithEqualityFn } from "zustand/traditional";
-import { BeadiInstance, BeadiPersistentData, makeFileStore, makeSignalBus, useBeadiInstance } from ".";
+import { BeadiFileData, BeadiInstance, makeFileStore, makeSignalBus, useBeadiInstance } from ".";
 import { makeModelState } from "./engine/compiler";
 import { makePreviewStore } from "./engine/preview";
 import _ from "lodash";
@@ -36,13 +36,15 @@ export type StorageShardDef<TShard extends StorageShard> = {
   name: string;
   shard: TShard;
 };
-export type MakeShardProps = {
+export type ShardSavedDataUpdater<TPersistent> = (partialData: Partial<TPersistent>) => void;
+export type MakeShardProps<TPersistent> = {
   beadiInstance: BeadiInstance;
-  initialData: Partial<BeadiPersistentData>;
+  initialData: TPersistent;
+  updateSavedData: ShardSavedDataUpdater<TPersistent>;
 };
-export type StorageShardDefBuilder<TShard extends StorageShard> = {
+export type StorageShardDefBuilder<TShard extends StorageShard, TPersistent> = {
   name: string;
-  makeShards: { [Key in keyof TShard]: (props: MakeShardProps) => TShard[Key] };
+  makeShards: { [Key in keyof TShard]: (props: MakeShardProps<TPersistent>) => TShard[Key] };
 };
 export type StorageShard = Record<string, StoreApi<any>>;
 type StorageShardHooks<D extends StorageShard> = {
@@ -68,8 +70,8 @@ interface StorageShardHook<TStore extends Store<any>> extends StorageShardHookFn
   ) => ExtractState<TStore>;
 }
 
-type CreateStorageShard<T extends StorageShard> = [StorageShardDefBuilder<T>, StorageShardHooks<T>];
-export function createStorageShard<T extends StorageShard>(shard: StorageShardDefBuilder<T>): CreateStorageShard<T> {
+type CreateStorageShard<T extends StorageShard, TPersistent> = [StorageShardDefBuilder<T, TPersistent>, StorageShardHooks<T>];
+export function createStorageShard<T extends StorageShard>(shard: StorageShardDefBuilder<T, any>): CreateStorageShard<T, unknown> {
   const hooks = Object.fromEntries([
     ...Object.keys(shard.makeShards).map((key) => {
       const useHook: StorageShardHookFn<any> = (selector) => {
@@ -117,9 +119,9 @@ const [
 ] = createStorageShard({
   name: "beadi",
   makeShards: {
-    fileStore: ({ initialData, beadiInstance }) => {
+    fileStore: ({ initialData, beadiInstance, updateSavedData }: MakeShardProps<BeadiFileData>) => {
       //TODO Validate the input
-      return makeFileStore(beadiInstance, initialData.nodes ?? { nodes: {}, edges: {} });
+      return makeFileStore(beadiInstance, initialData ?? { nodes: {}, edges: {} }, updateSavedData);
     },
     previewStore: () => makePreviewStore(),
     signalBus: () => makeSignalBus(),

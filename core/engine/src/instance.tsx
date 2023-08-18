@@ -1,18 +1,45 @@
 import { FunctionComponent, ReactNode, createContext, useContext } from "react";
-import { BeadiFileData, UnknownBeadiNode } from "./engine/store";
+import { UnknownBeadiNode } from "./engine/store";
 import { Storage, beadiStorageShard } from "./storage";
 import { AnyPlugin, BeadiContext, InputHandleDefs, OutputHandleDefs, notNull } from ".";
 import _ from "lodash";
 import { watchForChanges } from "./engine";
-
-export interface BeadiPersistentData {
-  nodes: BeadiFileData;
-}
+import { createStore } from "zustand";
 
 type BeadiInstanceProps = {
   beadiContext: BeadiContext<any>;
-  initialData: Partial<BeadiPersistentData>;
+  //shard name => saved shard data
+  initialData: Record<string, any>;
+  writePersistentData: (data: Record<string, any>) => void;
 };
+
+function makeSaveUpdater(initialData: Record<string, any>, writePersistentData: (data: Record<string, any>) => void) {
+  let saveStore = createStore(() => _.cloneDeep(initialData));
+
+  const update = (shard: string, partial: object) => {
+    saveStore.setState((state) => {
+      if (shard in state) {
+        return {
+          [shard]: {
+            ...state[shard],
+            ...partial,
+          },
+        };
+      } else {
+        return {
+          [shard]: partial,
+        };
+      }
+    });
+  };
+
+  saveStore.subscribe((n, o) => {
+    // console.log("SaveStore updated from ", o, " to ", n);
+    writePersistentData(n);
+  });
+
+  return update;
+}
 
 export class BeadiInstance {
   storage: Storage;
@@ -20,6 +47,8 @@ export class BeadiInstance {
 
   constructor(props: BeadiInstanceProps) {
     this.context = props.beadiContext;
+
+    const updateSave = makeSaveUpdater(props.initialData, props.writePersistentData);
 
     //This has to be the last assignment in the constructor, as there is a "this" reference in here...
     //Making this the last assignment should at least calm the chaos of that "this" a bit...
@@ -31,7 +60,10 @@ export class BeadiInstance {
             //REVIEW This this in the constructor is a recipe for disaster, but sadly the current architecture seems to require it...
             //At least it requires that storage is the very last thing in here
             beadiInstance: this,
-            initialData: props.initialData,
+            initialData: props.initialData[it.name],
+            updateSavedData: (partial) => {
+              updateSave(it.name, partial);
+            },
           })
         ),
       })),

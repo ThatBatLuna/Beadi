@@ -15,6 +15,7 @@ export const PreviewBeadi: FunctionComponent = () => {
     const instance = new BeadiInstance({
       beadiContext: context,
       initialData: previewSave,
+      writePersistentData: () => {},
     });
     return [context, instance];
   }, []);

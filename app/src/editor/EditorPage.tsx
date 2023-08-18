@@ -1,13 +1,18 @@
-import { BeadiEditor, BeadiInstance, useBeadi } from "@beadi/engine";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent, useState } from "react";
+import { SaveSelector } from "./SaveSelector";
+import { SaveEditor } from "./SaveEditor";
 
 export const EditorPage: FunctionComponent = () => {
-  const beadiContext = useBeadi();
-  const instance = useMemo(() => {
-    return new BeadiInstance({
-      beadiContext,
-      initialData: {},
-    });
-  }, [beadiContext]);
-  return <BeadiEditor instance={instance}></BeadiEditor>;
+  const [saveFile, setSaveFile] = useState<string | null>(sessionStorage.getItem("open_file"));
+
+  const openSave = (save: string) => {
+    sessionStorage.setItem("open_file", save);
+    setSaveFile(save);
+  };
+
+  if (saveFile === null) {
+    return <SaveSelector onSaveSelected={(s) => setSaveFile(s)} onCreateNew={() => openSave(`TODO_NEW_FILENAME${new Date().getTime()}`)} />;
+  } else {
+    return <SaveEditor saveFile={saveFile}></SaveEditor>;
+  }
 };
