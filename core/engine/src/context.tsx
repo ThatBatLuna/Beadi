@@ -23,8 +23,8 @@ import { UnknownBeadiNode, UnknownBeadiNodeData } from "./engine/store";
 import { Storage, beadiStorageShard } from "./storage";
 import { notNull } from ".";
 import _ from "lodash";
-import { makeNodeRenderer } from "./components/node/NodeRenderer";
 import { NodeProps } from "reactflow";
+import { BeadiNodeRenderer } from "./components/node/NodeRenderer";
 
 type BeadiContextProps = {
   plugins: AnyPlugin[];
@@ -65,7 +65,7 @@ export class BeadiContext<TGlobals extends Record<string, any> = {}> {
 
     this.nodeRenderers = Object.assign(
       {},
-      _.mapValues(this.nodeDefs, (it) => makeNodeRenderer(it)),
+      _.mapValues(this.nodeDefs, (it) => it.nodeComponent ?? BeadiNodeRenderer),
       ...props.plugins.map((it) => it.extraNodeRenderers)
     );
 

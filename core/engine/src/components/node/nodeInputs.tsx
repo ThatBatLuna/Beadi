@@ -3,6 +3,7 @@ import { useInputHandleData } from "../../engine/store";
 import { HandleInputProps } from "./NodeRenderer";
 import { useSignalBus } from "../../engine/signal";
 import { Button, Checkbox, NumberInput, TextInput } from "@beadi/components";
+import { InputHandleDef } from "../..";
 
 const NumberHandleInput: FunctionComponent<HandleInputProps> = ({ nodeId, handleId, input }) => {
   const [value, setValue] = useInputHandleData<any>(nodeId, handleId);
@@ -54,3 +55,18 @@ export const NODE_HANDLE_INPUT_TYPES: Record<string, FunctionComponent<HandleInp
   boolean: BooleanHandleInput,
   impulse: ImpulseHandleInput,
 };
+
+type HandleInputCProps = {
+  type: string;
+  input: InputHandleDef;
+  nodeId: string;
+  handleId: string;
+};
+
+export function getHandleInput({ type, input, nodeId, handleId }: HandleInputCProps) {
+  const Component = NODE_HANDLE_INPUT_TYPES[type];
+  if (Component !== undefined) {
+    return <Component input={input} nodeId={nodeId} handleId={handleId}></Component>;
+  }
+  return undefined;
+}

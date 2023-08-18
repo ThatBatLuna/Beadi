@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useCallback } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { Connection, Handle, Position } from "reactflow";
 import clsx from "clsx";
 import { useFileStore } from "../../storage";
@@ -6,16 +6,18 @@ import { handlesCompatible } from "../../engine/handles";
 import { NodeHandleDisplay } from "./NodeHandle";
 import { nodeHandleValuePreviews } from "./NodeHandleValuePreview";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
-import { HandleType } from "../../engine/node";
+import { HandleType, InputHandleDef, OutputHandleDef } from "../../engine/node";
 import { useBeadi } from "../../context";
+import { NODE_HANDLE_INPUT_TYPES } from "./nodeInputs";
 
 type NodeHandleLineProps = {
-  input?: ReactNode;
+  // input?: ReactNode;
   kind: "input" | "output";
   type: HandleType;
   label: string;
   connected?: boolean;
   handleId: string;
+  handleDef: InputHandleDef | OutputHandleDef;
   nodeId: string;
 
   expanded: boolean;
@@ -23,13 +25,14 @@ type NodeHandleLineProps = {
 };
 
 export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
-  input,
+  // input,
   kind,
   type,
   label,
   handleId,
   connected,
   nodeId,
+  handleDef,
   expanded,
   setExpanded,
 }) => {
@@ -67,6 +70,8 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
 
   const NodeHandleValuePreview = nodeHandleValuePreviews[type];
 
+  const InputComponent = NODE_HANDLE_INPUT_TYPES[type];
+
   return (
     <div className="flex flex-col items-stretch mt-2 w-full">
       <div className="flex flex-row items-center">
@@ -87,9 +92,7 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
             "mr-3 ml-1.5 justify-start": kind === "input",
           })}
         >
-          {input && connected !== true ? (
-            input
-          ) : (
+          {connected === true ? (
             <span
               className={clsx("block px-2", {
                 "text-start": kind === "input",
@@ -98,6 +101,8 @@ export const NodeHandleLine: FunctionComponent<NodeHandleLineProps> = ({
             >
               {label}
             </span>
+          ) : (
+            <InputComponent handleId={handleId} input={handleDef as InputHandleDef} nodeId={nodeId}></InputComponent>
           )}
           {kind === "output" && NodeHandleValuePreview !== undefined && (
             <button onMouseDownCapture={(e) => e.stopPropagation()} onClick={() => setExpanded(!expanded)}>
