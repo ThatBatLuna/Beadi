@@ -1,3 +1,11 @@
+# Version 0.4
+
+Oh wow! This is a big one!
+
+Large parts of the underlying engine were rewritten to make way for a new plugin-based architecture.
+
+TODO The rest of what changed.
+
 # Version 0.3
 
 This update brings the first draft of a mobile interface, so you aren't bound to your PC anymore and can take the fun anywhere. You can create your flows using the web-app on a PC as usual and then transfer them to your mobile device using an exported json file or by simply pressing a button to Export it to [litterbox.catbox.moe](https://litterbox.catbox.moe).

@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs = {
-      url = "nixpkgs/nixos-22.11";
+      url = "nixpkgs/nixos-23.05";
     };
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -26,8 +26,8 @@
 
       nodejs = buildNodeJs {
         enableNpm = true;
-        version = "18.16.0";
-        sha256 = "sha256-M9gaIz4jWlCa3aSk8iCQCNBFkZed5rPw9nwckGCT8Rg=";
+        version = "18.17.1";
+        sha256 = "sha256-8hXPA9DwDwesC2dMaBn4BMFULhbxUtoEmAAirsz15lo=";
       };
     in rec {
       flakedPkgs = pkgs;
@@ -37,6 +37,7 @@
         # add things you want in your shell here
         buildInputs = with pkgs; [
           nodejs
+          nodePackages.pnpm
         ];
       };
     });

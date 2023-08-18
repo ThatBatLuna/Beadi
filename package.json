@@ -2,41 +2,10 @@
   "name": "beadi",
   "version": "0.0.3",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.3",
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9",
-    "buttplug": "=3.1.1",
-    "clsx": "^1.2.1",
-    "file-saver": "^2.0.5",
-    "idb": "^7.1.1",
-    "immer": "^9.0.19",
-    "lodash": "^4.17.21",
-    "luxon": "^3.1.1",
-    "react": "^18.2.0",
-    "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.7.1",
-    "react-markdown": "^8.0.4",
-    "react-scripts": "5.0.1",
-    "reactflow": "^11.3.2",
-    "swr": "^2.1.0",
-    "typescript": "^4.9.3",
-    "use-debounce": "^9.0.3",
-    "web-vitals": "^2.1.4",
-    "zustand": "^4.1.4"
-  },
   "homepage": "https://beadi.onrender.com/",
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "build:ci": "CI=true craco build",
-    "test": "craco test"
+    "preinstall": "npx only-allow pnpm",
+    "start": "pnpm --filter beadi run dev"
   },
   "eslintConfig": {
     "extends": [
@@ -57,14 +26,5 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^7.0.0",
-    "@types/file-saver": "^2.0.5",
-    "@types/lodash": "^4.14.191",
-    "@types/luxon": "^3.1.0",
-    "autoprefixer": "^10.4.13",
-    "gh-pages": "^4.0.0",
-    "postcss": "^8.4.19",
-    "tailwindcss": "^3.2.4",
-    "wasm-loader": "^1.3.0"
   }
 }
