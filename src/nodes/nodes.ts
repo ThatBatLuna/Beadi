@@ -5,6 +5,7 @@ import {
   divideNodeDef,
   multiplyNodeDef,
   subtractNodeDef,
+  powerNodeDef
 } from "../nodes/AddNode";
 import { buttonNodeDef } from "../nodes/ButtonNode";
 import { buttplugNodeDef } from "../nodes/ButtplugNode";
@@ -34,6 +35,7 @@ const nodeDefList: NodeDef[] = [
   subtractNodeDef,
   divideNodeDef,
   multiplyNodeDef,
+  powerNodeDef,
   buttplugNodeDef,
   mixNodeDef,
   hysteresisNodeDef,

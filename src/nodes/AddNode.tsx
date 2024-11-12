@@ -58,3 +58,8 @@ export const divideNodeDef = makeMathNodeDef({
   type: "divide",
   function: (a, b) => (b === 0 ? 0.0 : a / b),
 });
+export const powerNodeDef = makeMathNodeDef({
+  label: "Power",
+  type: "power",
+  function: (a, b) => a ** b,
+});
